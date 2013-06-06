@@ -1,4 +1,4 @@
-package com.github.Fritos.Goldfish.Commands.Prototype;
+package org.nationsatwar.goldfish.Commands.Prototype;
 
 import java.io.File;
 import java.util.ArrayList;
@@ -6,9 +6,9 @@ import java.util.List;
 
 import org.bukkit.ChatColor;
 import org.bukkit.entity.Player;
+import org.nationsatwar.goldfish.Goldfish;
+import org.nationsatwar.goldfish.Utility.GoldfishUtility;
 
-import com.github.Fritos.Goldfish.Goldfish;
-import com.github.Fritos.Goldfish.Utility.GoldfishUtility;
 
 public class GoldfishCommandDelete {
 

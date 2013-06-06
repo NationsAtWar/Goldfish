@@ -1,10 +1,10 @@
-package com.github.Fritos.Goldfish.Commands.Prototype;
+package org.nationsatwar.goldfish.Commands.Prototype;
 
 import org.bukkit.ChatColor;
 import org.bukkit.entity.Player;
+import org.nationsatwar.goldfish.Goldfish;
+import org.nationsatwar.goldfish.Utility.GoldfishUtility;
 
-import com.github.Fritos.Goldfish.Goldfish;
-import com.github.Fritos.Goldfish.Utility.GoldfishUtility;
 
 public class GoldfishCommandExit {
 

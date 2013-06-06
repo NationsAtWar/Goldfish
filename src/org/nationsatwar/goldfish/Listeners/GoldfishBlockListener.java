@@ -1,4 +1,4 @@
-package com.github.Fritos.Goldfish.Listeners;
+package org.nationsatwar.goldfish.Listeners;
 
 import java.io.File;
 
@@ -9,9 +9,9 @@ import org.bukkit.event.Listener;
 import org.bukkit.event.block.BlockBreakEvent;
 import org.bukkit.event.block.BlockPlaceEvent;
 import org.bukkit.event.player.PlayerInteractEvent;
+import org.nationsatwar.goldfish.Goldfish;
+import org.nationsatwar.goldfish.Utility.GoldfishUtility;
 
-import com.github.Fritos.Goldfish.Goldfish;
-import com.github.Fritos.Goldfish.Utility.GoldfishUtility;
 
 public class GoldfishBlockListener implements Listener {
 	

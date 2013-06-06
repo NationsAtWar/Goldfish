@@ -1,4 +1,4 @@
-package com.github.Fritos.Goldfish.Commands.Prototype;
+package org.nationsatwar.goldfish.Commands.Prototype;
 
 import org.bukkit.ChatColor;
 import org.bukkit.Location;
@@ -6,9 +6,9 @@ import org.bukkit.World;
 import org.bukkit.WorldCreator;
 import org.bukkit.World.Environment;
 import org.bukkit.entity.Player;
+import org.nationsatwar.goldfish.Goldfish;
+import org.nationsatwar.goldfish.GoldfishPrototype;
 
-import com.github.Fritos.Goldfish.Goldfish;
-import com.github.Fritos.Goldfish.GoldfishPrototype;
 
 public class GoldfishCommandWarp {
 

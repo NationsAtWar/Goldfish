@@ -1,11 +1,11 @@
-package com.github.Fritos.Goldfish;
+package org.nationsatwar.goldfish;
 
 import java.io.File;
 
 import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.configuration.file.YamlConfiguration;
+import org.nationsatwar.goldfish.Utility.GoldfishPrototypeConfig;
 
-import com.github.Fritos.Goldfish.Utility.GoldfishPrototypeConfig;
 
 public class GoldfishInstance implements java.io.Serializable {
 	

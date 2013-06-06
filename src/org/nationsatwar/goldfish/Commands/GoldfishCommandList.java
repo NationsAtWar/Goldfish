@@ -1,9 +1,9 @@
-package com.github.Fritos.Goldfish.Commands;
+package org.nationsatwar.goldfish.Commands;
 
 import org.bukkit.ChatColor;
 import org.bukkit.entity.Player;
+import org.nationsatwar.goldfish.Goldfish;
 
-import com.github.Fritos.Goldfish.Goldfish;
 
 public class GoldfishCommandList {
 

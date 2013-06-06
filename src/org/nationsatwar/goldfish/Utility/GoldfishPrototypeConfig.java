@@ -1,4 +1,4 @@
-package com.github.Fritos.Goldfish.Utility;
+package org.nationsatwar.goldfish.Utility;
 
 import java.io.File;
 import java.io.IOException;
@@ -7,8 +7,8 @@ import java.util.logging.Logger;
 import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.configuration.file.FileConfigurationOptions;
 import org.bukkit.configuration.file.YamlConfiguration;
+import org.nationsatwar.goldfish.Goldfish;
 
-import com.github.Fritos.Goldfish.Goldfish;
 
 public class GoldfishPrototypeConfig {
 	

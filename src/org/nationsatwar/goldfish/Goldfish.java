@@ -1,4 +1,4 @@
-package com.github.Fritos.Goldfish;
+package org.nationsatwar.goldfish;
 
 import java.io.File;
 import java.util.logging.Logger;
@@ -9,12 +9,12 @@ import org.bukkit.World.Environment;
 import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.configuration.file.YamlConfiguration;
 import org.bukkit.plugin.java.JavaPlugin;
+import org.nationsatwar.goldfish.Listeners.GoldfishBlockListener;
+import org.nationsatwar.goldfish.Listeners.GoldfishLimitListener;
+import org.nationsatwar.goldfish.Listeners.GoldfishRespawnListener;
+import org.nationsatwar.goldfish.Listeners.GoldfishTimerListener;
+import org.nationsatwar.goldfish.Utility.GoldfishInstanceConfig;
 
-import com.github.Fritos.Goldfish.Listeners.GoldfishBlockListener;
-import com.github.Fritos.Goldfish.Listeners.GoldfishRespawnListener;
-import com.github.Fritos.Goldfish.Listeners.GoldfishLimitListener;
-import com.github.Fritos.Goldfish.Listeners.GoldfishTimerListener;
-import com.github.Fritos.Goldfish.Utility.GoldfishInstanceConfig;
 
 public class Goldfish extends JavaPlugin {
 	

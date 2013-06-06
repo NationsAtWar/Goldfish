@@ -1,4 +1,4 @@
-package com.github.Fritos.Goldfish.Listeners;
+package org.nationsatwar.goldfish.Listeners;
 
 import java.io.File;
 
@@ -7,10 +7,10 @@ import org.bukkit.configuration.file.YamlConfiguration;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 import org.bukkit.event.world.ChunkLoadEvent;
+import org.nationsatwar.goldfish.Goldfish;
+import org.nationsatwar.goldfish.Utility.GoldfishPrototypeConfig;
+import org.nationsatwar.goldfish.Utility.GoldfishUtility;
 
-import com.github.Fritos.Goldfish.Goldfish;
-import com.github.Fritos.Goldfish.Utility.GoldfishPrototypeConfig;
-import com.github.Fritos.Goldfish.Utility.GoldfishUtility;
 
 public class GoldfishLimitListener implements Listener {
 	

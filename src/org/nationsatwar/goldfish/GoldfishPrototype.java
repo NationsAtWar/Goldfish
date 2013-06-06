@@ -1,4 +1,4 @@
-package com.github.Fritos.Goldfish;
+package org.nationsatwar.goldfish;
 
 import org.bukkit.Location;
 import org.bukkit.World;

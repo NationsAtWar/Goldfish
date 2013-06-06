@@ -1,4 +1,4 @@
-package com.github.Fritos.Goldfish;
+package org.nationsatwar.goldfish;
 
 import java.io.File;
 import java.io.IOException;
@@ -7,8 +7,8 @@ import org.bukkit.Location;
 import org.bukkit.World;
 import org.bukkit.entity.Player;
 import org.bukkit.scheduler.BukkitRunnable;
+import org.nationsatwar.goldfish.Utility.GoldfishUtility;
 
-import com.github.Fritos.Goldfish.Utility.GoldfishUtility;
 
 public class GoldfishThread extends BukkitRunnable {
 	

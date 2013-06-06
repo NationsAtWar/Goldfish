@@ -1,22 +1,22 @@
-package com.github.Fritos.Goldfish;
+package org.nationsatwar.goldfish;
 
 import org.bukkit.ChatColor;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandExecutor;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
+import org.nationsatwar.goldfish.Commands.GoldfishCommandEnter;
+import org.nationsatwar.goldfish.Commands.GoldfishCommandLeave;
+import org.nationsatwar.goldfish.Commands.GoldfishCommandList;
+import org.nationsatwar.goldfish.Commands.Prototype.GoldfishCommandActivate;
+import org.nationsatwar.goldfish.Commands.Prototype.GoldfishCommandCreate;
+import org.nationsatwar.goldfish.Commands.Prototype.GoldfishCommandDelete;
+import org.nationsatwar.goldfish.Commands.Prototype.GoldfishCommandEntrance;
+import org.nationsatwar.goldfish.Commands.Prototype.GoldfishCommandExit;
+import org.nationsatwar.goldfish.Commands.Prototype.GoldfishCommandUpdate;
+import org.nationsatwar.goldfish.Commands.Prototype.GoldfishCommandWarp;
 
-import com.github.Fritos.Goldfish.Commands.Prototype.GoldfishCommandCreate;
-import com.github.Fritos.Goldfish.Commands.Prototype.GoldfishCommandEntrance;
-import com.github.Fritos.Goldfish.Commands.Prototype.GoldfishCommandExit;
-import com.github.Fritos.Goldfish.Commands.Prototype.GoldfishCommandActivate;
-import com.github.Fritos.Goldfish.Commands.Prototype.GoldfishCommandUpdate;
-import com.github.Fritos.Goldfish.Commands.Prototype.GoldfishCommandDelete;
-import com.github.Fritos.Goldfish.Commands.Prototype.GoldfishCommandWarp;
 
-import com.github.Fritos.Goldfish.Commands.GoldfishCommandEnter;
-import com.github.Fritos.Goldfish.Commands.GoldfishCommandLeave;
-import com.github.Fritos.Goldfish.Commands.GoldfishCommandList;
 
 public class GoldfishCommandExecutor implements CommandExecutor {
 	
