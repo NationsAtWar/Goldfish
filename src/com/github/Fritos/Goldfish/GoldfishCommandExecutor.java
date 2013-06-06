@@ -1,30 +1,50 @@
 package com.github.Fritos.Goldfish;
 
-import java.io.File;
-import java.io.FileInputStream;
-import java.io.FileOutputStream;
-import java.io.InputStream;
-import java.io.OutputStream;
-
-import org.apache.commons.io.*;
-
 import org.bukkit.ChatColor;
-import org.bukkit.Location;
-import org.bukkit.World;
-import org.bukkit.World.Environment;
-import org.bukkit.WorldCreator;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandExecutor;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 
-public class GoldfishCommandExecutor implements CommandExecutor {
+import com.github.Fritos.Goldfish.Commands.Prototype.GoldfishCommandCreate;
+import com.github.Fritos.Goldfish.Commands.Prototype.GoldfishCommandEntrance;
+import com.github.Fritos.Goldfish.Commands.Prototype.GoldfishCommandExit;
+import com.github.Fritos.Goldfish.Commands.Prototype.GoldfishCommandActivate;
+import com.github.Fritos.Goldfish.Commands.Prototype.GoldfishCommandUpdate;
+import com.github.Fritos.Goldfish.Commands.Prototype.GoldfishCommandDelete;
+import com.github.Fritos.Goldfish.Commands.Prototype.GoldfishCommandWarp;
 
-	private Goldfish plugin;
+import com.github.Fritos.Goldfish.Commands.GoldfishCommandEnter;
+import com.github.Fritos.Goldfish.Commands.GoldfishCommandLeave;
+import com.github.Fritos.Goldfish.Commands.GoldfishCommandList;
+
+public class GoldfishCommandExecutor implements CommandExecutor {
+	
+	private GoldfishCommandCreate createCommand;
+	private GoldfishCommandEntrance entranceCommand;
+	private GoldfishCommandExit exitCommand;
+	private GoldfishCommandActivate activateCommand;
+	private GoldfishCommandUpdate updateCommand;
+	private GoldfishCommandDelete deleteCommand;
+	private GoldfishCommandWarp warpCommand;
+	private GoldfishCommandList listCommand;
+	
+	private GoldfishCommandEnter enterCommand;
+	private GoldfishCommandLeave leaveCommand;
 	
 	public GoldfishCommandExecutor(Goldfish plugin) {
 		
-		this.plugin = plugin;
+		createCommand = new GoldfishCommandCreate(plugin);
+		entranceCommand = new GoldfishCommandEntrance(plugin);
+		exitCommand = new GoldfishCommandExit(plugin);
+		activateCommand = new GoldfishCommandActivate(plugin);
+		updateCommand = new GoldfishCommandUpdate(plugin);
+		deleteCommand = new GoldfishCommandDelete(plugin);
+		warpCommand = new GoldfishCommandWarp(plugin);
+		
+		enterCommand = new GoldfishCommandEnter(plugin);
+		leaveCommand = new GoldfishCommandLeave(plugin);
+		listCommand = new GoldfishCommandList(plugin);
 	}
 
 	@Override
@@ -38,40 +58,24 @@ public class GoldfishCommandExecutor implements CommandExecutor {
 			helpCommand(sender);
 		
 		// -goldfish prototype
-		else if (args[0].equals("prototype"))
+		else if (args[0].equals("prototype") || args[0].equals("pt"))
 			prototypeCommand(sender, args);
-		
-		// -goldfish entrance
-		else if (args[0].equals("entrance"))
-			entranceCommand(sender, args);
-		
-		// -goldfish exit
-		else if (args[0].equals("exit"))
-			exitCommand(sender, args);
-		
-		// -goldfish activate
-		else if (args[0].equals("activate"))
-			activateCommand(sender, args);
 		
 		// -goldfish enter
 		else if (args[0].equals("enter"))
 			enterCommand(sender, args);
 		
-		// -goldfish enter
+		// -goldfish leave
 		else if (args[0].equals("leave"))
 			leaveCommand(sender, args);
 		
-		// -goldfish destructible
-		else if (args[0].equals("destructible"))
-			destructibleCommand(sender, args);
+		// -goldfish leave
+		else if (args[0].equals("list"))
+			listCommand(sender, args);
 		
-		// -goldfish naked
-		else if (args[0].equals("naked"))
-			nakedCommand(sender, args);
-		
-		// -goldfish timer
-		else if (args[0].equals("timer"))
-			timerCommand(sender, args);
+		// -goldfish debug
+		else if (args[0].equals("debug"))
+			debugCommand(sender, args);
 		
 		// -goldfish <non-applicable command>
 		else
@@ -84,19 +88,19 @@ public class GoldfishCommandExecutor implements CommandExecutor {
 
 		sender.sendMessage(ChatColor.DARK_RED + "[Nations at War]" + ChatColor.DARK_AQUA + " -=[GOLDFISH]=-");
 		sender.sendMessage(ChatColor.YELLOW + "Allows you to create and manage instances.");
-		sender.sendMessage(ChatColor.YELLOW + "Command List: Prototype, Entrance, Exit, Activate, " +
-				"Enter, Leave, Destructible, Naked, Minimum, Timer");
+		sender.sendMessage(ChatColor.YELLOW + "Command List: Prototype, Enter, Leave, List");
 	}
 
 	/**
-	 * Handles the prototype command: Create, Warp, List, Update, and Delete
+	 * Handles the prototype commands: Create, Entrance, Exit, Activate, Update, Delete, Warp
 	 */
 	public void prototypeCommand(CommandSender sender, String[] args) {
 
 		if (args.length == 1 || args[1].equals("help")) {
 			sender.sendMessage(ChatColor.DARK_RED + "[Goldfish]" + ChatColor.DARK_AQUA + " -=[PROTOTYPE]=-");
-			sender.sendMessage(ChatColor.YELLOW + "Allows you to manage prototypes for instances.");
-			sender.sendMessage(ChatColor.YELLOW + "Sub-args list: Create, Save, Warp, List, Update, Delete");
+			sender.sendMessage(ChatColor.YELLOW + "Allows you to manage instance prototypes. ('/goldfish pt' for short)");
+			sender.sendMessage(ChatColor.YELLOW + "Sub-Command List: Create, Entrance, Exit, Activate, Update, " +
+			"Delete, Warp, List");
 			return;
 		}
 
@@ -107,17 +111,24 @@ public class GoldfishCommandExecutor implements CommandExecutor {
 			return;
 		}
 
-		if (args[1].equals("warp") && (args.length == 2 || args[2].equals("help"))) {
-			sender.sendMessage(ChatColor.DARK_RED + "[Nations at War]" + ChatColor.DARK_AQUA + " -=[PROTOYPE - WARP]=-");
-			sender.sendMessage(ChatColor.DARK_AQUA + "e.g. '/goldfish prototype warp [worldname]'");
-			sender.sendMessage(ChatColor.YELLOW + "Warps you to the prototype of instance [worldname]");
+		if (args[1].equals("entrance") && (args.length == 2 || args[2].equals("help"))) {
+			sender.sendMessage(ChatColor.DARK_RED + "[Nations at War]" + ChatColor.DARK_AQUA + " -=[PROTOYPE - ENTRANCE]=-");
+			sender.sendMessage(ChatColor.DARK_AQUA + "e.g. '/goldfish entrance [worldname]");
+			sender.sendMessage(ChatColor.YELLOW + "Makes the region around your current location the entrance to [worldname].");
 			return;
 		}
 
-		if (args[1].equals("list") && (args.length > 2 && args[2].equals("help"))) {
-			sender.sendMessage(ChatColor.DARK_RED + "[Nations at War]" + ChatColor.DARK_AQUA + " -=[PROTOYPE - LIST]=-");
-			sender.sendMessage(ChatColor.DARK_AQUA + "e.g. '/goldfish prototype list'");
-			sender.sendMessage(ChatColor.YELLOW + "Gives you a list of all prototype worlds.");
+		if (args[1].equals("exit") && (args.length > 2 && args[2].equals("help"))) {
+			sender.sendMessage(ChatColor.DARK_RED + "[Nations at War]" + ChatColor.DARK_AQUA + " -=[PROTOYPE - EXIT]=-");
+			sender.sendMessage(ChatColor.DARK_AQUA + "e.g. '/goldfish exit");
+			sender.sendMessage(ChatColor.YELLOW + "Makes the region around your current location the exit.");
+			return;
+		}
+
+		if (args[1].equals("activate") && (args.length == 2 || args[2].equals("help"))) {
+			sender.sendMessage(ChatColor.DARK_RED + "[Nations at War]" + ChatColor.DARK_AQUA + " -=[PROTOYPE - ACTIVATE]=-");
+			sender.sendMessage(ChatColor.DARK_AQUA + "e.g. '/goldfish activate [worldname]");
+			sender.sendMessage(ChatColor.YELLOW + "Activates [worldname] so it can now be instanced. Requires entrance and exit.");
 			return;
 		}
 
@@ -134,203 +145,50 @@ public class GoldfishCommandExecutor implements CommandExecutor {
 			sender.sendMessage(ChatColor.YELLOW + "Completely destroys the prototype.");
 			return;
 		}
-		
-		// PROTOTYPE - CREATE
+
+		if (args[1].equals("warp") && (args.length == 2 || args[2].equals("help"))) {
+			sender.sendMessage(ChatColor.DARK_RED + "[Nations at War]" + ChatColor.DARK_AQUA + " -=[PROTOYPE - WARP]=-");
+			sender.sendMessage(ChatColor.DARK_AQUA + "e.g. '/goldfish prototype warp [worldname]'");
+			sender.sendMessage(ChatColor.YELLOW + "Warps you to the prototype of instance [worldname]");
+			return;
+		}
 		
 		String worldName = (args.length > 2 ? args[2] : "");
 		
-		if (args[1].equals("create") && !worldName.equals("")) {
-			
-			if (plugin.goldfishManager.exists(worldName)) {
-				
-				sender.sendMessage(ChatColor.YELLOW + "A prototype with that name already exists.");
-				return;
-			}
-			
-			plugin.getServer().createWorld(new WorldCreator(worldName).environment(Environment.NORMAL));
-			
-			GoldfishInstance instance = new GoldfishInstance(plugin, worldName);
-			plugin.goldfishManager.add(instance);
-
-			sender.sendMessage(ChatColor.YELLOW + "Prototype " + worldName + " has been created. You may warp there at " +
-					"your convenience");
-			
-		    saveInstance(worldName);
-		    
-			return;
-		}
+		// PROTOTYPE - CREATE
 		
-		// PROTOTYPE - WARP
+		if (args[1].equals("create") && !worldName.equals(""))
+			createCommand.execute((Player) sender, worldName);
 		
-		if (args[1].equals("warp") && !worldName.equals("")) {
-
-			if (!plugin.goldfishManager.exists(worldName)) {
-				
-				sender.sendMessage(ChatColor.YELLOW + "A prototype with that name does not exist.");
-				return;
-			}
-
-			World newWorld = plugin.getServer().getWorld(worldName);
-			
-			Player player = (Player) sender;
-			
-			if (!plugin.goldfishManager.find(worldName).exitSet)
-				player.teleport(newWorld.getSpawnLocation());
-			else
-				player.teleport(plugin.goldfishManager.find(worldName).getExitLocation());
-			
-			return;
-		}
+		// PROTOTYPE - ENTRANCE
 		
-		// PROTOTYPE - LIST
+		if (args[1].equals("entrance") && !worldName.equals(""))
+			entranceCommand.execute((Player) sender, worldName);
 		
-		if (args[1].equals("list")) {
-			
-			for ( String instanceName : plugin.goldfishManager.getInstanceNames() )
-				sender.sendMessage(ChatColor.YELLOW + instanceName);
-
-			return;
-		}
+		// PROTOTYPE - EXIT
+		
+		if (args[1].equals("exit"))
+			exitCommand.execute((Player) sender, worldName);
+		
+		// PROTOTYPE - ACTIVATE
+		
+		if (args[1].equals("activate") && !worldName.equals(""))
+			activateCommand.execute((Player) sender, worldName);
 		
 		// PROTOTYPE - UPDATE
 		
-		if (args[1].equals("update") && !worldName.equals("")) {
-
-			if (!plugin.goldfishManager.exists(worldName)) {
-				
-				sender.sendMessage(ChatColor.YELLOW + "A prototype with that name does not exist.");
-				return;
-			}
-			
-		    saveInstance(worldName);
-
-			return;
-		}
+		if (args[1].equals("update") && !worldName.equals(""))
+			updateCommand.execute((Player) sender, worldName);
 		
 		// PROTOTYPE - DELETE
 		
-		if (args[1].equals("delete") && !worldName.equals("")) {
-
-			if (!plugin.goldfishManager.exists(worldName)) {
-				
-				sender.sendMessage(ChatColor.YELLOW + "A prototype with that name does not exist.");
-				return;
-			}
-			
-			plugin.getServer().unloadWorld(worldName, true);
-			plugin.goldfishManager.remove(plugin.goldfishManager.find(worldName));
-
-		    File worldDir = new File(worldName + "\\");
-		    File protoDir = new File("plugins\\instances\\prototypes\\" + worldName + "\\");
-			
-			try {
-				FileUtils.deleteDirectory(worldDir);
-				FileUtils.deleteDirectory(protoDir);
-				sender.sendMessage(ChatColor.YELLOW + "Prototype world: " + worldName + " has been deleted.");
-			} catch (Exception e) {
-				plugin.logger("Could not delete prototype world.");
-			}
-
-			sender.sendMessage(ChatColor.YELLOW + "Prototype " + worldName + " has been deleted.");
-			return;
-		}
-	}
-
-	/**
-	 * Handles the Entrance command
-	 */
-	private void entranceCommand(CommandSender sender, String[] args) {
-
-		if (args.length == 1 || (args.length > 2 && args[2].equals("help"))) {
-			sender.sendMessage(ChatColor.DARK_RED + "[Nations at War]" + ChatColor.DARK_AQUA + " -=[ENTRANCE]=-");
-			sender.sendMessage(ChatColor.DARK_AQUA + "e.g. '/goldfish entrance [worldname]");
-			sender.sendMessage(ChatColor.YELLOW + "Makes the region around your current location the entrance to [worldname].");
-			return;
-		}
+		if (args[1].equals("delete") && !worldName.equals(""))
+			deleteCommand.execute((Player) sender, worldName);
 		
-		String worldName = (args.length > 1 ? args[1] : "");
-		Player player = (Player) sender;
-
-		if (!plugin.goldfishManager.exists(worldName)) {
-			
-			sender.sendMessage(ChatColor.YELLOW + "A prototype with that name does not exist.");
-			return;
-		}
+		// PROTOTYPE - WARP
 		
-		plugin.goldfishManager.find(worldName).setNewEntranceLocation(player.getLocation());
-
-		sender.sendMessage(ChatColor.YELLOW + "Prototype " + worldName + "'s entrance location has been set.");
-		
-	    saveInstance(worldName);
-	    
-		return;
-	}
-
-	/**
-	 * Handles the Exit command
-	 */
-	private void exitCommand(CommandSender sender, String[] args) {
-
-		if (args.length > 1 && args[1].equals("help")) {
-			sender.sendMessage(ChatColor.DARK_RED + "[Nations at War]" + ChatColor.DARK_AQUA + " -=[EXIT]=-");
-			sender.sendMessage(ChatColor.DARK_AQUA + "e.g. '/goldfish exit");
-			sender.sendMessage(ChatColor.YELLOW + "Makes the region around your current location the exit.");
-			return;
-		}
-		
-		Player player = (Player) sender;
-		
-		for ( String instanceName : plugin.goldfishManager.getInstanceNames() )
-			if (player.getWorld().getName().equals(instanceName)) {
-				
-				plugin.goldfishManager.find(instanceName).setNewExitLocation(player.getLocation());
-				sender.sendMessage(ChatColor.YELLOW + "Prototype " + instanceName + "'s exit location has been set.");
-				
-			    saveInstance(instanceName);
-				return;
-			}
-
-		sender.sendMessage(ChatColor.YELLOW + "You are not inside an instance prototype.");
-	    
-		return;
-	}
-
-	/**
-	 * Handles the Activate command
-	 */
-	private void activateCommand(CommandSender sender, String[] args) {
-
-		if (args.length == 1 || args[1].equals("help")) {
-			sender.sendMessage(ChatColor.DARK_RED + "[Nations at War]" + ChatColor.DARK_AQUA + " -=[ACTIVATE]=-");
-			sender.sendMessage(ChatColor.DARK_AQUA + "e.g. '/goldfish activate [worldname]");
-			sender.sendMessage(ChatColor.YELLOW + "Activates [worldname] so it can now be instanced. Requires entrance and exit.");
-			return;
-		}
-		
-		String worldName = (args.length > 1 ? args[1] : "");
-		
-		GoldfishInstance instance = plugin.goldfishManager.find(worldName);
-		
-		if (instance == null) {
-			
-			sender.sendMessage(ChatColor.YELLOW + "A prototype with that name does not exist.");
-			return;
-		}
-		
-		if (!instance.canActivate()) {
-			
-			sender.sendMessage(ChatColor.YELLOW + "You have to set this prototype's entrance and exit first.");
-			return;
-		}
-		
-	    saveInstance(worldName);
-		
-		instance.toggleActivated();
-		
-		if (instance.isActivated())
-			sender.sendMessage(ChatColor.YELLOW + "Prototype " + worldName + " has been activated");
-		else
-			sender.sendMessage(ChatColor.YELLOW + "Prototype " + worldName + " has been deactivated");
+		if (args[1].equals("warp") && !worldName.equals(""))
+			warpCommand.execute((Player) sender, worldName);
 	}
 
 	/**
@@ -345,48 +203,8 @@ public class GoldfishCommandExecutor implements CommandExecutor {
 			return;
 		}
 		
-		for ( String instanceName : plugin.goldfishManager.getInstanceNames() ) {
-			
-			GoldfishInstance instance = plugin.goldfishManager.find(instanceName);
-			
-			Player player = (Player) sender;
-			
-			if (player.getWorld().getName().equals(instance.getEntranceLocation().getWorld().getName())) {
-
-				double entranceDistance = player.getLocation().distance(instance.getEntranceLocation());
-				
-				if (entranceDistance < 10 && instance.isActivated()) {
-					
-					String newInstanceName = player.getName();
-					
-					newInstanceName = newInstanceName + "_" + instanceName;
-					
-					World world = plugin.getServer().getWorld(newInstanceName);
-					
-					if (world == null) {
-
-					    File protoDir = new File("plugins\\instances\\prototypes\\" + instanceName + "\\");
-					    File worldDir = new File(newInstanceName + "\\");
-						
-					    copyDirectory(protoDir, worldDir);
-						
-						plugin.getServer().createWorld(new WorldCreator(newInstanceName).environment(Environment.NORMAL));
-						world = plugin.getServer().getWorld(newInstanceName);
-
-						GoldfishThread instanceThread = new GoldfishThread(plugin, newInstanceName, 30000);
-						instanceThread.start();
-					}
-					
-					player.teleport(new Location(world, instance.getExitLocation().getX(), 
-							instance.getExitLocation().getY(), instance.getExitLocation().getZ()));
-					
-					return;
-				}
-			}
-		}
-		
-		sender.sendMessage(ChatColor.YELLOW + "No instance locations here.");
-		return;
+		else
+			enterCommand.execute((Player) sender);
 	}
 
 	/**
@@ -401,111 +219,35 @@ public class GoldfishCommandExecutor implements CommandExecutor {
 			return;
 		}
 		
-		for ( String instanceName : plugin.goldfishManager.getInstanceNames() ) {
-			
-			GoldfishInstance instance = plugin.goldfishManager.find(instanceName);
-			
-			Player player = (Player) sender;
-			
-			if (player.getWorld().getName().equals(instance.getExitLocation().getWorld().getName())) {
+		else
+			leaveCommand.execute((Player) sender);
+	}
 
-				double exitDistance = player.getLocation().distance(instance.getExitLocation());
-				
-				if (exitDistance < 10) {
-					
-					player.teleport(instance.getEntranceLocation());
-					return;
-				}
-			}
+	/**
+	 * Handles the List command
+	 */
+	private void listCommand(CommandSender sender, String[] args) {
+
+		if (args[0].equals("list") && (args.length > 1 && args[1].equals("help"))) {
+			sender.sendMessage(ChatColor.DARK_RED + "[Nations at War]" + ChatColor.DARK_AQUA + " -=[PROTOYPE - LIST]=-");
+			sender.sendMessage(ChatColor.DARK_AQUA + "e.g. '/goldfish list'");
+			sender.sendMessage(ChatColor.YELLOW + "Gives you a list of all available instances.");
+			return;
 		}
 		
-		sender.sendMessage(ChatColor.YELLOW + "No instance locations here.");
-		return;
+		else
+			listCommand.execute((Player) sender);
 	}
-	
-	/**
-	 * Handles the Destructible command
-	 */
-	private void destructibleCommand(CommandSender sender, String[] args) {
 
-		if (args.length == 1 || args[1].equals("help")) {
-			sender.sendMessage(ChatColor.DARK_RED + "[Nations at War]" + ChatColor.DARK_AQUA + " -=[DESTRUCTIBLE]=-");
-			sender.sendMessage(ChatColor.DARK_AQUA + "e.g. '/goldfish destructible [true/false] [blocktype] [worldname]");
-			sender.sendMessage(ChatColor.YELLOW + "Changes whether or not [blocktype] is destructible in [world]");
-			sender.sendMessage(ChatColor.YELLOW + "If [blocktype] is 'all', all block types are affected.");
-			return;
-		}
-	}
-	
 	/**
-	 * Handles the Naked command
+	 * Handles the Debug command
 	 */
-	private void nakedCommand(CommandSender sender, String[] args) {
-
-		if (args.length == 1 || args[1].equals("help")) {
-			sender.sendMessage(ChatColor.DARK_RED + "[Nations at War]" + ChatColor.DARK_AQUA + " -=[NAKED]=-");
-			sender.sendMessage(ChatColor.DARK_AQUA + "e.g. '/goldfish naked [true/false] [worldname]");
-			sender.sendMessage(ChatColor.YELLOW + "Changes whether or not players/parties enter with equipment.");
-			return;
-		}
-	}
-	
-	/**
-	 * Handles the Timer command
-	 */
-	private void timerCommand(CommandSender sender, String[] args) {
-
-		if (args.length == 1 || args[1].equals("help")) {
-			sender.sendMessage(ChatColor.DARK_RED + "[Nations at War]" + ChatColor.DARK_AQUA + " -=[TIMER]=-");
-			sender.sendMessage(ChatColor.DARK_AQUA + "e.g. '/goldfish timer [timeramount] [worldname]");
-			sender.sendMessage(ChatColor.YELLOW + "Gives the instance a timer, if it reaches 0, parties are kicked out.");
-			sender.sendMessage(ChatColor.YELLOW + "Set timer to 0 for indefinite.");
-			return;
-		}
-	}
-	
-	private void saveInstance(String worldName) {
+	private void debugCommand(CommandSender sender, String[] args) {
 		
-		plugin.getServer().getWorld(worldName).save();
-
-	    File worldDir = new File(worldName + "\\");
-	    File protoDir = new File("plugins\\instances\\prototypes\\" + worldName);
-	    
-	    copyDirectory(worldDir, protoDir);
-	    
-	    File uidFile = new File("plugins\\instances\\prototypes\\" + worldName + "\\uid.dat");
-	    uidFile.delete();
+		// Temporary command used for debugging purposes.
+		
+		Player player = (Player) sender;
+		
+		sender.sendMessage(player.getLocation().getWorld().getChunkAt(player.getLocation()).toString());
 	}
-	
-    private void copyDirectory(File sourceLocation, File targetLocation) {
-        
-        if (sourceLocation.isDirectory()) {
-        	
-            if (!targetLocation.exists())
-                targetLocation.mkdir();
-            
-            String[] children = sourceLocation.list();
-            
-            for (int i=0; i<children.length; i++)
-                copyDirectory(new File(sourceLocation, children[i]), new File(targetLocation, children[i]));
-            
-        } else {
-            
-        	try {
-	            InputStream in = new FileInputStream(sourceLocation);
-	            OutputStream out = new FileOutputStream(targetLocation);
-	            
-	            // Copy the bits from instream to outstream
-	            byte[] buf = new byte[1024];
-	            int len;
-	            
-	            while ((len = in.read(buf)) > 0)
-	                out.write(buf, 0, len);
-	            
-	            in.close();
-	            out.close();
-	            
-        	} catch (Exception e) { plugin.logger(e.getMessage()); }
-        }
-    }
 }

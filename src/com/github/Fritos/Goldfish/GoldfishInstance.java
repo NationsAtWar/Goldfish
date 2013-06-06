@@ -1,94 +1,43 @@
 package com.github.Fritos.Goldfish;
 
-import java.util.ArrayList;
+import java.io.File;
 
-import org.bukkit.Location;
-import org.bukkit.World;
+import org.bukkit.configuration.file.FileConfiguration;
+import org.bukkit.configuration.file.YamlConfiguration;
+
+import com.github.Fritos.Goldfish.Utility.GoldfishPrototypeConfig;
 
 public class GoldfishInstance implements java.io.Serializable {
 	
+	public transient Goldfish plugin;
+	
 	private static final long serialVersionUID = 1L;
 
-	public String name;
-	
-	public boolean entranceSet;
-	public boolean exitSet;
-	
-	private transient Goldfish plugin;
-	
-	private ArrayList<String> instanceCopies;
-	
-	private boolean activated;
-	
-	private ArrayList<Integer> destructibleBlocks;
-	private boolean naked;
-	private int minimumPlayers;
+	private String name;
+
+	private boolean timerActive;
 	private int timerAmount;
+	
+	private GoldfishThread timer;
 
-	private String entranceWorld;
-	private double entranceCoordX;
-	private double entranceCoordY;
-	private double entranceCoordZ;
-
-	private String exitWorld;
-	private double exitCoordX;
-	private double exitCoordY;
-	private double exitCoordZ;
-
-	public GoldfishInstance(Goldfish plugin, String newName) {
+	public GoldfishInstance(Goldfish plugin, String name) {
 		
 		this.plugin = plugin;
 		
-		name = newName;
+		this.name = name;
 		
-		activated = false;
+		File dataFile = new File(Goldfish.prototypePath + name + "\\prototypedata.yml");
+		FileConfiguration config = YamlConfiguration.loadConfiguration(dataFile);
 		
-		destructibleBlocks = new ArrayList<Integer>();
-		naked = false;
+		timerAmount = config.getInt(GoldfishPrototypeConfig.timerAmount);
 		
-		minimumPlayers = 1;
-		timerAmount = 0;
-		
-		entranceWorld = "";
-		exitWorld = "";
+		if (timerAmount > 0)
+			timerActive = true;
 	}
 	
-	public void setPlugin(Goldfish plugin) {
+	public String getName() {
 		
-		this.plugin = plugin;
-	}
-	
-	public void addInstanceCopy(String copyName) {
-		
-		instanceCopies.add(copyName);
-	}
-	
-	public boolean canActivate() {
-		
-		if (entranceSet && exitSet)
-			return true;
-		else
-			return false;
-	}
-	
-	public boolean isActivated() {
-		
-		return activated;
-	}
-	
-	public ArrayList<Integer> getDestructibleBlocks() {
-		
-		return destructibleBlocks;
-	}
-	
-	public boolean isNaked() {
-		
-		return naked;
-	}
-	
-	public int getMinimumPlayers() {
-		
-		return minimumPlayers;
+		return name;
 	}
 	
 	public int getTimerAmount() {
@@ -96,42 +45,30 @@ public class GoldfishInstance implements java.io.Serializable {
 		return timerAmount;
 	}
 	
-	public Location getEntranceLocation() {
+	public boolean isTimerActive() {
 		
-		World world = plugin.getServer().getWorld(entranceWorld);
-		return new Location(world, entranceCoordX, entranceCoordY, entranceCoordZ);
+		return timerActive;
 	}
 	
-	public Location getExitLocation() {
-
-		World world = plugin.getServer().getWorld(exitWorld);
-		return new Location(world, exitCoordX, exitCoordY, exitCoordZ);
+	public GoldfishThread getTimer() {
+		
+		return timer;
 	}
 	
-	public void toggleActivated() {
+	public void setTimer(GoldfishThread timer) {
 		
-		activated = !activated;
+		this.timer = timer;
 	}
 	
-	public void setNewEntranceLocation(Location newLocation) {
+	public void startTimer() {
 		
-		entranceWorld = newLocation.getWorld().getName();
-		entranceCoordX = newLocation.getX();
-		entranceCoordY = newLocation.getY();
-		entranceCoordZ = newLocation.getZ();
-		
-		entranceSet = true;
+		timerActive = true;
+		timer.activate();
 	}
 	
-	public void setNewExitLocation(Location newLocation) {
+	public void stopTimer() {
 		
-		plugin.logger(newLocation.getWorld().getName());
-		
-		exitWorld = newLocation.getWorld().getName();
-		exitCoordX = newLocation.getX();
-		exitCoordY = newLocation.getY();
-		exitCoordZ = newLocation.getZ();
-		
-		exitSet = true;
+		timerActive = false;
+		timer.deactivate();
 	}
 }

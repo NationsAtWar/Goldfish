@@ -8,109 +8,141 @@ import java.io.ObjectOutputStream;
 import java.util.ArrayList;
 import java.util.HashMap;
 
-import org.bukkit.WorldCreator;
-import org.bukkit.World.Environment;
-
 public class GoldfishManager {
-	
-	private static String path = "plugins\\instances\\";
-	
-	private HashMap<String, GoldfishInstance> collection;
+
 	private Goldfish plugin;
+	
+	private HashMap<String, GoldfishPrototype> prototypes;
+	private HashMap<String, GoldfishInstance> instances;
 
 	public GoldfishManager(Goldfish plugin) {
 		
 		this.plugin = plugin;
-		collection = new HashMap<String, GoldfishInstance>();
+		
+		prototypes = new HashMap<String, GoldfishPrototype>();
+		instances = new HashMap<String, GoldfishInstance>();
 	}
+	
+	// Saving and Loading only affects Prototypes. Instances are handled completely through config files.
 	
 	public void saveAll() throws Exception {
 		
-		for (String instanceName : getInstanceNames()) {
+		for (String prototypeName : getPrototypeNames()) {
 			
-			GoldfishInstance instance = find(instanceName);
-			save(instance);
+			GoldfishPrototype prototype = findPrototype(prototypeName);
+			save(prototype);
 		}
 	}
 	
 	public void loadAll() throws Exception {
 		
-		File instanceDirectory = new File(path);
+		File prototypeDirectory = new File(Goldfish.prototypePath);
 		
-		for (File instanceFile : instanceDirectory.listFiles()) {
+		for (File prototypeFile : prototypeDirectory.listFiles()) {
 			
-			int dot = instanceFile.getName().lastIndexOf(".");
+			int dot = prototypeFile.getName().lastIndexOf(".");
 			
-			if (!instanceFile.isDirectory() && instanceFile.getName().substring(dot + 1).equals("gf")) {
+			if (!prototypeFile.isDirectory() && prototypeFile.getName().substring(dot + 1).equals("gf")) {
 				
-				String fileName = instanceFile.getName().substring(0, dot);
+				String fileName = prototypeFile.getName().substring(0, dot);
 				load(fileName);
 			}
 		}
 	}
 	
-	public void save(GoldfishInstance instance) throws Exception {
+	private void save(GoldfishPrototype prototype) throws Exception {
 		
-		String fullPath = path + instance.name + ".gf";
+		String fullPath = Goldfish.prototypePath + prototype.getName() + ".gf";
 		
 		FileOutputStream fileOut = new FileOutputStream(fullPath);
 		ObjectOutputStream out = new ObjectOutputStream(fileOut);
 		
-		out.writeObject(instance);
+		out.writeObject(prototype);
 		
 		out.close();
 		fileOut.close();
-		
-		plugin.getServer().unloadWorld(instance.name, true);
 	}
 	
-	public void load(String fileName) throws Exception {
+	private void load(String fileName) throws Exception {
 		
-		GoldfishInstance instance = null;
+		GoldfishPrototype prototype = null;
 		
-		String fullPath = path + fileName + ".gf";
+		String fullPath = Goldfish.prototypePath + fileName + ".gf";
 		
 		FileInputStream fileIn = new FileInputStream(fullPath);
 		ObjectInputStream in = new ObjectInputStream(fileIn);
 		
-		instance = (GoldfishInstance) in.readObject();
+		prototype = (GoldfishPrototype) in.readObject();
 		in.close();
 		fileIn.close();
 		
-		if (instance == null)
+		if (prototype == null)
 			plugin.logger("Failed");
 		else {
 			
-			instance.setPlugin(plugin);
-			plugin.getServer().createWorld(new WorldCreator(fileName).environment(Environment.NORMAL));
-			add(instance);
+			prototype.setPlugin(plugin);
+			addPrototype(prototype);
 		}
 	}
 	
-	public void add(GoldfishInstance instance) {
+	/*
+	 *  Handles Prototype Commands
+	 */
+	public void addPrototype(GoldfishPrototype prototype) {
 		
-		collection.put(instance.name, instance);
+		prototypes.put(prototype.getName(), prototype);
 	}
 	
-	public void remove(GoldfishInstance instance) {
+	public void removePrototype(GoldfishPrototype prototype) {
 		
-		collection.remove(instance.name);
+		prototypes.remove(prototype.getName());
 	}
 	
-	public GoldfishInstance find(String instanceName) {
+	public GoldfishPrototype findPrototype(String prototypeName) {
 		
-		return collection.get(instanceName);
+		return prototypes.get(prototypeName);
 	}
 	
-	public boolean exists(String instanceName) {
+	public boolean prototypeExists(String prototypeName) {
 		
-		return collection.containsKey(instanceName);
+		return prototypes.containsKey(prototypeName);
+	}
+	
+	public ArrayList<String> getPrototypeNames() {
+		
+		ArrayList<String> prototypeNames = new ArrayList<String>();
+		prototypeNames.addAll(prototypes.keySet());
+		
+		return prototypeNames;
+	}
+	
+	/*
+	 *  Handles Instance Commands
+	 */
+	public void addInstance(GoldfishInstance instance) {
+		
+		instances.put(instance.getName(), instance);
+	}
+	
+	public void removeInstance(GoldfishInstance instance) {
+		
+		instances.remove(instance.getName());
+	}
+	
+	public GoldfishInstance findInstance(String instanceName) {
+		
+		return instances.get(instanceName);
+	}
+	
+	public boolean instanceExists(String instanceName) {
+		
+		return instances.containsKey(instanceName);
 	}
 	
 	public ArrayList<String> getInstanceNames() {
 		
 		ArrayList<String> instanceNames = new ArrayList<String>();
-		instanceNames.addAll(collection.keySet());
+		instanceNames.addAll(instances.keySet());
 		
 		return instanceNames;
 	}
