@@ -14,6 +14,8 @@ import org.nationsatwar.goldfish.Listeners.GoldfishLimitListener;
 import org.nationsatwar.goldfish.Listeners.GoldfishRespawnListener;
 import org.nationsatwar.goldfish.Listeners.GoldfishTimerListener;
 import org.nationsatwar.goldfish.Utility.GoldfishInstanceConfig;
+import org.nationsatwar.goldfish.Utility.GoldfishPrototypeConfig;
+import org.nationsatwar.goldfish.Utility.GoldfishUtility;
 
 
 public class Goldfish extends JavaPlugin {
@@ -57,7 +59,7 @@ public class Goldfish extends JavaPlugin {
    
    public void logger(String logMessage) {
 	   
-	   log.info(logMessage);
+	   log.info("Goldfish: " + logMessage);
    }
    
    private void loadInstances() {
@@ -88,14 +90,47 @@ public class Goldfish extends JavaPlugin {
 			GoldfishInstanceConfig.saveInstanceConfig(checkFile);
 			
 			try {
-				File dataFile = new File(instancePath + checkFile + "\\instancedata.yml");
-				FileConfiguration config = YamlConfiguration.loadConfiguration(dataFile);
-				
-				if (config.getBoolean(GoldfishInstanceConfig.instanceLoadOnStartup))
-					getServer().createWorld(new WorldCreator(instancePath + checkFile).environment(Environment.NORMAL));
-				
 				GoldfishInstance instance = new GoldfishInstance(this, checkFile);
 				goldfishManager.addInstance(instance);
+				
+				File instanceDataFile = new File(instancePath + checkFile + "\\instancedata.yml");
+				FileConfiguration instanceConfig = YamlConfiguration.loadConfiguration(instanceDataFile);
+				
+				String prototypeName = GoldfishUtility.getPrototypeName(checkFile);
+				
+				File prototypeDataFile = new File(prototypePath + prototypeName + "\\prototypedata.yml");
+				FileConfiguration prototypeConfig = YamlConfiguration.loadConfiguration(prototypeDataFile);
+		    	
+				// Reloads instance timers
+				int instanceTimerAmount = instanceConfig.getInt(GoldfishInstanceConfig.instanceTimerAmount);
+				
+				if (instanceTimerAmount > 0) {
+					
+					GoldfishTimers instanceTimer = new GoldfishTimers(this, instancePath + checkFile, instanceTimerAmount, false);
+			    	instance.setInstanceTimer(instanceTimer);
+					instanceTimer.runTaskTimer(this, 0, 20);
+				}
+				
+				// Reloads timeout timers
+				int timeoutTimerAmount = prototypeConfig.getInt(GoldfishPrototypeConfig.timeoutTimerAmount);
+
+				logger("Timer Amount: " + timeoutTimerAmount);
+				logger("Data Location: " + instancePath + checkFile + "\\prototypedata.yml");
+				
+				if (timeoutTimerAmount > 0) {
+					
+					logger("Creating timeout timer");
+					logger("Instance Name: " + instance.getName());
+					logger("Timer Name: " + instancePath + checkFile);
+					
+					GoldfishTimers timeoutTimer = new GoldfishTimers(this, instancePath + checkFile, timeoutTimerAmount, false);
+			    	instance.setTimeoutTimer(timeoutTimer);
+			    	timeoutTimer.runTaskTimer(this, 0, 20);
+				}
+				
+				// Loads instance worlds that previously had players in them
+				if (instanceConfig.getBoolean(GoldfishInstanceConfig.instanceLoadOnStartup))
+					getServer().createWorld(new WorldCreator(instancePath + checkFile).environment(Environment.NORMAL));
 			}
 			catch (Exception e) { continue; }
 		}
@@ -118,6 +153,11 @@ public class Goldfish extends JavaPlugin {
 			   File dataFile = new File(instancePath + instanceName + "\\instancedata.yml");
 			   FileConfiguration config = YamlConfiguration.loadConfiguration(dataFile);
 			   
+			   // Saves current instance timers
+			   int timerAmount = goldfishManager.findInstance(instanceName).getInstanceTimer().getTimerAmount();
+			   config.set(GoldfishInstanceConfig.instanceTimerAmount, timerAmount);
+			   
+			   // Saves current instance player status (Determines if world should load on startup)
 			   if (world.getPlayers().size() == 0)
 				   config.set(GoldfishInstanceConfig.instanceLoadOnStartup, false);
 			   else

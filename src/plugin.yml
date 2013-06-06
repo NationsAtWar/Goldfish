@@ -1,5 +1,5 @@
 name: Goldfish
-main: com.github.Fritos.Goldfish.Goldfish
+main: org.nationsatwar.goldfish.Goldfish
 version: 1.0
 
 commands:

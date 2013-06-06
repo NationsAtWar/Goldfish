@@ -14,7 +14,7 @@ import org.bukkit.entity.Player;
 import org.nationsatwar.goldfish.Goldfish;
 import org.nationsatwar.goldfish.GoldfishInstance;
 import org.nationsatwar.goldfish.GoldfishPrototype;
-import org.nationsatwar.goldfish.GoldfishThread;
+import org.nationsatwar.goldfish.GoldfishTimers;
 import org.nationsatwar.goldfish.Utility.GoldfishInstanceConfig;
 import org.nationsatwar.goldfish.Utility.GoldfishPrototypeConfig;
 import org.nationsatwar.goldfish.Utility.GoldfishUtility;
@@ -67,17 +67,23 @@ public class GoldfishCommandEnter {
 					// This will turn the full instance/prototype name to its base name
 					if (GoldfishUtility.isPrototype(exitName) || GoldfishUtility.isInstance(exitName))
 						exitName = GoldfishUtility.getPrototypeName(exitName);
-					
-					// If entrance world is an instance, this will find the appropriate instance for the player
-					if (GoldfishUtility.isPrototype(exitName) || GoldfishUtility.isInstance(exitName))
-						exitName = GoldfishUtility.getPrototypeName(exitName);
-					
-					// Commence teleportation
-					exitName = getExistingInstance(exitName, player.getName());
-					
-					if (exitName == null)
-						exitName = createInstance(prototypeName, player.getName());
+
+				    File prototypeDataFile = new File(Goldfish.prototypePath + exitName + "\\prototypedata.yml");
+				    FileConfiguration prototypeConfig = YamlConfiguration.loadConfiguration(prototypeDataFile);
 				    
+				    // Changes name of instance depending on whether or not it's a static instance
+				    if (prototypeConfig.getBoolean(GoldfishPrototypeConfig.staticInstance))
+				    	exitName = createInstance(prototypeName, player.getName(), true);
+				    else {
+					
+						// Finds the instance associated with the player name, returns the first one found, null if none found
+						exitName = getExistingInstance(exitName, player.getName());
+						
+						if (exitName == null)
+							exitName = createInstance(prototypeName, player.getName(), false);
+				    }
+				    
+				    // This file damages world loading, get rid of it
 				    File uidFile = new File(exitName + "\\uid.dat");
 				    uidFile.delete();
 					
@@ -127,28 +133,42 @@ public class GoldfishCommandEnter {
 		return null;
 	}
 	
-	private String createInstance(String prototypeName, String userName) {
+	private String createInstance(String prototypeName, String userName, boolean isStatic) {
 		
 		int newID = 0;
 		
 		while (true) {
 			
-			String instanceName = prototypeName + "_" + newID;
+			String instanceName = "";
+			String directoryName = "";
 			
-			String directoryName = Goldfish.instancePath + instanceName;
-
-			File instanceDir = new File(directoryName + "\\");
+			if (!isStatic) {
 			
-			if (instanceDir.exists()) {
+				instanceName = prototypeName + "_" + newID;
+				directoryName = Goldfish.instancePath + instanceName;
+				File instanceDir = new File(directoryName + "\\");
 				
-				newID++;
-				continue;
-			}
+				if (instanceDir.exists()) {
+					
+					newID++;
+					continue;
+				}
 
-			// Copy prototype directory
-		    File protoDir = new File(Goldfish.prototypePath + prototypeName + "\\");
-			
-		    GoldfishUtility.copyDirectory(protoDir, instanceDir);
+				// Copy prototype directory
+			    File protoDir = new File(Goldfish.prototypePath + prototypeName + "\\");
+			    GoldfishUtility.copyDirectory(protoDir, instanceDir);
+			    
+			} else {
+				
+				instanceName = prototypeName + "_static";
+				directoryName = Goldfish.instancePath + instanceName;
+				
+				File instanceDir = new File(directoryName + "\\");
+				
+				// Copy prototype directory
+			    File protoDir = new File(Goldfish.prototypePath + prototypeName + "\\");
+			    GoldfishUtility.copyDirectory(protoDir, instanceDir);
+			}
 		    
 		    File uidFile = new File(directoryName + "\\uid.dat");
 		    uidFile.delete();
@@ -163,21 +183,30 @@ public class GoldfishCommandEnter {
 		    FileConfiguration instanceConfig = YamlConfiguration.loadConfiguration(instanceDataFile);
 		    
 		    // Set instance config defaults
-		    int defaultTimer = prototypeConfig.getInt(GoldfishPrototypeConfig.timerAmount);
-		    
-		    instanceConfig.set(GoldfishInstanceConfig.timerAmount, defaultTimer);
-		    
 		    instanceConfig.createSection("user." + userName);
+	    	
+	    	GoldfishInstance instance = new GoldfishInstance(plugin, instanceName);
+	    	plugin.goldfishManager.addInstance(instance);
 			
-		    // Sets the timer if applicable
-		    if (defaultTimer > 0) {
+		    // Sets the instance timer if applicable
+		    int instanceTimerAmount = prototypeConfig.getInt(GoldfishPrototypeConfig.instanceTimerAmount);
+		    instanceConfig.set(GoldfishInstanceConfig.instanceTimerAmount, instanceTimerAmount);
+		    
+		    if (instanceTimerAmount > 0) {
 		    	
-		    	GoldfishInstance instance = new GoldfishInstance(plugin, instanceName);
-		    	plugin.goldfishManager.addInstance(instance);
-		    	
-				GoldfishThread instanceTimer = new GoldfishThread(plugin, directoryName, 25, true);
-		    	instance.setTimer(instanceTimer);
+				GoldfishTimers instanceTimer = new GoldfishTimers(plugin, directoryName, instanceTimerAmount, true);
+		    	instance.setInstanceTimer(instanceTimer);
 				instanceTimer.runTaskTimer(plugin, 0, 20);
+		    }
+			
+		    // Sets the timeout timer if applicable
+	    	int timeoutTimerAmount = prototypeConfig.getInt(GoldfishPrototypeConfig.timeoutTimerAmount);
+	    	
+		    if (timeoutTimerAmount > 0) {
+		    	
+				GoldfishTimers timeoutTimer = new GoldfishTimers(plugin, directoryName, timeoutTimerAmount, false);
+		    	instance.setTimeoutTimer(timeoutTimer);
+		    	timeoutTimer.runTaskTimer(plugin, 0, 20);
 		    }
 		    
 		    prototypeDataFile.delete();

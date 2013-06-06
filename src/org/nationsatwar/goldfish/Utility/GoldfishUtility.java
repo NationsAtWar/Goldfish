@@ -120,8 +120,11 @@ public class GoldfishUtility {
 		
 		for (int i = 0; i < instanceName.length(); i++) {
 			
-			if (instanceName.charAt(i) == '_')
-				return Integer.parseInt(instanceName.substring(i + 1));
+			if (instanceName.charAt(i) == '_') {
+				
+				try { return Integer.parseInt(instanceName.substring(i + 1)); }
+				catch (Exception e) { log.info("Trying to extract ID from static instance: " + e.getMessage()); }
+			}
 		}
     	
     	return 0;

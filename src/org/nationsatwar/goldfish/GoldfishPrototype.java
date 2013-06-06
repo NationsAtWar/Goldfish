@@ -120,8 +120,6 @@ public class GoldfishPrototype implements java.io.Serializable {
 	
 	public void setNewExitLocation(Location newLocation) {
 		
-		plugin.logger(newLocation.getWorld().getName());
-		
 		exitWorld = newLocation.getWorld().getName();
 		exitCoordX = newLocation.getX();
 		exitCoordY = newLocation.getY();

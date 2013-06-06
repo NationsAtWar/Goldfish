@@ -15,7 +15,7 @@ public class GoldfishInstanceConfig {
 	// Instance Config Options
 	public static String instanceLoadOnStartup = "instance.loadonstartup";
 
-	public static String timerAmount = "timer.amount";
+	public static String instanceTimerAmount = "instanceTimer.amount";
 	
 	private static Logger log = Logger.getLogger("Minecraft");
 	private static String lineBreak = "\r\n";
@@ -30,7 +30,7 @@ public class GoldfishInstanceConfig {
 	    // Creates default config parameters on creation
 	    config.addDefault(instanceLoadOnStartup, true);
 
-	    config.addDefault(timerAmount, 0);
+	    config.addDefault(instanceTimerAmount, 0);
 	    
 	    configOptions.copyDefaults(true);
 	    
@@ -45,7 +45,7 @@ public class GoldfishInstanceConfig {
 	    header += "This value is altered every time the server restarts." + lineBreak;
 	    header += "True if the instance world has players in it, false otherwise." + lineBreak;
 	    
-	    header += lineBreak + "-=(Timer)=-" + lineBreak;
+	    header += lineBreak + "-=(Instance Timer Amount)=-" + lineBreak;
 	    header += "How long the instance has left until it expires." + lineBreak;
 	    header += "The timer will only update if manipulated through a hook or upon server reboot." + lineBreak;
 	    

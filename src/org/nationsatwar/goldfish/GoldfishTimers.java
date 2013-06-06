@@ -10,7 +10,7 @@ import org.bukkit.scheduler.BukkitRunnable;
 import org.nationsatwar.goldfish.Utility.GoldfishUtility;
 
 
-public class GoldfishThread extends BukkitRunnable {
+public class GoldfishTimers extends BukkitRunnable {
 	
 	private Goldfish plugin;
 	
@@ -18,7 +18,7 @@ public class GoldfishThread extends BukkitRunnable {
 	private int timer;
 	private boolean active;
 
-	public GoldfishThread(Goldfish plugin, String instanceName, int timer, boolean active) {
+	public GoldfishTimers(Goldfish plugin, String instanceName, int timer, boolean active) {
 		
 		this.plugin = plugin;
 		
@@ -29,28 +29,26 @@ public class GoldfishThread extends BukkitRunnable {
 
 	public void run() {
 		
-		plugin.logger("Timer remaining: " + timer);
-		
 		if (!active)
-			return;
-		
-		World instanceWorld = plugin.getServer().getWorld(instanceName);
-		
-		if (instanceWorld == null)
 			return;
 		
 		timer--;
 		
-		if (timer % 10 == 0 && timer > 0) {
-			
-			for (Player player : instanceWorld.getPlayers())
-				player.sendMessage("You have " + timer + " seconds to complete this instance.");
-		}
+		World instanceWorld = plugin.getServer().getWorld(instanceName);
 		
-		if (timer < 10 && timer > 0) {
+		if (instanceWorld != null) {
+		
+			if (timer % 10 == 0 && timer > 0) {
+				
+				for (Player player : instanceWorld.getPlayers())
+					player.sendMessage("You have " + timer + " seconds to complete this instance.");
+			}
 			
-			for (Player player : instanceWorld.getPlayers())
-				player.sendMessage(String.valueOf(timer));
+			if (timer < 10 && timer > 0) {
+				
+				for (Player player : instanceWorld.getPlayers())
+					player.sendMessage(String.valueOf(timer));
+			}
 		}
 		
 		if (timer <= 0) {
@@ -68,8 +66,9 @@ public class GoldfishThread extends BukkitRunnable {
 			Location entrance = new Location(world, instance.getEntranceLocation().getX(), 
 					instance.getEntranceLocation().getY(), instance.getEntranceLocation().getZ());
 			
-			for (Player player : instanceWorld.getPlayers())
-				player.teleport(entrance);
+			if (instanceWorld != null)
+				for (Player player : instanceWorld.getPlayers())
+					player.teleport(entrance);
 			
 			plugin.getServer().unloadWorld(instanceName, true);
 			
@@ -84,13 +83,21 @@ public class GoldfishThread extends BukkitRunnable {
 	
 	public void activate() {
 		
-		plugin.logger("Activated");
 		active = true;
 	}
 	
 	public void deactivate() {
 		
-		plugin.logger("Deactivated");
 		active = false;
+	}
+	
+	public int getTimerAmount() {
+		
+		return timer;
+	}
+	
+	public void setTimerAmount(int timerAmount) {
+		
+		timer = timerAmount;
 	}
 }

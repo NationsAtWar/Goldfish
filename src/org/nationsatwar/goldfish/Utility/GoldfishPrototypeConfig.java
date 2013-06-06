@@ -32,8 +32,12 @@ public class GoldfishPrototypeConfig {
 	public static String respawnInstance = "respawn.instance";
 	public static String respawnInside = "respawn.inside";
 
-	public static String timerAmount = "timer.amount";
-	public static String timerActiveWhenEmpty = "timer.activewhenempty";
+	public static String instanceTimerAmount = "instancetimer.amount";
+	public static String instanceTimerActiveWhenEmpty = "instancetimer.activewhenempty";
+
+	public static String timeoutTimerAmount = "timeouttimer.amount";
+
+	public static String staticInstance = "staticinstance";
 	
 	private static Logger log = Logger.getLogger("Minecraft");
 	private static String lineBreak = "\r\n";
@@ -62,11 +66,15 @@ public class GoldfishPrototypeConfig {
 	    config.addDefault(blockUse0, true);
 	    config.addDefault(blockUse1, true);
 
-	    config.addDefault(respawnInstance, true);
+	    config.addDefault(respawnInstance, false);
 	    config.addDefault(respawnInside, true);
 
-	    config.addDefault(timerAmount, 0);
-	    config.addDefault(timerActiveWhenEmpty, false);
+	    config.addDefault(instanceTimerAmount, 0);
+	    config.addDefault(instanceTimerActiveWhenEmpty, false);
+
+	    config.addDefault(timeoutTimerAmount, 60);
+
+	    config.addDefault(staticInstance, false);
 	    
 	    configOptions.copyDefaults(true);
 	    
@@ -91,10 +99,19 @@ public class GoldfishPrototypeConfig {
 	    header += "The second parameter will only activate if the first parameter is true." + lineBreak;
 	    header += "Respawn.Inside will spawn the player inside the instance if true, or right outside if false." + lineBreak;
 
-	    header += lineBreak + "-=(Timer)=-" + lineBreak;
+	    header += lineBreak + "-=(Instance Timer)=-" + lineBreak;
 	    header += "Amount determines how long an instance will last. 0 means indefinitely." + lineBreak;
 	    header += "When a timer reaches 0, everyone in the instance will be teleported out and the instance deleted." + lineBreak;
 	    header += "If 'Active When Empty' is true, the timer will continue even if there's no players in the instance." + lineBreak;
+
+	    header += lineBreak + "-=(Timeout Timer)=-" + lineBreak;
+	    header += "Amount determines how long an instance will last. 0 means indefinitely." + lineBreak;
+	    header += "Different from instance timer in that it only counts down when the instance is empty, " + lineBreak;
+	    header += "and resets whenever a player re-enters the instance." + lineBreak;
+
+	    header += lineBreak + "-=(Static Instance)=-" + lineBreak;
+	    header += "If an instance is static, then only one instance can ever be active at any given time." + lineBreak;
+	    header += "All players will join the same instance on entering." + lineBreak;
 	    
 	    configOptions.header(header);
 	    configOptions.copyHeader(true);

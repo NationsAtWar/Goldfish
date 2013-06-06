@@ -77,7 +77,7 @@ public class GoldfishManager {
 		fileIn.close();
 		
 		if (prototype == null)
-			plugin.logger("Failed");
+			plugin.logger("Failed to load: " + fileName);
 		else {
 			
 			prototype.setPlugin(plugin);

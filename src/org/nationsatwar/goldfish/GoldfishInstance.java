@@ -5,6 +5,7 @@ import java.io.File;
 import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.configuration.file.YamlConfiguration;
 import org.nationsatwar.goldfish.Utility.GoldfishPrototypeConfig;
+import org.nationsatwar.goldfish.Utility.GoldfishUtility;
 
 
 public class GoldfishInstance implements java.io.Serializable {
@@ -14,25 +15,15 @@ public class GoldfishInstance implements java.io.Serializable {
 	private static final long serialVersionUID = 1L;
 
 	private String name;
-
-	private boolean timerActive;
-	private int timerAmount;
 	
-	private GoldfishThread timer;
+	private GoldfishTimers instanceTimer;
+	private GoldfishTimers timeoutTimer;
 
 	public GoldfishInstance(Goldfish plugin, String name) {
 		
 		this.plugin = plugin;
 		
 		this.name = name;
-		
-		File dataFile = new File(Goldfish.prototypePath + name + "\\prototypedata.yml");
-		FileConfiguration config = YamlConfiguration.loadConfiguration(dataFile);
-		
-		timerAmount = config.getInt(GoldfishPrototypeConfig.timerAmount);
-		
-		if (timerAmount > 0)
-			timerActive = true;
 	}
 	
 	public String getName() {
@@ -40,35 +31,49 @@ public class GoldfishInstance implements java.io.Serializable {
 		return name;
 	}
 	
-	public int getTimerAmount() {
+	public GoldfishTimers getInstanceTimer() {
 		
-		return timerAmount;
+		return instanceTimer;
 	}
 	
-	public boolean isTimerActive() {
+	public void setInstanceTimer(GoldfishTimers instanceTimer) {
 		
-		return timerActive;
+		this.instanceTimer = instanceTimer;
 	}
 	
-	public GoldfishThread getTimer() {
+	public void startInstanceTimer() {
 		
-		return timer;
+		instanceTimer.activate();
 	}
 	
-	public void setTimer(GoldfishThread timer) {
+	public void stopInstanceTimer() {
 		
-		this.timer = timer;
+		instanceTimer.deactivate();
 	}
 	
-	public void startTimer() {
+	public GoldfishTimers getTimeoutTimer() {
 		
-		timerActive = true;
-		timer.activate();
+		return timeoutTimer;
 	}
 	
-	public void stopTimer() {
+	public void setTimeoutTimer(GoldfishTimers timeoutTimer) {
 		
-		timerActive = false;
-		timer.deactivate();
+		this.timeoutTimer = timeoutTimer;
+	}
+	
+	public void startTimeoutTimer() {
+		
+		timeoutTimer.activate();
+	}
+	
+	public void stopTimeoutTimer() {
+		
+		String prototypeName = GoldfishUtility.getPrototypeName(name);
+		
+    	File dataFile = new File(Goldfish.prototypePath + prototypeName + "\\prototypedata.yml");
+    	FileConfiguration config = YamlConfiguration.loadConfiguration(dataFile);
+		
+		timeoutTimer.setTimerAmount(config.getInt(GoldfishPrototypeConfig.timeoutTimerAmount));
+		timeoutTimer.deactivate();
 	}
 }
