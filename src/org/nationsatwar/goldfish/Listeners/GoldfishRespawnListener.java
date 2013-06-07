@@ -1,13 +1,10 @@
 package org.nationsatwar.goldfish.Listeners;
 
-import java.io.File;
-
 import org.bukkit.Location;
 import org.bukkit.World;
 import org.bukkit.WorldCreator;
 import org.bukkit.World.Environment;
 import org.bukkit.configuration.file.FileConfiguration;
-import org.bukkit.configuration.file.YamlConfiguration;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 import org.bukkit.event.player.PlayerRespawnEvent;
@@ -38,12 +35,11 @@ public class GoldfishRespawnListener implements Listener {
     	
     	worldName = GoldfishUtility.getPrototypeName(worldName);
     	GoldfishPrototype instance = plugin.goldfishManager.findPrototype(worldName);
-	    
-	    File dataFile = new File(Goldfish.prototypePath + worldName + "\\prototypedata.yml");
-	    FileConfiguration config = YamlConfiguration.loadConfiguration(dataFile);
+
+	    FileConfiguration prototypeConfig = plugin.goldfishManager.getPrototypeConfig(worldName);
     	
-    	boolean respawnInstance = config.getBoolean(GoldfishPrototypeConfig.respawnInstance);
-    	boolean respawnInside = config.getBoolean(GoldfishPrototypeConfig.respawnInside);
+    	boolean respawnInstance = prototypeConfig.getBoolean(GoldfishPrototypeConfig.respawnInstance);
+    	boolean respawnInside = prototypeConfig.getBoolean(GoldfishPrototypeConfig.respawnInside);
     	
     	if (respawnInstance) {
     		

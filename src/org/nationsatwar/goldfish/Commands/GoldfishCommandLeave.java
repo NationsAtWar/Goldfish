@@ -11,7 +11,7 @@ import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.configuration.file.YamlConfiguration;
 import org.bukkit.entity.Player;
 import org.nationsatwar.goldfish.Goldfish;
-import org.nationsatwar.goldfish.GoldfishPrototype;
+import org.nationsatwar.goldfish.Utility.GoldfishPrototypeConfig;
 import org.nationsatwar.goldfish.Utility.GoldfishUtility;
 
 
@@ -31,59 +31,88 @@ public class GoldfishCommandLeave {
 		if (GoldfishUtility.isPrototype(worldName) || GoldfishUtility.isInstance(worldName))
 			worldName = GoldfishUtility.getPrototypeName(player.getWorld().getName());
 		
-		for ( String instanceName : plugin.goldfishManager.getPrototypeNames() ) {
+		for ( String prototypeName : plugin.goldfishManager.getPrototypeNames() ) {
 			
-			GoldfishPrototype instance = plugin.goldfishManager.findPrototype(instanceName);
-
-			// This will turn the full instance/prototype name to its base name
-			if (GoldfishUtility.isPrototype(instanceName) || GoldfishUtility.isInstance(instanceName))
-				instanceName = GoldfishUtility.getPrototypeName(instanceName);
+			FileConfiguration prototypeConfig = plugin.goldfishManager.getPrototypeConfig(prototypeName);
 			
-			// Determines if player world is the same as cycled instance
-			if (worldName.equals(instanceName)) {
+			int exitID = 1;
+			boolean foundEntrance = false;
+			
+			// Attempts to find a nearby entrance from the cycled prototype
+			while (true) {
 				
-				Location exit = new Location(player.getWorld(), instance.getExitLocation().getX(), 
-						instance.getExitLocation().getY(), instance.getExitLocation().getZ());
+				// Breaks if all numbered locations have been cycled through
+				if (!prototypeConfig.contains("exits.location" + exitID))
+					break;
+				
+				// Checks to see if the entrance is active and matches the player world
+				if (prototypeConfig.getBoolean("exits.location" + exitID + ".active")) {
+					
+					float exitX = prototypeConfig.getInt("exits.location" + exitID + ".exitx");
+					float exitY = prototypeConfig.getInt("exits.location" + exitID + ".exity");
+					float exitZ = prototypeConfig.getInt("exits.location" + exitID + ".exitz");
+					
+					Location exitLocation = new Location(player.getWorld(), exitX, exitY, exitZ);
 
-				double exitDistance = player.getLocation().distance(exit);
-				
-				if (exitDistance < 10) {
+					double entranceDistance = player.getLocation().distance(exitLocation);
 					
-					if (!instance.isEntranceSet()) {
+					// If the player is close enough, break and continue
+					if (entranceDistance < 10) {
 						
-						player.sendMessage(ChatColor.YELLOW + "There is no entrance location set.");
-						return;
+						foundEntrance = true;
+						break;
 					}
-					
-					String entranceName = instance.getEntranceWorld();
-					
-					// If entrance world is an instance, this will find the appropriate instance for the player
-					if (GoldfishUtility.isPrototype(entranceName) || GoldfishUtility.isInstance(entranceName))
-						entranceName = GoldfishUtility.getPrototypeName(entranceName);
-					
-					entranceName = getExistingInstance(entranceName, player.getName());
-					
-					World world = plugin.getServer().getWorld(entranceName);
-					
-					if (world == null) {
-						
-						plugin.getServer().createWorld(new WorldCreator(entranceName).environment(Environment.NORMAL));
-						world = plugin.getServer().getWorld(entranceName);
-					}
-					
-					Location entrance = new Location(world, instance.getEntranceLocation().getX(), 
-							instance.getEntranceLocation().getY(), instance.getEntranceLocation().getZ());
-					
-					player.teleport(entrance);
-					return;
 				}
+				
+				exitID++;
 			}
+			
+			if (!foundEntrance)
+				continue;
+			
+			// Sets the instance location to teleport the player to
+			float instanceX = prototypeConfig.getInt("exits.location" + exitID + ".instancex");
+			float instanceY = prototypeConfig.getInt("exits.location" + exitID + ".instancey");
+			float instanceZ = prototypeConfig.getInt("exits.location" + exitID + ".instancez");
+			
+			String instanceName = prototypeConfig.getString("exits.location" + exitID + ".exitworld");
+		    
+		    // Changes name of instance depending on whether or not it's a static instance
+		    if (prototypeConfig.getBoolean(GoldfishPrototypeConfig.staticInstance))
+		    	instanceName = plugin.goldfishManager.createInstance(prototypeName, player.getName(), true);
+		    else {
+			
+				// Finds the instance associated with the player name, returns the first one found, null if none found
+		    	instanceName = getExistingInstance(instanceName, player.getName());
+				
+				if (instanceName == null)
+					instanceName = plugin.goldfishManager.createInstance(prototypeName, player.getName(), false);
+		    }
+		    
+		    // This file damages world loading, get rid of it
+		    File uidFile = new File(instanceName + "\\uid.dat");
+		    uidFile.delete();
+			
+			World instanceWorld = plugin.getServer().getWorld(instanceName);
+			
+			// Create world if it doesn't exist yet
+			if (instanceWorld == null) {
+				
+				plugin.getServer().createWorld(new WorldCreator(instanceName).environment(Environment.NORMAL));
+				instanceWorld = plugin.getServer().getWorld(instanceName);
+			}
+			
+			Location instanceLocation = new Location(instanceWorld, instanceX, instanceY, instanceZ);
+			
+			player.teleport(instanceLocation);
+			
+			return;
 		}
 		
-		player.sendMessage(ChatColor.YELLOW + "No instance locations here.");
+		player.sendMessage(ChatColor.YELLOW + "There is no exit located here.");
 	}
 	
-	private String getExistingInstance(String checkName, String userName) {
+	private static String getExistingInstance(String checkName, String userName) {
 		
 	    String[] folderList = new File(Goldfish.instancePath).list();
 		

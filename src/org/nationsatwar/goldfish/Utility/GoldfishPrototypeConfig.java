@@ -9,7 +9,6 @@ import org.bukkit.configuration.file.FileConfigurationOptions;
 import org.bukkit.configuration.file.YamlConfiguration;
 import org.nationsatwar.goldfish.Goldfish;
 
-
 public class GoldfishPrototypeConfig {
 	
 	// Prototype Config Options
@@ -18,7 +17,7 @@ public class GoldfishPrototypeConfig {
 	public static String limitOneZ = "limit.one.z";
 	public static String limitTwoX = "limit.two.x";
 	public static String limitTwoZ = "limit.two.z";
-
+	
 	public static String blockBreakAllowAll = "block.break.allowall";
 	public static String blockBreak0 = "block.break.0";
 	public static String blockBreak1 = "block.break.1";
@@ -28,22 +27,40 @@ public class GoldfishPrototypeConfig {
 	public static String blockUseAllowAll = "block.use.allowall";
 	public static String blockUse0 = "block.use.0";
 	public static String blockUse1 = "block.use.1";
-
+	
 	public static String respawnInstance = "respawn.instance";
 	public static String respawnInside = "respawn.inside";
-
+	
 	public static String instanceTimerAmount = "instancetimer.amount";
 	public static String instanceTimerActiveWhenEmpty = "instancetimer.activewhenempty";
-
+	
 	public static String timeoutTimerAmount = "timeouttimer.amount";
-
+	
 	public static String staticInstance = "staticinstance";
+	
+	public static String entrancesLocation1Active = "entrances.location1.active";
+	public static String entrancesLocation1EntranceWorld = "entrances.location1.entranceworld";
+	public static String entrancesLocation1EntranceX = "entrances.location1.entrancex";
+	public static String entrancesLocation1EntranceY = "entrances.location1.entrancey";
+	public static String entrancesLocation1EntranceZ = "entrances.location1.entrancez";
+	public static String entrancesLocation1InstanceX = "entrances.location1.instancex";
+	public static String entrancesLocation1InstanceY = "entrances.location1.instancey";
+	public static String entrancesLocation1InstanceZ = "entrances.location1.instancez";
+	
+	public static String exitsLocation1Active = "exits.location1.active";
+	public static String exitsLocation1ExitWorld = "exits.location1.exitworld";
+	public static String exitsLocation1ExitX = "exits.location1.exitx";
+	public static String exitsLocation1ExitY = "exits.location1.exity";
+	public static String exitsLocation1ExitZ = "exits.location1.exitz";
+	public static String exitsLocation1InstanceX = "exits.location1.instancex";
+	public static String exitsLocation1InstanceY = "exits.location1.instancey";
+	public static String exitsLocation1InstanceZ = "exits.location1.instancez";
 	
 	private static Logger log = Logger.getLogger("Minecraft");
 	private static String lineBreak = "\r\n";
 	
 	public static void savePrototypeConfig(String worldName) {
-
+		
 	    File dataFile = new File(Goldfish.prototypePath + worldName + "\\prototypedata.yml");
 		
 	    FileConfiguration config = YamlConfiguration.loadConfiguration(dataFile);
@@ -75,6 +92,24 @@ public class GoldfishPrototypeConfig {
 	    config.addDefault(timeoutTimerAmount, 60);
 
 	    config.addDefault(staticInstance, false);
+
+	    config.addDefault(entrancesLocation1Active, false);
+	    config.addDefault(entrancesLocation1EntranceWorld, "");
+	    config.addDefault(entrancesLocation1EntranceX, 0);
+	    config.addDefault(entrancesLocation1EntranceY, 0);
+	    config.addDefault(entrancesLocation1EntranceZ, 0);
+	    config.addDefault(entrancesLocation1InstanceX, 0);
+	    config.addDefault(entrancesLocation1InstanceY, 0);
+	    config.addDefault(entrancesLocation1InstanceZ, 0);
+
+	    config.addDefault(exitsLocation1Active, false);
+	    config.addDefault(exitsLocation1ExitWorld, "");
+	    config.addDefault(exitsLocation1ExitX, 0);
+	    config.addDefault(exitsLocation1ExitY, 0);
+	    config.addDefault(exitsLocation1ExitZ, 0);
+	    config.addDefault(exitsLocation1InstanceX, 0);
+	    config.addDefault(exitsLocation1InstanceY, 0);
+	    config.addDefault(exitsLocation1InstanceZ, 0);
 	    
 	    configOptions.copyDefaults(true);
 	    
@@ -112,6 +147,13 @@ public class GoldfishPrototypeConfig {
 	    header += lineBreak + "-=(Static Instance)=-" + lineBreak;
 	    header += "If an instance is static, then only one instance can ever be active at any given time." + lineBreak;
 	    header += "All players will join the same instance on entering." + lineBreak;
+
+	    header += lineBreak + "-=(Entrances and Exits)=-" + lineBreak;
+	    header += "This determines exactly where the entrances and exits are, and where they link to." + lineBreak;
+	    header += "You can have as many entrances and exits as you like, just number them in connecting order." + lineBreak;
+	    header += "If you have an 'entrance4' but no 'entrance3', 'entrance4' will not be checked." + lineBreak;
+	    header += "No instance world needs to be specified for obvious reasons." + lineBreak;
+	    header += "Also, setting entrances and exits in-game will replace entrance1 and exit1 respectively." + lineBreak;
 	    
 	    configOptions.header(header);
 	    configOptions.copyHeader(true);

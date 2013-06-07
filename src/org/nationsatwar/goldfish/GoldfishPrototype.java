@@ -32,8 +32,6 @@ public class GoldfishPrototype implements java.io.Serializable {
 		
 		name = newName;
 		
-		activated = false;
-		
 		entranceWorld = "";
 		exitWorld = "";
 	}

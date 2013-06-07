@@ -121,9 +121,8 @@ public class GoldfishTimerListener implements Listener {
 					GoldfishInstance instance = plugin.goldfishManager.findInstance(instanceName);
 					
 					String prototypeName = GoldfishUtility.getPrototypeName(instanceName);
-		    		
-					File prototypeDataFile = new File(Goldfish.prototypePath + prototypeName + "\\" + "prototypedata.yml");
-					FileConfiguration prototypeConfig = YamlConfiguration.loadConfiguration(prototypeDataFile);
+					
+					FileConfiguration prototypeConfig = plugin.goldfishManager.getPrototypeConfig(prototypeName);
 					
 					plugin.logger("Attempting to start timer");
 					plugin.logger("Instance Name: " + instance.getName());

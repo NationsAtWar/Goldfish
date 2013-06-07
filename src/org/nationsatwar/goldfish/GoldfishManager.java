@@ -3,10 +3,17 @@ package org.nationsatwar.goldfish;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
+import java.io.IOException;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
 import java.util.ArrayList;
 import java.util.HashMap;
+
+import org.bukkit.configuration.file.FileConfiguration;
+import org.bukkit.configuration.file.YamlConfiguration;
+import org.nationsatwar.goldfish.Utility.GoldfishInstanceConfig;
+import org.nationsatwar.goldfish.Utility.GoldfishPrototypeConfig;
+import org.nationsatwar.goldfish.Utility.GoldfishUtility;
 
 public class GoldfishManager {
 
@@ -116,6 +123,20 @@ public class GoldfishManager {
 		return prototypeNames;
 	}
 	
+	public FileConfiguration getPrototypeConfig(String prototypeName) {
+		
+	    File prototypeDataFile = new File(Goldfish.prototypePath + prototypeName + "\\prototypedata.yml");
+	    FileConfiguration prototypeConfig = YamlConfiguration.loadConfiguration(prototypeDataFile);
+		
+		return prototypeConfig;
+	}
+	
+	public void savePrototypeConfig(FileConfiguration prototypeConfig, String prototypeName) {
+		
+		try { prototypeConfig.save(Goldfish.prototypePath + prototypeName + "\\prototypedata.yml"); }
+		catch (IOException e) { plugin.logger("Couldn't save config file " + prototypeName + ": " + e.getMessage()); }
+	}
+	
 	/*
 	 *  Handles Instance Commands
 	 */
@@ -145,5 +166,105 @@ public class GoldfishManager {
 		instanceNames.addAll(instances.keySet());
 		
 		return instanceNames;
+	}
+	
+	public FileConfiguration getInstanceConfig(String instanceName) {
+		
+	    File instanceDataFile = new File(Goldfish.instancePath + instanceName + "\\instancedata.yml");
+	    FileConfiguration instanceConfig = YamlConfiguration.loadConfiguration(instanceDataFile);
+		
+		return instanceConfig;
+	}
+	
+	public void saveInstanceConfig(FileConfiguration instanceConfig, String instanceName) {
+		
+		try { instanceConfig.save(Goldfish.prototypePath + instanceName + "\\instancedata.yml"); }
+		catch (IOException e) { plugin.logger("Couldn't save config file " + instanceName + ": " + e.getMessage()); }
+	}
+	
+	// Extraneous Methods
+	public String createInstance(String prototypeName, String userName, boolean isStatic) {
+		
+		int newID = 0;
+		
+		while (true) {
+			
+			String instanceName = "";
+			String directoryName = "";
+			
+			if (!isStatic) {
+			
+				instanceName = prototypeName + "_" + newID;
+				directoryName = Goldfish.instancePath + instanceName;
+				File instanceDir = new File(directoryName + "\\");
+				
+				if (instanceDir.exists()) {
+					
+					newID++;
+					continue;
+				}
+
+				// Copy prototype directory
+			    File protoDir = new File(Goldfish.prototypePath + prototypeName + "\\");
+			    GoldfishUtility.copyDirectory(protoDir, instanceDir);
+			    
+			} else {
+				
+				instanceName = prototypeName + "_static";
+				directoryName = Goldfish.instancePath + instanceName;
+				
+				File instanceDir = new File(directoryName + "\\");
+				
+				// Copy prototype directory
+			    File protoDir = new File(Goldfish.prototypePath + prototypeName + "\\");
+			    GoldfishUtility.copyDirectory(protoDir, instanceDir);
+			}
+		    
+		    File uidFile = new File(directoryName + "\\uid.dat");
+		    uidFile.delete();
+		    
+		    // Create Config file
+			GoldfishInstanceConfig.saveInstanceConfig(instanceName);
+
+		    File prototypeDataFile = new File(directoryName + "\\prototypedata.yml");
+		    File instanceDataFile = new File(directoryName + "\\instancedata.yml");
+
+		    FileConfiguration prototypeConfig = YamlConfiguration.loadConfiguration(prototypeDataFile);
+		    FileConfiguration instanceConfig = YamlConfiguration.loadConfiguration(instanceDataFile);
+		    
+		    // Set instance config defaults
+		    instanceConfig.createSection("user." + userName);
+	    	
+	    	GoldfishInstance instance = new GoldfishInstance(plugin, instanceName);
+	    	plugin.goldfishManager.addInstance(instance);
+			
+		    // Sets the instance timer if applicable
+		    int instanceTimerAmount = prototypeConfig.getInt(GoldfishPrototypeConfig.instanceTimerAmount);
+		    instanceConfig.set(GoldfishInstanceConfig.instanceTimerAmount, instanceTimerAmount);
+		    
+		    if (instanceTimerAmount > 0) {
+		    	
+				GoldfishTimers instanceTimer = new GoldfishTimers(plugin, directoryName, instanceTimerAmount, true);
+		    	instance.setInstanceTimer(instanceTimer);
+				instanceTimer.runTaskTimer(plugin, 0, 20);
+		    }
+			
+		    // Sets the timeout timer if applicable
+	    	int timeoutTimerAmount = prototypeConfig.getInt(GoldfishPrototypeConfig.timeoutTimerAmount);
+	    	
+		    if (timeoutTimerAmount > 0) {
+		    	
+				GoldfishTimers timeoutTimer = new GoldfishTimers(plugin, directoryName, timeoutTimerAmount, false);
+		    	instance.setTimeoutTimer(timeoutTimer);
+		    	timeoutTimer.runTaskTimer(plugin, 0, 20);
+		    }
+		    
+		    prototypeDataFile.delete();
+		    
+		    try { instanceConfig.save(instanceDataFile); }
+		    catch (IOException e) { plugin.logger(e.getMessage()); }
+		    
+		    return directoryName;
+		}
 	}
 }

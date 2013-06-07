@@ -62,7 +62,7 @@ public class GoldfishUtility {
 	            in.close();
 	            out.close();
 	            
-        	} catch (Exception e) { log.info(e.getMessage()); }
+        	} catch (Exception e) { log.info("Couldn't copy directory: " + e.getMessage()); }
         }
     }
  

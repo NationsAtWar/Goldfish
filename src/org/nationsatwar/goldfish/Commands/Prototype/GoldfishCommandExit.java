@@ -17,13 +17,13 @@ public class GoldfishCommandExit {
 	
 	public void execute(Player player, String worldName) {
 		
-		for ( String instanceName : plugin.goldfishManager.getPrototypeNames() )
-			if (player.getWorld().getName().equals(Goldfish.prototypePath + instanceName)) {
+		for ( String prototypeName : plugin.goldfishManager.getPrototypeNames() )
+			if (player.getWorld().getName().equals(Goldfish.prototypePath + prototypeName)) {
 				
-				plugin.goldfishManager.findPrototype(instanceName).setNewExitLocation(player.getLocation());
-				player.sendMessage(ChatColor.YELLOW + "Prototype " + instanceName + "'s exit location has been set.");
-				
-				GoldfishUtility.saveInstance(instanceName);
+				plugin.goldfishManager.findPrototype(prototypeName).setNewExitLocation(player.getLocation());
+			    
+				player.sendMessage(ChatColor.YELLOW + "Prototype " + prototypeName + "'s exit location has been set.");
+				GoldfishUtility.saveInstance(prototypeName);
 				return;
 			}
 
