@@ -1,14 +1,19 @@
 package org.nationsatwar.goldfish.Commands;
 
 import java.io.File;
+import java.util.Calendar;
+import java.util.Date;
+import java.util.GregorianCalendar;
 
 import org.bukkit.ChatColor;
 import org.bukkit.Location;
+import org.bukkit.Material;
 import org.bukkit.World;
 import org.bukkit.WorldCreator;
 import org.bukkit.World.Environment;
 import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.entity.Player;
+import org.bukkit.inventory.ItemStack;
 
 import org.nationsatwar.goldfish.Goldfish;
 import org.nationsatwar.goldfish.Utility.GoldfishPrototypeConfig;
@@ -70,6 +75,10 @@ public class GoldfishCommandEnter {
 			if (!foundEntrance)
 				continue;
 			
+			// Check to see if all the conditions have been met
+			if (!checkConditions(prototypeName, player))
+				return;
+			
 			// Sets the instance location to teleport the player to
 			float instanceX = prototypeConfig.getInt("entrances.location" + entranceID + ".instancex");
 			float instanceY = prototypeConfig.getInt("entrances.location" + entranceID + ".instancey");
@@ -77,17 +86,11 @@ public class GoldfishCommandEnter {
 			
 			String instanceName = prototypeName;
 		    
-		    // Changes name of instance depending on whether or not it's a static instance
+		    // Creates instance if it doesn't already exist dependent on whether or not it's set to static
 		    if (prototypeConfig.getBoolean(GoldfishPrototypeConfig.staticInstance))
 		    	instanceName = plugin.goldfishManager.createInstance(prototypeName, player.getName(), true);
-		    else {
-			
-				// Finds the instance associated with the player name, returns the first one found, null if none found
-		    	instanceName = GoldfishUtility.getExistingInstance(instanceName, player.getName());
-				
-				if (instanceName == null)
-					instanceName = plugin.goldfishManager.createInstance(prototypeName, player.getName(), false);
-		    }
+		    else
+		    	instanceName = plugin.goldfishManager.createInstance(prototypeName, player.getName(), false);
 		    
 		    // This file damages world loading, get rid of it
 		    File uidFile = new File(instanceName + "\\uid.dat");
@@ -104,11 +107,131 @@ public class GoldfishCommandEnter {
 			
 			Location instanceLocation = new Location(instanceWorld, instanceX, instanceY, instanceZ);
 			
+			instanceName = prototypeName + "_" + GoldfishUtility.getInstanceID(instanceName);
+			
+			if (prototypeConfig.getBoolean(GoldfishPrototypeConfig.equipmentStore))
+				storeInventory(instanceName, player);
+			
 			player.teleport(instanceLocation);
 			
 			return;
 		}
 		
 		player.sendMessage(ChatColor.YELLOW + "There is no entrance located here.");
+	}
+	
+	private void storeInventory(String instanceName, Player player) {
+		
+		FileConfiguration instanceConfig = plugin.goldfishManager.getInstanceConfig(instanceName);
+		
+		for (int i = 0; i < player.getInventory().getSize(); i++) {
+			
+			String section = "user." + player.getName() + ".inventory" + i;
+			
+			ItemStack itemStack = player.getInventory().getItem(i);
+			
+			if (itemStack != null) {
+				
+				instanceConfig.set(section, itemStack);
+				player.getInventory().clear(i);
+			} else
+				instanceConfig.set(section, null);
+		}
+		
+		plugin.goldfishManager.saveInstanceConfig(instanceConfig, instanceName);
+	}
+	
+	private boolean checkConditions(String prototypeName, Player player) {
+		
+		FileConfiguration prototypeConfig = plugin.goldfishManager.getPrototypeConfig(prototypeName);
+
+		// General condition allowance
+		boolean conditionAllow = prototypeConfig.getBoolean(GoldfishPrototypeConfig.conditionAllow);
+		
+		if (!conditionAllow) {
+			
+			player.sendMessage(ChatColor.YELLOW + "You are not allowed in this instance."); // STUB: Handle message via hook if viable
+			return false;
+		}
+		
+		// Game Time condition allowance
+		boolean conditionGameTimeActive = prototypeConfig.getBoolean(GoldfishPrototypeConfig.conditionGameTimeActive);
+		
+		if (conditionGameTimeActive) {
+			
+			int conditionGameTimeBegin = prototypeConfig.getInt(GoldfishPrototypeConfig.conditionGameTimeBegin) * 10;
+			int conditionGameTimeEnd = prototypeConfig.getInt(GoldfishPrototypeConfig.conditionGameTimeEnd) * 10;
+			
+			int playerTime = (int) (player.getWorld().getTime() + 6000);
+			
+			if (playerTime >= 24000)
+				playerTime -= 24000;
+			
+			if ((conditionGameTimeBegin < conditionGameTimeEnd && (playerTime < conditionGameTimeBegin || playerTime > conditionGameTimeEnd)) ||
+					(conditionGameTimeBegin > conditionGameTimeEnd && (playerTime < conditionGameTimeBegin && playerTime > conditionGameTimeEnd))) {
+				
+				player.sendMessage(ChatColor.YELLOW + "You must wait between " + (conditionGameTimeBegin / 10) + " and " +
+						(conditionGameTimeEnd / 10) + " to enter this instance.");
+				return false;
+			}
+		}
+		
+		// Server Time condition allowance
+		boolean conditionServerTimeActive = prototypeConfig.getBoolean(GoldfishPrototypeConfig.conditionServerTimeActive);
+		
+		if (conditionServerTimeActive) {
+			
+			int conditionServerTimeBegin = prototypeConfig.getInt(GoldfishPrototypeConfig.conditionServerTimeBegin);
+			int conditionServerTimeEnd = prototypeConfig.getInt(GoldfishPrototypeConfig.conditionServerTimeEnd);
+			
+			Date date = new Date();
+			Calendar calendar = GregorianCalendar.getInstance();
+			calendar.setTime(date);
+			
+			calendar.get(Calendar.HOUR_OF_DAY); // gets hour in 24h format
+			
+			int playerTime = (int) ((calendar.get(Calendar.HOUR_OF_DAY) * 100) + calendar.get(Calendar.MINUTE));
+			
+			if ((conditionServerTimeBegin < conditionServerTimeEnd && (playerTime < conditionServerTimeBegin || playerTime > conditionServerTimeEnd)) ||
+					(conditionServerTimeBegin > conditionServerTimeEnd && (playerTime < conditionServerTimeBegin && playerTime > conditionServerTimeEnd))) {
+				
+				player.sendMessage(ChatColor.YELLOW + "You must wait between " + conditionServerTimeBegin + " and " +
+						conditionServerTimeEnd + " to enter this instance.");
+				return false;
+			}
+		}
+
+		// Item Require condition allowance
+		for (String section : prototypeConfig.getConfigurationSection("condition.itemrequire").getKeys(false)) {
+			
+			int itemID = Integer.parseInt(section);
+			
+			int itemAmount = prototypeConfig.getInt("condition.itemrequire." + itemID);
+			boolean conditionMet = false;
+			
+			for (ItemStack itemStack : player.getInventory()) {
+				
+				if (itemStack == null)
+					continue;
+				
+				if (itemStack.getTypeId() == itemID)
+					itemAmount -= itemStack.getAmount();
+				
+				if (itemAmount <= 0) {
+					
+					conditionMet = true;
+					break;
+				}
+			}
+			
+			if (!conditionMet) {
+				
+				player.sendMessage(ChatColor.YELLOW + "You must have " + itemAmount + " more " +
+						Material.getMaterial(itemID) + " to enter this instance.");
+				return false;
+			}
+		}
+		
+		return true;
 	}
 }

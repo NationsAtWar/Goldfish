@@ -1,13 +1,8 @@
 package org.nationsatwar.goldfish;
 
-import java.io.File;
-import java.io.IOException;
-
-import org.bukkit.Location;
 import org.bukkit.World;
 import org.bukkit.entity.Player;
 import org.bukkit.scheduler.BukkitRunnable;
-import org.nationsatwar.goldfish.Utility.GoldfishUtility;
 
 
 public class GoldfishTimers extends BukkitRunnable {
@@ -28,6 +23,8 @@ public class GoldfishTimers extends BukkitRunnable {
 	}
 
 	public void run() {
+		
+		plugin.logger("Timer: " + timer);
 		
 		if (!active)
 			return;
@@ -53,30 +50,7 @@ public class GoldfishTimers extends BukkitRunnable {
 		
 		if (timer <= 0) {
 			
-			GoldfishPrototype instance = plugin.goldfishManager.findPrototype(GoldfishUtility.getPrototypeName(instanceName));
-			
-			String entranceName = instance.getEntranceWorld();
-			
-			// If entrance world is an instance, this will find the appropriate instance for the player
-			if (GoldfishUtility.isPrototype(entranceName) || GoldfishUtility.isInstance(entranceName))
-				entranceName = GoldfishUtility.getPrototypeName(entranceName);
-			
-			World world = plugin.getServer().getWorld(entranceName);
-			
-			Location entrance = new Location(world, instance.getEntranceLocation().getX(), 
-					instance.getEntranceLocation().getY(), instance.getEntranceLocation().getZ());
-			
-			if (instanceWorld != null)
-				for (Player player : instanceWorld.getPlayers())
-					player.teleport(entrance);
-			
-			plugin.getServer().unloadWorld(instanceName, true);
-			
-			File instanceDir = new File(instanceName);
-			
-			try { GoldfishUtility.deleteDirectory(instanceDir); }
-			catch (IOException e) {	plugin.logger("Couldn't delete directory: " + e.getMessage()); }
-			
+			plugin.goldfishManager.destroyInstance(instanceName);
 			plugin.getServer().getScheduler().cancelTask(getTaskId());
 		}
 	}

@@ -10,6 +10,7 @@ import org.bukkit.World.Environment;
 import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.configuration.file.YamlConfiguration;
 import org.bukkit.entity.Player;
+import org.bukkit.inventory.ItemStack;
 import org.nationsatwar.goldfish.Goldfish;
 import org.nationsatwar.goldfish.Utility.GoldfishPrototypeConfig;
 import org.nationsatwar.goldfish.Utility.GoldfishUtility;
@@ -104,6 +105,17 @@ public class GoldfishCommandLeave {
 			
 			Location instanceLocation = new Location(instanceWorld, instanceX, instanceY, instanceZ);
 			
+			instanceName = prototypeName + "_" + GoldfishUtility.getInstanceID(instanceName);
+			
+			if (prototypeConfig.getBoolean(GoldfishPrototypeConfig.equipmentStore)) {
+				
+				if (prototypeConfig.getBoolean(GoldfishPrototypeConfig.equipmentBooty))
+					loadInventory(instanceName, player, instanceLocation, true);
+				else
+					loadInventory(instanceName, player, instanceLocation, false);
+			}
+				
+			
 			player.teleport(instanceLocation);
 			
 			return;
@@ -133,5 +145,28 @@ public class GoldfishCommandLeave {
 		}
 		
 		return checkName;
+	}
+	
+	private void loadInventory(String instanceName, Player player, Location exitLocation, boolean dropBooty) {
+		
+		FileConfiguration instanceConfig = plugin.goldfishManager.getInstanceConfig(instanceName);
+		
+		for (int i = 0; i < player.getInventory().getSize(); i++) {
+			
+			String section = "user." + player.getName() + ".inventory" + i;
+
+			ItemStack playerItemStack = player.getInventory().getItem(i);
+			player.getInventory().clear(i);
+			
+			if (playerItemStack != null && dropBooty)
+				exitLocation.getWorld().dropItem(exitLocation, playerItemStack);
+				
+			ItemStack itemStack = instanceConfig.getItemStack(section);
+			
+			if (itemStack != null)
+				player.getInventory().setItem(i, itemStack);
+		}
+		
+		plugin.goldfishManager.saveInstanceConfig(instanceConfig, instanceName);
 	}
 }

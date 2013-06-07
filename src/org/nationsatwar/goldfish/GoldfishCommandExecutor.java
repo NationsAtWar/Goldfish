@@ -1,5 +1,9 @@
 package org.nationsatwar.goldfish;
 
+import java.util.Calendar;
+import java.util.Date;
+import java.util.GregorianCalendar;
+
 import org.bukkit.ChatColor;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandExecutor;
@@ -248,6 +252,11 @@ public class GoldfishCommandExecutor implements CommandExecutor {
 		
 		Player player = (Player) sender;
 		
-		sender.sendMessage(player.getLocation().getWorld().getChunkAt(player.getLocation()).toString());
+		Date date = new Date();   // given date
+		Calendar calendar = GregorianCalendar.getInstance(); // creates a new calendar instance
+		calendar.setTime(date);   // assigns calendar to given date 
+		calendar.get(Calendar.HOUR_OF_DAY); // gets hour in 24h format
+		
+		player.sendMessage(calendar.get(Calendar.HOUR_OF_DAY) + calendar.get(Calendar.MINUTE) + "");
 	}
 }

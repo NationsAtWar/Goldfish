@@ -9,8 +9,11 @@ import java.io.ObjectOutputStream;
 import java.util.ArrayList;
 import java.util.HashMap;
 
+import org.bukkit.Location;
+import org.bukkit.World;
 import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.configuration.file.YamlConfiguration;
+import org.bukkit.entity.Player;
 import org.nationsatwar.goldfish.Utility.GoldfishInstanceConfig;
 import org.nationsatwar.goldfish.Utility.GoldfishPrototypeConfig;
 import org.nationsatwar.goldfish.Utility.GoldfishUtility;
@@ -178,18 +181,28 @@ public class GoldfishManager {
 	
 	public void saveInstanceConfig(FileConfiguration instanceConfig, String instanceName) {
 		
-		try { instanceConfig.save(Goldfish.prototypePath + instanceName + "\\instancedata.yml"); }
+		try { instanceConfig.save(Goldfish.instancePath + instanceName + "\\instancedata.yml"); }
 		catch (IOException e) { plugin.logger("Couldn't save config file " + instanceName + ": " + e.getMessage()); }
 	}
 	
 	// Extraneous Methods
-	public String createInstance(String prototypeName, String userName, boolean isStatic) {
+	
+	/*
+	 * Attempts to find an existing instance. If it can't, it will create a new one with the default properties.
+	 * Returns the full path of the instance name
+	 */
+	public String createInstance(String prototypeName, String playerName, boolean isStatic) {
+		
+		String instanceName = GoldfishUtility.getExistingInstance(prototypeName, playerName);
+		
+		if (instanceName != null)
+			return instanceName;
 		
 		int newID = 0;
 		
 		while (true) {
 			
-			String instanceName = "";
+			instanceName = "";
 			String directoryName = "";
 			
 			if (!isStatic) {
@@ -225,15 +238,17 @@ public class GoldfishManager {
 		    
 		    // Create Config file
 			GoldfishInstanceConfig.saveInstanceConfig(instanceName);
-
-		    File prototypeDataFile = new File(directoryName + "\\prototypedata.yml");
-		    File instanceDataFile = new File(directoryName + "\\instancedata.yml");
-
-		    FileConfiguration prototypeConfig = YamlConfiguration.loadConfiguration(prototypeDataFile);
-		    FileConfiguration instanceConfig = YamlConfiguration.loadConfiguration(instanceDataFile);
+		    
+		    FileConfiguration prototypeConfig = plugin.goldfishManager.getPrototypeConfig(prototypeName);
+		    FileConfiguration instanceConfig = plugin.goldfishManager.getInstanceConfig(instanceName);
 		    
 		    // Set instance config defaults
-		    instanceConfig.createSection("user." + userName);
+		    instanceConfig.createSection("user." + playerName);
+		    
+		    int respawnCounter = prototypeConfig.getInt(GoldfishPrototypeConfig.respawnCounter);
+		    
+		    if (respawnCounter > 0)
+		    	instanceConfig.set("user." + playerName + ".lives", respawnCounter);
 	    	
 	    	GoldfishInstance instance = new GoldfishInstance(plugin, instanceName);
 	    	plugin.goldfishManager.addInstance(instance);
@@ -259,12 +274,42 @@ public class GoldfishManager {
 		    	timeoutTimer.runTaskTimer(plugin, 0, 20);
 		    }
 		    
+		    // Delete the copied prototypeDataFile
+		    File prototypeDataFile = new File(directoryName + "\\prototypedata.yml");
 		    prototypeDataFile.delete();
 		    
-		    try { instanceConfig.save(instanceDataFile); }
-		    catch (IOException e) { plugin.logger(e.getMessage()); }
+		    plugin.goldfishManager.saveInstanceConfig(instanceConfig, instanceName);
 		    
 		    return directoryName;
 		}
+	}
+	
+	public void destroyInstance(String instanceName) {
+		
+		World instanceWorld = plugin.getServer().getWorld(instanceName);
+		
+		GoldfishPrototype instance = plugin.goldfishManager.findPrototype(GoldfishUtility.getPrototypeName(instanceName));
+		
+		String entranceName = instance.getEntranceWorld();
+		
+		// If entrance world is an instance, this will find the appropriate instance for the player
+		if (GoldfishUtility.isPrototype(entranceName) || GoldfishUtility.isInstance(entranceName))
+			entranceName = GoldfishUtility.getPrototypeName(entranceName);
+		
+		World world = plugin.getServer().getWorld(entranceName);
+		
+		Location entrance = new Location(world, instance.getEntranceLocation().getX(), 
+				instance.getEntranceLocation().getY(), instance.getEntranceLocation().getZ());
+		
+		if (instanceWorld != null)
+			for (Player player : instanceWorld.getPlayers())
+				player.teleport(entrance);
+		
+		plugin.getServer().unloadWorld(instanceName, true);
+		
+		File instanceDir = new File(instanceName);
+		
+		try { GoldfishUtility.deleteDirectory(instanceDir); }
+		catch (IOException e) {	plugin.logger("Couldn't delete directory: " + e.getMessage()); }
 	}
 }

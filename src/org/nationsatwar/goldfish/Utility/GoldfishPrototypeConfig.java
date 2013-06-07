@@ -29,7 +29,11 @@ public class GoldfishPrototypeConfig {
 	public static String blockUse1 = "block.use.1";
 	
 	public static String respawnInstance = "respawn.instance";
-	public static String respawnInside = "respawn.inside";
+	public static String respawnCounter = "respawn.counter";
+	public static String respawnLocationWorld = "respawn.locationworld";
+	public static String respawnLocationX = "respawn.locationx";
+	public static String respawnLocationY = "respawn.locationy";
+	public static String respawnLocationZ = "respawn.locationz";
 	
 	public static String instanceTimerAmount = "instancetimer.amount";
 	public static String instanceTimerActiveWhenEmpty = "instancetimer.activewhenempty";
@@ -37,6 +41,9 @@ public class GoldfishPrototypeConfig {
 	public static String timeoutTimerAmount = "timeouttimer.amount";
 	
 	public static String staticInstance = "staticinstance";
+	
+	public static String equipmentStore = "equipment.store";
+	public static String equipmentBooty = "equipment.booty";
 	
 	public static String entrancesLocation1Active = "entrances.location1.active";
 	public static String entrancesLocation1EntranceWorld = "entrances.location1.entranceworld";
@@ -55,6 +62,16 @@ public class GoldfishPrototypeConfig {
 	public static String exitsLocation1InstanceX = "exits.location1.instancex";
 	public static String exitsLocation1InstanceY = "exits.location1.instancey";
 	public static String exitsLocation1InstanceZ = "exits.location1.instancez";
+	
+	public static String conditionAllow = "condition.allow";
+	public static String conditionGameTimeActive = "condition.gametime.active";
+	public static String conditionGameTimeBegin = "condition.gametime.begin";
+	public static String conditionGameTimeEnd = "condition.gametime.end";
+	public static String conditionServerTimeActive = "condition.servertime.active";
+	public static String conditionServerTimeBegin = "condition.servertime.begin";
+	public static String conditionServerTimeEnd = "condition.servertime.end";
+	public static String conditionItemRequire0 = "condition.itemrequire.0";
+	public static String conditionItemRequire1 = "condition.itemrequire.1";
 	
 	private static Logger log = Logger.getLogger("Minecraft");
 	private static String lineBreak = "\r\n";
@@ -84,7 +101,11 @@ public class GoldfishPrototypeConfig {
 	    config.addDefault(blockUse1, true);
 
 	    config.addDefault(respawnInstance, false);
-	    config.addDefault(respawnInside, true);
+	    config.addDefault(respawnCounter, 0);
+	    config.addDefault(respawnLocationWorld, "");
+	    config.addDefault(respawnLocationX, 0);
+	    config.addDefault(respawnLocationY, 0);
+	    config.addDefault(respawnLocationZ, 0);
 
 	    config.addDefault(instanceTimerAmount, 0);
 	    config.addDefault(instanceTimerActiveWhenEmpty, false);
@@ -92,6 +113,9 @@ public class GoldfishPrototypeConfig {
 	    config.addDefault(timeoutTimerAmount, 60);
 
 	    config.addDefault(staticInstance, false);
+
+	    config.addDefault(equipmentStore, false);
+	    config.addDefault(equipmentBooty, true);
 
 	    config.addDefault(entrancesLocation1Active, false);
 	    config.addDefault(entrancesLocation1EntranceWorld, "");
@@ -110,6 +134,16 @@ public class GoldfishPrototypeConfig {
 	    config.addDefault(exitsLocation1InstanceX, 0);
 	    config.addDefault(exitsLocation1InstanceY, 0);
 	    config.addDefault(exitsLocation1InstanceZ, 0);
+
+	    config.addDefault(conditionAllow, true);
+	    config.addDefault(conditionGameTimeActive, false);
+	    config.addDefault(conditionGameTimeBegin, 0);
+	    config.addDefault(conditionGameTimeEnd, 0);
+	    config.addDefault(conditionServerTimeActive, false);
+	    config.addDefault(conditionServerTimeBegin, 0);
+	    config.addDefault(conditionServerTimeEnd, 0);
+	    config.addDefault(conditionItemRequire0, 0);
+	    config.addDefault(conditionItemRequire1, 0);
 	    
 	    configOptions.copyDefaults(true);
 	    
@@ -129,10 +163,10 @@ public class GoldfishPrototypeConfig {
 	    header += "Individual blocks determined by Type ID will override the 'AllowAll' parameter." + lineBreak;
 
 	    header += lineBreak + "-=(Respawn)=-" + lineBreak;
-	    header += "There are two parameters here, respawn.instance and respawn.inside" + lineBreak;
-	    header += "The first parameter will determine whether or not the player respawns at the instance or their default spawn point." + lineBreak;
-	    header += "The second parameter will only activate if the first parameter is true." + lineBreak;
-	    header += "Respawn.Inside will spawn the player inside the instance if true, or right outside if false." + lineBreak;
+	    header += "Respawn instance will spawn the player at the specified location if true, or default spawn if false." + lineBreak;
+	    header += "Respawn counter is the maximum number of times a player can die before being kicked out of the instance. 0 means infinite." + lineBreak;
+	    header += "A player will respawn at the respawn location if they have respawn lives left, and/or if the respawn is outside the instance." + lineBreak;
+	    header += "If the respawn is inside the instance and there's no respawn lives left, the player will respawn at entrance.location1" + lineBreak;
 
 	    header += lineBreak + "-=(Instance Timer)=-" + lineBreak;
 	    header += "Amount determines how long an instance will last. 0 means indefinitely." + lineBreak;
@@ -148,12 +182,24 @@ public class GoldfishPrototypeConfig {
 	    header += "If an instance is static, then only one instance can ever be active at any given time." + lineBreak;
 	    header += "All players will join the same instance on entering." + lineBreak;
 
+	    header += lineBreak + "-=(Equipment)=-" + lineBreak;
+	    header += "If storing equipment is turned on, then equipment is stripped on entry and returned on exit." + lineBreak;
+	    header += "If booty is turned on, all items gained in instance will be given to the player." + lineBreak;
+
 	    header += lineBreak + "-=(Entrances and Exits)=-" + lineBreak;
 	    header += "This determines exactly where the entrances and exits are, and where they link to." + lineBreak;
 	    header += "You can have as many entrances and exits as you like, just number them in connecting order." + lineBreak;
 	    header += "If you have an 'entrance4' but no 'entrance3', 'entrance4' will not be checked." + lineBreak;
 	    header += "No instance world needs to be specified for obvious reasons." + lineBreak;
 	    header += "Also, setting entrances and exits in-game will replace entrance1 and exit1 respectively." + lineBreak;
+
+	    header += lineBreak + "-=(Conditions)=-" + lineBreak;
+	    header += "Determines whether or not to allow the player to enter the instance." + lineBreak;
+	    header += "If 'allow' is set to false, the player can not enter under any circumstances until set to true." + lineBreak;
+	    header += "If game time or server time is set to true, then the current time must fall between the given 'begin' and 'end'" + lineBreak;
+	    header += "Use military time for either case. (1530 means 3:30 PM)" + lineBreak;
+	    header += "The path for item require will specify the item ID that is required. If the value assigned to that number is greater than 0, " + lineBreak;
+	    header += "then that is the number of that item required to enter the instance." + lineBreak;
 	    
 	    configOptions.header(header);
 	    configOptions.copyHeader(true);

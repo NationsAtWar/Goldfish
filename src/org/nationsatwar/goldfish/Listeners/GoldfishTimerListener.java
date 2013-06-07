@@ -8,6 +8,7 @@ import org.bukkit.configuration.file.YamlConfiguration;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 import org.bukkit.event.player.PlayerJoinEvent;
+import org.bukkit.event.player.PlayerRespawnEvent;
 import org.bukkit.event.player.PlayerTeleportEvent;
 import org.nationsatwar.goldfish.Goldfish;
 import org.nationsatwar.goldfish.GoldfishInstance;
@@ -17,8 +18,7 @@ import org.nationsatwar.goldfish.Utility.GoldfishUtility;
 
 public class GoldfishTimerListener implements Listener {
 	
-	// Public to evade warning (debug purposes)
-	public Goldfish plugin;
+	private Goldfish plugin;
     
     public GoldfishTimerListener(Goldfish plugin) {
     	
@@ -28,8 +28,56 @@ public class GoldfishTimerListener implements Listener {
     @EventHandler
     public void onPlayerTeleport(PlayerTeleportEvent event) {
     	
+    	handleTimers(event.getFrom().getWorld(), event.getTo().getWorld());
+    }
+    
+    @EventHandler
+    public void onPlayerRespawn(PlayerRespawnEvent event) {
+    	
+    	handleTimers(event.getPlayer().getWorld(), event.getRespawnLocation().getWorld());
+    }
+    
+    @EventHandler
+    public void onPlayerJoin(PlayerJoinEvent event) {
+    	
+    	for (String instanceName : plugin.goldfishManager.getInstanceNames()) {
+    		
+			File instanceDataFile = new File(Goldfish.instancePath + instanceName + "\\" + "instancedata.yml");
+						
+			if (instanceDataFile.exists()) {
+				
+				FileConfiguration instanceConfig = YamlConfiguration.loadConfiguration(instanceDataFile);
+				
+				// Checks all instances related to the joining user
+				if (instanceConfig.contains("user." + event.getPlayer().getName())) {
+					
+					GoldfishInstance instance = plugin.goldfishManager.findInstance(instanceName);
+					
+					String prototypeName = GoldfishUtility.getPrototypeName(instanceName);
+					
+					FileConfiguration prototypeConfig = plugin.goldfishManager.getPrototypeConfig(prototypeName);
+
+					// Determines whether or not to start the instance timer
+					String worldName = event.getPlayer().getWorld().getName();
+					int instanceTimerAmount = prototypeConfig.getInt(GoldfishPrototypeConfig.instanceTimerAmount);
+					boolean instanceTimerActiveWhenEmpty = prototypeConfig.getBoolean(GoldfishPrototypeConfig.instanceTimerActiveWhenEmpty);
+					
+					if (instanceTimerAmount > 0 && (instanceTimerActiveWhenEmpty || worldName.equals(Goldfish.instancePath + instanceName)))
+						instance.startInstanceTimer();
+					
+					// Starts timeout timer if applicable
+					if (prototypeConfig.getInt(GoldfishPrototypeConfig.timeoutTimerAmount) > 0 &&
+							!event.getPlayer().getWorld().getName().equals(Goldfish.instancePath + instanceName))
+						instance.startTimeoutTimer();
+				}
+			}
+    	}
+    }
+    
+    private void handleTimers(World fromWorld, World toWorld) {
+    	
     	// Handles timers dependent on the world that the player is teleporting from
-    	String fromWorldName = event.getFrom().getWorld().getName();
+    	String fromWorldName = fromWorld.getName();
     	
     	// Only works if the 'from world' is an instance
     	if (GoldfishUtility.isInstance(fromWorldName)) {
@@ -39,7 +87,7 @@ public class GoldfishTimerListener implements Listener {
         	File dataFile = new File(Goldfish.prototypePath + prototypeName + "\\prototypedata.yml");
         	FileConfiguration config = YamlConfiguration.loadConfiguration(dataFile);
     		
-    		World world = event.getFrom().getWorld();
+    		World world = fromWorld;
     		
     		// Sees if the world is now empty
     		if (world != null && world.getPlayers().size() == 1) {
@@ -71,7 +119,7 @@ public class GoldfishTimerListener implements Listener {
     	}
     	
     	// Handles timers dependent on the world that the player is teleporting to
-    	String toWorldName = event.getTo().getWorld().getName();
+    	String toWorldName = toWorld.getName();
     	
     	// Only works if the 'to world' is an instance
     	if (GoldfishUtility.isInstance(toWorldName)) {
@@ -101,43 +149,6 @@ public class GoldfishTimerListener implements Listener {
     			if (config.getInt(GoldfishPrototypeConfig.timeoutTimerAmount) > 0)
     				instance.stopTimeoutTimer();
     		}
-    	}
-    }
-    
-    @EventHandler
-    public void onPlayerJoin(PlayerJoinEvent event) {
-    	
-    	for (String instanceName : plugin.goldfishManager.getInstanceNames()) {
-    		
-			File instanceDataFile = new File(Goldfish.instancePath + instanceName + "\\" + "instancedata.yml");
-						
-			if (instanceDataFile.exists()) {
-				
-				FileConfiguration instanceConfig = YamlConfiguration.loadConfiguration(instanceDataFile);
-				
-				// Checks all instances related to the joining user
-				if (instanceConfig.contains("user." + event.getPlayer().getName())) {
-					
-					GoldfishInstance instance = plugin.goldfishManager.findInstance(instanceName);
-					
-					String prototypeName = GoldfishUtility.getPrototypeName(instanceName);
-					
-					FileConfiguration prototypeConfig = plugin.goldfishManager.getPrototypeConfig(prototypeName);
-					
-					plugin.logger("Attempting to start timer");
-					plugin.logger("Instance Name: " + instance.getName());
-					
-					// Starts instance timer if applicable
-					if (prototypeConfig.getBoolean(GoldfishPrototypeConfig.instanceTimerActiveWhenEmpty) ||
-							event.getPlayer().getWorld().getName().equals(Goldfish.instancePath + instanceName))
-						instance.startInstanceTimer();
-					
-					// Starts timeout timer if applicable
-					if (prototypeConfig.getInt(GoldfishPrototypeConfig.timeoutTimerAmount) > 0 &&
-							!event.getPlayer().getWorld().getName().equals(Goldfish.instancePath + instanceName))
-						instance.startTimeoutTimer();
-				}
-			}
     	}
     }
 }

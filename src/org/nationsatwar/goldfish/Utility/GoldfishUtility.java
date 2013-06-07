@@ -96,16 +96,17 @@ public class GoldfishUtility {
     		file.delete();
     }
     
-    public static String getPrototypeName(String instanceName) {
+    /*
+     *  Trims the prototype or instance path name as well as the instance ID if they exist
+     */
+    public static String getPrototypeName(String checkName) {
     	
-    	String prototypeName = instanceName;
+    	String prototypeName = checkName;
     	
-    	if (instanceName.length() > Goldfish.prototypePath.length() && 
-    			instanceName.substring(0, Goldfish.prototypePath.length()).equals(Goldfish.prototypePath))
-    		prototypeName = instanceName.substring(Goldfish.prototypePath.length());
-    	else if (instanceName.length() > Goldfish.instancePath.length() && 
-    			instanceName.substring(0, Goldfish.instancePath.length()).equals(Goldfish.instancePath))
-    		prototypeName = instanceName.substring(Goldfish.instancePath.length());
+    	if (isPrototype(checkName))
+    		prototypeName = checkName.substring(Goldfish.prototypePath.length());
+    	else if (isInstance(checkName))
+    		prototypeName = checkName.substring(Goldfish.instancePath.length());
 		
 		for (int i = 0; i < prototypeName.length(); i++) {
 			
@@ -116,6 +117,9 @@ public class GoldfishUtility {
     	return prototypeName;
     }
     
+    /*
+     *  Returns just instance ID if one exists, otherwise 0
+     */
     public static int getInstanceID(String instanceName) {
 		
 		for (int i = 0; i < instanceName.length(); i++) {
@@ -130,23 +134,36 @@ public class GoldfishUtility {
     	return 0;
     }
     
+    /*
+     *  Checks to see if the name contains the prototype path
+     */
     public static boolean isPrototype(String checkName) {
     	
-    	if (checkName.contains(Goldfish.prototypePath))
+    	if (checkName.length() > Goldfish.prototypePath.length() && 
+    			checkName.substring(0, Goldfish.prototypePath.length()).equals(Goldfish.prototypePath))
     		return true;
     	else
     		return false;
     }
+
     
+    /*
+     *  Checks to see if the name contains the instance path
+     */
     public static boolean isInstance(String checkName) {
     	
-    	if (checkName.contains(Goldfish.instancePath))
+    	if (checkName.length() > Goldfish.instancePath.length() && 
+    			checkName.substring(0, Goldfish.instancePath.length()).equals(Goldfish.instancePath))
     		return true;
     	else
     		return false;
     }
 	
-	public static String getExistingInstance(String instanceName, String userName) {
+    /*
+     *  Goes through all the instances to see if they match the prototype name and has the user in the instance data file
+     *  Returns the instance name with ID if it can find it, null otherwise
+     */
+	public static String getExistingInstance(String prototypeName, String userName) {
 		
 	    String[] folderList = new File(Goldfish.instancePath).list();
 		
@@ -155,8 +172,8 @@ public class GoldfishUtility {
 			if (fileName == null)
 				continue;
 			
-			if (fileName.substring(0, instanceName.length()).equals(instanceName) &&
-					fileName.charAt(instanceName.length()) == '_') {
+			if (fileName.length() >= prototypeName.length() && fileName.substring(0, prototypeName.length()).equals(prototypeName) &&
+					fileName.charAt(prototypeName.length()) == '_') {
 				
 				File dataFile = new File(Goldfish.instancePath + fileName + "\\" + "instancedata.yml");
 				
