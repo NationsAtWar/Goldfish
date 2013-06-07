@@ -26,7 +26,7 @@ public class Goldfish extends JavaPlugin {
 	public static String prototypePath = "plugins\\Goldfish\\prototypes\\";
 	public static String instancePath = "plugins\\Goldfish\\instances\\";
 	
-	private GoldfishCommandExecutor commandExecutor;
+	protected GoldfishCommandExecutor commandExecutor;
 	
 	Logger log = Logger.getLogger("Minecraft");
 	
