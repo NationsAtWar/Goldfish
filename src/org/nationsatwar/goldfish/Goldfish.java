@@ -1,6 +1,7 @@
 package org.nationsatwar.goldfish;
 
 import java.io.File;
+import java.util.HashMap;
 import java.util.logging.Logger;
 
 import org.bukkit.World;
@@ -20,7 +21,10 @@ import org.nationsatwar.goldfish.Utility.GoldfishUtility;
 
 public class Goldfish extends JavaPlugin {
 	
+	public HashMap<String, GoldfishHook> goldfishHooks;
+	
 	public GoldfishManager goldfishManager = new GoldfishManager(this);
+	public GoldfishHook goldfishAPI = new GoldfishHook(this);
 	
 	public static String goldfishPath = "plugins\\Goldfish\\";
 	public static String prototypePath = "plugins\\Goldfish\\prototypes\\";
@@ -31,7 +35,9 @@ public class Goldfish extends JavaPlugin {
 	Logger log = Logger.getLogger("Minecraft");
 	
 	public void onEnable() {
-
+		
+		goldfishHooks = new HashMap<String, GoldfishHook>();
+		
 		getServer().getPluginManager().registerEvents(new GoldfishBlockListener(this), this);
 		getServer().getPluginManager().registerEvents(new GoldfishLimitListener(this), this);
 		getServer().getPluginManager().registerEvents(new GoldfishRespawnListener(this), this);
@@ -50,33 +56,41 @@ public class Goldfish extends JavaPlugin {
     	
     	logger("Goldfish has been enabled.");
 	}
-    
-   public void onDisable() {
-	   
-	   saveInstances();
-	   logger("Goldfish has been disabled.");
-   }
-   
-   public void logger(String logMessage) {
-	   
-	   log.info("Goldfish: " + logMessage);
-   }
-   
-   private void loadInstances() {
-	   
-	   // Create necessary folders
-	   File goldfishDirectory = new File(goldfishPath);
-	   File prototypeDirectory = new File(prototypePath);
-	   File instanceDirectory = new File(instancePath);
-	   
-	   if (!goldfishDirectory.exists())
-		   goldfishDirectory.mkdir();
-	   
-	   if (!prototypeDirectory.exists())
-		   prototypeDirectory.mkdir();
-	   
-	   if (!instanceDirectory.exists())
-		   instanceDirectory.mkdir();
+	
+	public void onDisable() {
+		
+		saveInstances();
+		logger("Goldfish has been disabled.");
+	}
+	
+	public void logger(String logMessage) {
+		
+		log.info("Goldfish: " + logMessage);
+	}
+	
+	public GoldfishHook fishhook(JavaPlugin externalPlugin) {
+		
+		GoldfishHook newGoldfishHook = new GoldfishHook(this);
+		goldfishHooks.put(externalPlugin.getName(), newGoldfishHook);
+		
+		return newGoldfishHook;
+	}
+	
+	private void loadInstances() {
+		
+		// Create necessary folders
+		File goldfishDirectory = new File(goldfishPath);
+		File prototypeDirectory = new File(prototypePath);
+		File instanceDirectory = new File(instancePath);
+		
+		if (!goldfishDirectory.exists())
+			goldfishDirectory.mkdir();
+		
+		if (!prototypeDirectory.exists())
+			prototypeDirectory.mkdir();
+		
+		if (!instanceDirectory.exists())
+			instanceDirectory.mkdir();
 	   
 	   // Load all prototypes into manager
 	   try { goldfishManager.loadAll(); }

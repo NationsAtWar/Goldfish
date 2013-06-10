@@ -16,6 +16,7 @@ import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
 
 import org.nationsatwar.goldfish.Goldfish;
+import org.nationsatwar.goldfish.GoldfishHook;
 import org.nationsatwar.goldfish.Utility.GoldfishPrototypeConfig;
 import org.nationsatwar.goldfish.Utility.GoldfishUtility;
 
@@ -149,6 +150,15 @@ public class GoldfishCommandEnter {
 		boolean conditionAllow = prototypeConfig.getBoolean(GoldfishPrototypeConfig.conditionAllow);
 		
 		if (!conditionAllow) {
+			
+			for (GoldfishHook goldfishHook : plugin.goldfishHooks.values()) {
+				
+				if (goldfishHook.prohibitedInstances.containsKey(prototypeName)) {
+					
+					player.sendMessage(ChatColor.YELLOW + goldfishHook.prohibitedInstances.get(prototypeName));
+					return false;
+				}
+			}
 			
 			player.sendMessage(ChatColor.YELLOW + "You are not allowed in this instance."); // STUB: Handle message via hook if viable
 			return false;
