@@ -244,7 +244,5 @@ public class GoldfishCommandExecutor implements CommandExecutor {
 	private void debugCommand(CommandSender sender, String[] args) {
 		
 		// Temporary command used for debugging purposes.
-		
-		Player player = (Player) sender;
 	}
 }

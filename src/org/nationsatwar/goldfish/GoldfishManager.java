@@ -239,7 +239,9 @@ public class GoldfishManager {
 			}
 		    
 		    File uidFile = new File(directoryName + "/uid.dat");
+		    File lockFile = new File(directoryName + "/session.lock");
 		    uidFile.delete();
+		    lockFile.delete();
 		    
 		    // Create Config file
 			GoldfishInstanceConfig.saveInstanceConfig(instanceName);
