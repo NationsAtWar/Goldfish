@@ -38,7 +38,7 @@ public class GoldfishCommandDelete {
 		List<File> instanceDirs = new ArrayList<File>();
 		
 		for (String checkFile : baseInstanceDir.list())
-			if (checkFile.substring(0, worldName.length()).equals(worldName)) {
+			if (checkFile.length() >= worldName.length() && checkFile.substring(0, worldName.length()).equals(worldName)) {
 				
 				instanceDirs.add(new File(Goldfish.instancePath + checkFile));
 				plugin.getServer().unloadWorld(Goldfish.instancePath + checkFile, true);

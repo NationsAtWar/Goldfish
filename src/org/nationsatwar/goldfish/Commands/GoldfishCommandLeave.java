@@ -93,8 +93,6 @@ public class GoldfishCommandLeave {
 		    // This file damages world loading, get rid of it
 		    File uidFile = new File(instanceName + "/uid.dat");
 		    uidFile.delete();
-		    File lockFile = new File(instanceName + "/session.lock");
-		    lockFile.delete();
 			
 			World instanceWorld = plugin.getServer().getWorld(instanceName);
 			

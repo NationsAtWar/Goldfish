@@ -22,10 +22,8 @@ public class GoldfishUtility {
 		if (plugin.getServer().getWorld(Goldfish.prototypePath + worldName) != null)
 			plugin.getServer().getWorld(Goldfish.prototypePath + worldName).save();
 	    
-	    File uidFile = new File(Goldfish.prototypePath + worldName + "/uid.dat");
-	    File lockFile = new File(Goldfish.prototypePath + worldName + "/session.lock");
+	    File uidFile = new File(Goldfish.prototypePath + worldName + "/uid.dat");;
 	    uidFile.delete();
-	    lockFile.delete();
 	    
 	    GoldfishPrototypeConfig.savePrototypeConfig(worldName);
 	}

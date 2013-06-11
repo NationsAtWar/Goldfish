@@ -83,8 +83,6 @@ public class GoldfishCommandEnter {
 		    // This file damages world loading, get rid of it
 		    File uidFile = new File(instanceName + "/uid.dat");
 		    uidFile.delete();
-		    File lockFile = new File(instanceName + "/session.lock");
-		    lockFile.delete();
 			
 			World instanceWorld = plugin.getServer().getWorld(instanceName);
 			
@@ -211,6 +209,9 @@ public class GoldfishCommandEnter {
 			
 			int itemAmount = prototypeConfig.getInt("condition.itemrequire." + itemID);
 			boolean conditionMet = false;
+			
+			if (itemAmount <= 0)
+				conditionMet = true;
 			
 			for (ItemStack itemStack : player.getInventory()) {
 				

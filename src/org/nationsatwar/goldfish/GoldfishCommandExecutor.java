@@ -154,6 +154,9 @@ public class GoldfishCommandExecutor implements CommandExecutor {
 		
 		String worldName = (args.length > 2 ? args[2] : "");
 		
+		for (int i = 3; i < args.length; i++)
+			worldName = worldName + " " + args[i];
+		
 		// PROTOTYPE - CREATE
 		
 		if (args[1].equals("create") && !worldName.equals(""))
