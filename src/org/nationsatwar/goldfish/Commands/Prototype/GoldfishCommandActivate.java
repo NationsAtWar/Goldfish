@@ -88,9 +88,9 @@ public class GoldfishCommandActivate {
 		else {
 			
 			for (Location entranceLocation : plugin.goldfishManager.getEntranceLocations(worldName))
-				entranceLocation.getBlock().setTypeId(1);
+				entranceLocation.getBlock().setTypeId(0);
 			for (Location entranceLocation : plugin.goldfishManager.getExitLocations(worldName))
-				entranceLocation.getBlock().setTypeId(1);
+				entranceLocation.getBlock().setTypeId(0);
 			
 			player.sendMessage(ChatColor.YELLOW + "Prototype " + worldName + " has been deactivated");
 		}

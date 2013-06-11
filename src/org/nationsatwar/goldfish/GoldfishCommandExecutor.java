@@ -1,7 +1,5 @@
 package org.nationsatwar.goldfish;
 
-import net.minecraft.server.v1_5_R3.BlockPortal;
-
 import org.bukkit.ChatColor;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandExecutor;
@@ -248,7 +246,5 @@ public class GoldfishCommandExecutor implements CommandExecutor {
 		// Temporary command used for debugging purposes.
 		
 		Player player = (Player) sender;
-		
-		player.sendMessage("" + BlockPortal.PORTAL.id);
 	}
 }
