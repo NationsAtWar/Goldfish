@@ -94,7 +94,7 @@ public class GoldfishCommandEnter {
 		    	instanceName = plugin.goldfishManager.createInstance(prototypeName, player.getName(), false);
 		    
 		    // This file damages world loading, get rid of it
-		    File uidFile = new File(instanceName + "\\uid.dat");
+		    File uidFile = new File(instanceName + "/uid.dat");
 		    uidFile.delete();
 			
 			World instanceWorld = plugin.getServer().getWorld(instanceName);

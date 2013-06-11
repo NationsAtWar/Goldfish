@@ -26,9 +26,9 @@ public class Goldfish extends JavaPlugin {
 	public GoldfishManager goldfishManager = new GoldfishManager(this);
 	public GoldfishHook goldfishAPI = new GoldfishHook(this);
 	
-	public static String goldfishPath = "plugins\\Goldfish\\";
-	public static String prototypePath = "plugins\\Goldfish\\prototypes\\";
-	public static String instancePath = "plugins\\Goldfish\\instances\\";
+	public static String goldfishPath = "plugins/Goldfish/";
+	public static String prototypePath = "plugins/Goldfish/prototypes/";
+	public static String instancePath = "plugins/Goldfish/instances/";
 	
 	protected GoldfishCommandExecutor commandExecutor;
 	
@@ -107,12 +107,12 @@ public class Goldfish extends JavaPlugin {
 				GoldfishInstance instance = new GoldfishInstance(this, checkFile);
 				goldfishManager.addInstance(instance);
 				
-				File instanceDataFile = new File(instancePath + checkFile + "\\instancedata.yml");
+				File instanceDataFile = new File(instancePath + checkFile + "/instancedata.yml");
 				FileConfiguration instanceConfig = YamlConfiguration.loadConfiguration(instanceDataFile);
 				
 				String prototypeName = GoldfishUtility.getPrototypeName(checkFile);
 				
-				File prototypeDataFile = new File(prototypePath + prototypeName + "\\prototypedata.yml");
+				File prototypeDataFile = new File(prototypePath + prototypeName + "/prototypedata.yml");
 				FileConfiguration prototypeConfig = YamlConfiguration.loadConfiguration(prototypeDataFile);
 		    	
 				// Reloads instance timers
@@ -129,7 +129,7 @@ public class Goldfish extends JavaPlugin {
 				int timeoutTimerAmount = prototypeConfig.getInt(GoldfishPrototypeConfig.timeoutTimerAmount);
 
 				logger("Timer Amount: " + timeoutTimerAmount);
-				logger("Data Location: " + instancePath + checkFile + "\\prototypedata.yml");
+				logger("Data Location: " + instancePath + checkFile + "/prototypedata.yml");
 				
 				if (timeoutTimerAmount > 0) {
 					
@@ -164,7 +164,7 @@ public class Goldfish extends JavaPlugin {
 			   if (world == null)
 				   continue;
 			   
-			   File dataFile = new File(instancePath + instanceName + "\\instancedata.yml");
+			   File dataFile = new File(instancePath + instanceName + "/instancedata.yml");
 			   FileConfiguration config = YamlConfiguration.loadConfiguration(dataFile);
 			   
 			   // Saves current instance timers

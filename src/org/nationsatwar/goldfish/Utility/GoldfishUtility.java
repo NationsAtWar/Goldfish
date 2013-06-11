@@ -23,12 +23,12 @@ public class GoldfishUtility {
 		if (Bukkit.getServer().getWorld(Goldfish.prototypePath + worldName) != null)
 			Bukkit.getServer().getWorld(Goldfish.prototypePath + worldName).save();
 
-	    File worldDir = new File(worldName + "\\");
-	    File protoDir = new File(Goldfish.prototypePath + worldName + "\\");
+	    File worldDir = new File(worldName + "/");
+	    File protoDir = new File(Goldfish.prototypePath + worldName + "/");
 	    
 	    copyDirectory(worldDir, protoDir);
 	    
-	    File uidFile = new File(Goldfish.prototypePath + worldName + "\\uid.dat");
+	    File uidFile = new File(Goldfish.prototypePath + worldName + "/uid.dat");
 	    uidFile.delete();
 	    
 	    GoldfishPrototypeConfig.savePrototypeConfig(worldName);
@@ -175,7 +175,7 @@ public class GoldfishUtility {
 			if (fileName.length() >= prototypeName.length() && fileName.substring(0, prototypeName.length()).equals(prototypeName) &&
 					fileName.charAt(prototypeName.length()) == '_') {
 				
-				File dataFile = new File(Goldfish.instancePath + fileName + "\\" + "instancedata.yml");
+				File dataFile = new File(Goldfish.instancePath + fileName + "/instancedata.yml");
 				
 				if (dataFile.exists()) {
 					

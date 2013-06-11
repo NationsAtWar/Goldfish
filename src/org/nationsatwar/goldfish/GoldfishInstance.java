@@ -70,7 +70,7 @@ public class GoldfishInstance implements java.io.Serializable {
 		
 		String prototypeName = GoldfishUtility.getPrototypeName(name);
 		
-    	File dataFile = new File(Goldfish.prototypePath + prototypeName + "\\prototypedata.yml");
+    	File dataFile = new File(Goldfish.prototypePath + prototypeName + "/prototypedata.yml");
     	FileConfiguration config = YamlConfiguration.loadConfiguration(dataFile);
 		
 		timeoutTimer.setTimerAmount(config.getInt(GoldfishPrototypeConfig.timeoutTimerAmount));

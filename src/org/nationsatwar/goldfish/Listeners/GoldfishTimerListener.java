@@ -42,7 +42,7 @@ public class GoldfishTimerListener implements Listener {
     	
     	for (String instanceName : plugin.goldfishManager.getInstanceNames()) {
     		
-			File instanceDataFile = new File(Goldfish.instancePath + instanceName + "\\" + "instancedata.yml");
+			File instanceDataFile = new File(Goldfish.instancePath + instanceName + "/instancedata.yml");
 						
 			if (instanceDataFile.exists()) {
 				
@@ -84,7 +84,7 @@ public class GoldfishTimerListener implements Listener {
     		
     		String prototypeName = GoldfishUtility.getPrototypeName(fromWorldName);
     		
-        	File dataFile = new File(Goldfish.prototypePath + prototypeName + "\\prototypedata.yml");
+        	File dataFile = new File(Goldfish.prototypePath + prototypeName + "/prototypedata.yml");
         	FileConfiguration config = YamlConfiguration.loadConfiguration(dataFile);
     		
     		World world = fromWorld;
@@ -128,7 +128,7 @@ public class GoldfishTimerListener implements Listener {
     		
     		String prototypeName = GoldfishUtility.getPrototypeName(toWorldName);
     		
-        	File dataFile = new File(Goldfish.prototypePath + prototypeName + "\\prototypedata.yml");
+        	File dataFile = new File(Goldfish.prototypePath + prototypeName + "/prototypedata.yml");
         	FileConfiguration config = YamlConfiguration.loadConfiguration(dataFile);
         	
     		if (!config.getBoolean(GoldfishPrototypeConfig.staticInstance)) {

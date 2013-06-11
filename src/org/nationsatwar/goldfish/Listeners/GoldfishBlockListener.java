@@ -79,7 +79,7 @@ public class GoldfishBlockListener implements Listener {
     
     private boolean determinePermission(int blockID, String permissionType, String prototypeName) {
     	
-    	File dataFile = new File(Goldfish.prototypePath + prototypeName + "\\prototypedata.yml");
+    	File dataFile = new File(Goldfish.prototypePath + prototypeName + "/prototypedata.yml");
     	FileConfiguration config = YamlConfiguration.loadConfiguration(dataFile);
     	
     	String permission = "block." + permissionType + "." + blockID;

@@ -91,7 +91,7 @@ public class GoldfishCommandLeave {
 		    }
 		    
 		    // This file damages world loading, get rid of it
-		    File uidFile = new File(instanceName + "\\uid.dat");
+		    File uidFile = new File(instanceName + "/uid.dat");
 		    uidFile.delete();
 			
 			World instanceWorld = plugin.getServer().getWorld(instanceName);
@@ -132,7 +132,7 @@ public class GoldfishCommandLeave {
 			
 			if (fileName.contains(checkName)) {
 				
-				File dataFile = new File(Goldfish.instancePath + fileName + "\\" + "instancedata.yml");
+				File dataFile = new File(Goldfish.instancePath + fileName + "/instancedata.yml");
 				
 				if (dataFile.exists()) {
 					

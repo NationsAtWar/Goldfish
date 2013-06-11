@@ -30,7 +30,7 @@ public class GoldfishCommandDelete {
 		plugin.getServer().unloadWorld(Goldfish.prototypePath + worldName, true);
 		plugin.goldfishManager.removePrototype(plugin.goldfishManager.findPrototype(worldName));
 
-	    File protoDir = new File(Goldfish.prototypePath + worldName + "\\");
+	    File protoDir = new File(Goldfish.prototypePath + worldName + "/");
 	    File protoFile = new File(Goldfish.prototypePath + worldName + ".gf");
 		
 		File baseInstanceDir = new File(Goldfish.instancePath);

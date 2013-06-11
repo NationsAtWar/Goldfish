@@ -22,7 +22,7 @@ public class GoldfishInstanceConfig {
 	
 	public static void saveInstanceConfig(String worldName) {
 
-	    File dataFile = new File(Goldfish.instancePath + worldName + "\\instancedata.yml");
+	    File dataFile = new File(Goldfish.instancePath + worldName + "/instancedata.yml");
 		
 	    FileConfiguration config = YamlConfiguration.loadConfiguration(dataFile);
 	    FileConfigurationOptions configOptions = config.options();

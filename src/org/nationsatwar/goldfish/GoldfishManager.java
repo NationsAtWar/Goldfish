@@ -128,7 +128,7 @@ public class GoldfishManager {
 	
 	public FileConfiguration getPrototypeConfig(String prototypeName) {
 		
-	    File prototypeDataFile = new File(Goldfish.prototypePath + prototypeName + "\\prototypedata.yml");
+	    File prototypeDataFile = new File(Goldfish.prototypePath + prototypeName + "/prototypedata.yml");
 	    FileConfiguration prototypeConfig = YamlConfiguration.loadConfiguration(prototypeDataFile);
 		
 		return prototypeConfig;
@@ -136,7 +136,7 @@ public class GoldfishManager {
 	
 	public void savePrototypeConfig(FileConfiguration prototypeConfig, String prototypeName) {
 		
-		try { prototypeConfig.save(Goldfish.prototypePath + prototypeName + "\\prototypedata.yml"); }
+		try { prototypeConfig.save(Goldfish.prototypePath + prototypeName + "/prototypedata.yml"); }
 		catch (IOException e) { plugin.logger("Couldn't save config file " + prototypeName + ": " + e.getMessage()); }
 	}
 	
@@ -173,7 +173,7 @@ public class GoldfishManager {
 	
 	public FileConfiguration getInstanceConfig(String instanceName) {
 		
-	    File instanceDataFile = new File(Goldfish.instancePath + instanceName + "\\instancedata.yml");
+	    File instanceDataFile = new File(Goldfish.instancePath + instanceName + "/instancedata.yml");
 	    FileConfiguration instanceConfig = YamlConfiguration.loadConfiguration(instanceDataFile);
 		
 		return instanceConfig;
@@ -181,7 +181,7 @@ public class GoldfishManager {
 	
 	public void saveInstanceConfig(FileConfiguration instanceConfig, String instanceName) {
 		
-		try { instanceConfig.save(Goldfish.instancePath + instanceName + "\\instancedata.yml"); }
+		try { instanceConfig.save(Goldfish.instancePath + instanceName + "/instancedata.yml"); }
 		catch (IOException e) { plugin.logger("Couldn't save config file " + instanceName + ": " + e.getMessage()); }
 	}
 	
@@ -209,7 +209,7 @@ public class GoldfishManager {
 			
 				instanceName = prototypeName + "_" + newID;
 				directoryName = Goldfish.instancePath + instanceName;
-				File instanceDir = new File(directoryName + "\\");
+				File instanceDir = new File(directoryName + "/");
 				
 				if (instanceDir.exists()) {
 					
@@ -218,7 +218,7 @@ public class GoldfishManager {
 				}
 
 				// Copy prototype directory
-			    File protoDir = new File(Goldfish.prototypePath + prototypeName + "\\");
+			    File protoDir = new File(Goldfish.prototypePath + prototypeName + "/");
 			    GoldfishUtility.copyDirectory(protoDir, instanceDir);
 			    
 			} else {
@@ -226,14 +226,14 @@ public class GoldfishManager {
 				instanceName = prototypeName + "_static";
 				directoryName = Goldfish.instancePath + instanceName;
 				
-				File instanceDir = new File(directoryName + "\\");
+				File instanceDir = new File(directoryName + "/");
 				
 				// Copy prototype directory
-			    File protoDir = new File(Goldfish.prototypePath + prototypeName + "\\");
+			    File protoDir = new File(Goldfish.prototypePath + prototypeName + "/");
 			    GoldfishUtility.copyDirectory(protoDir, instanceDir);
 			}
 		    
-		    File uidFile = new File(directoryName + "\\uid.dat");
+		    File uidFile = new File(directoryName + "/uid.dat");
 		    uidFile.delete();
 		    
 		    // Create Config file
@@ -275,7 +275,7 @@ public class GoldfishManager {
 		    }
 		    
 		    // Delete the copied prototypeDataFile
-		    File prototypeDataFile = new File(directoryName + "\\prototypedata.yml");
+		    File prototypeDataFile = new File(directoryName + "/prototypedata.yml");
 		    prototypeDataFile.delete();
 		    
 		    plugin.goldfishManager.saveInstanceConfig(instanceConfig, instanceName);

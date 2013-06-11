@@ -78,7 +78,7 @@ public class GoldfishPrototypeConfig {
 	
 	public static void savePrototypeConfig(String worldName) {
 		
-	    File dataFile = new File(Goldfish.prototypePath + worldName + "\\prototypedata.yml");
+	    File dataFile = new File(Goldfish.prototypePath + worldName + "/prototypedata.yml");
 		
 	    FileConfiguration config = YamlConfiguration.loadConfiguration(dataFile);
 	    FileConfigurationOptions configOptions = config.options();

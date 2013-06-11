@@ -40,7 +40,7 @@ public class GoldfishLimitListener implements Listener {
      */
     private boolean checkLimit(ChunkLoadEvent event, String prototypeName) {
 	    
-	    File dataFile = new File(Goldfish.prototypePath + prototypeName + "\\prototypedata.yml");
+	    File dataFile = new File(Goldfish.prototypePath + prototypeName + "/prototypedata.yml");
 		
 	    FileConfiguration config = YamlConfiguration.loadConfiguration(dataFile);
 	    
