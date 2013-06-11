@@ -41,6 +41,6 @@ public class GoldfishCommandCreate {
 		player.sendMessage(ChatColor.YELLOW + "Prototype " + worldName + " has been created. You may warp there at " +
 				"your convenience");
 		
-	    GoldfishUtility.saveInstance(worldName);
+	    GoldfishUtility.savePrototype(plugin, worldName);
 	}
 }

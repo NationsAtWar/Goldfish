@@ -8,25 +8,19 @@ import java.io.InputStream;
 import java.io.OutputStream;
 import java.util.logging.Logger;
 
-import org.bukkit.Bukkit;
 import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.configuration.file.YamlConfiguration;
+import org.bukkit.plugin.java.JavaPlugin;
 import org.nationsatwar.goldfish.Goldfish;
-
 
 public class GoldfishUtility {
 	
 	static Logger log = Logger.getLogger("Minecraft");
 	
-	public static void saveInstance(String worldName) {
+	public static void savePrototype(JavaPlugin plugin, String worldName) {
 		
-		if (Bukkit.getServer().getWorld(Goldfish.prototypePath + worldName) != null)
-			Bukkit.getServer().getWorld(Goldfish.prototypePath + worldName).save();
-
-	    File worldDir = new File(worldName + "/");
-	    File protoDir = new File(Goldfish.prototypePath + worldName + "/");
-	    
-	    copyDirectory(worldDir, protoDir);
+		if (plugin.getServer().getWorld(Goldfish.prototypePath + worldName) != null)
+			plugin.getServer().getWorld(Goldfish.prototypePath + worldName).save();
 	    
 	    File uidFile = new File(Goldfish.prototypePath + worldName + "/uid.dat");
 	    uidFile.delete();

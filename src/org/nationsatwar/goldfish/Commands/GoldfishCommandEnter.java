@@ -29,7 +29,7 @@ public class GoldfishCommandEnter {
 		this.plugin = plugin;
 	}
 	
-	public void execute(Player player) {
+	public boolean execute(Player player) {
 		
 		String worldName = player.getWorld().getName();
 		
@@ -38,39 +38,24 @@ public class GoldfishCommandEnter {
 		
 		for ( String prototypeName : plugin.goldfishManager.getPrototypeNames() ) {
 			
-			FileConfiguration prototypeConfig = plugin.goldfishManager.getPrototypeConfig(prototypeName);
-			
-			int entranceID = 1;
 			boolean foundEntrance = false;
+			int entranceID = 0;
 			
-			// Attempts to find a nearby entrance from the cycled prototype
-			while (true) {
-				
-				// Breaks if all numbered locations have been cycled through
-				if (!prototypeConfig.contains("entrances.location" + entranceID))
-					break;
-				
-				// Checks to see if the entrance is active and matches the player world
-				if (prototypeConfig.getBoolean("entrances.location" + entranceID + ".active") &&
-						worldName.equals(prototypeConfig.getString("entrances.location" + entranceID + ".entranceworld"))) {
-					
-					float entranceX = prototypeConfig.getInt("entrances.location" + entranceID + ".entrancex");
-					float entranceY = prototypeConfig.getInt("entrances.location" + entranceID + ".entrancey");
-					float entranceZ = prototypeConfig.getInt("entrances.location" + entranceID + ".entrancez");
-					
-					Location entranceLocation = new Location(player.getWorld(), entranceX, entranceY, entranceZ);
-
-					double entranceDistance = player.getLocation().distance(entranceLocation);
-					
-					// If the player is close enough, break and continue
-					if (entranceDistance < 10) {
-						
-						foundEntrance = true;
-						break;
-					}
-				}
+			for (Location entranceLocation : plugin.goldfishManager.getEntranceLocations(prototypeName)) {
 				
 				entranceID++;
+				
+				if (!entranceLocation.getWorld().getName().equals(worldName))
+					continue;
+				
+				double entranceDistance = player.getLocation().distance(entranceLocation);
+				
+				// If the player is close enough, break and continue
+				if (entranceDistance < 10) {
+					
+					foundEntrance = true;
+					break;
+				}
 			}
 			
 			if (!foundEntrance)
@@ -78,7 +63,9 @@ public class GoldfishCommandEnter {
 			
 			// Check to see if all the conditions have been met
 			if (!checkConditions(prototypeName, player))
-				return;
+				return false;
+			
+			FileConfiguration prototypeConfig = plugin.goldfishManager.getPrototypeConfig(prototypeName);
 			
 			// Sets the instance location to teleport the player to
 			float instanceX = prototypeConfig.getInt("entrances.location" + entranceID + ".instancex");
@@ -113,12 +100,16 @@ public class GoldfishCommandEnter {
 			if (prototypeConfig.getBoolean(GoldfishPrototypeConfig.equipmentStore))
 				storeInventory(instanceName, player);
 			
+			instanceLocation.getBlock().setTypeId(90);
+			
 			player.teleport(instanceLocation);
 			
-			return;
+			return true;
 		}
 		
 		player.sendMessage(ChatColor.YELLOW + "There is no entrance located here.");
+		
+		return false;
 	}
 	
 	private void storeInventory(String instanceName, Player player) {

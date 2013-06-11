@@ -8,6 +8,7 @@ import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 
 import org.bukkit.Location;
 import org.bukkit.World;
@@ -25,12 +26,16 @@ public class GoldfishManager {
 	private HashMap<String, GoldfishPrototype> prototypes;
 	private HashMap<String, GoldfishInstance> instances;
 
+	private HashMap<String, GoldfishPortalTimer> portalTimers;
+
 	public GoldfishManager(Goldfish plugin) {
 		
 		this.plugin = plugin;
 		
 		prototypes = new HashMap<String, GoldfishPrototype>();
 		instances = new HashMap<String, GoldfishInstance>();
+		
+		portalTimers = new HashMap<String, GoldfishPortalTimer>();
 	}
 	
 	// Saving and Loading only affects Prototypes. Instances are handled completely through config files.
@@ -311,5 +316,97 @@ public class GoldfishManager {
 		
 		try { GoldfishUtility.deleteDirectory(instanceDir); }
 		catch (IOException e) {	plugin.logger("Couldn't delete directory: " + e.getMessage()); }
+	}
+	
+	public List<Location> getEntranceLocations(String prototypeName) {
+		
+		List<Location> entranceLocations = new ArrayList<Location>();
+		
+		FileConfiguration prototypeConfig = plugin.goldfishManager.getPrototypeConfig(prototypeName);
+		
+		int entranceID = 1;
+		
+		while (true) {
+			
+			// Breaks if all numbered locations have been cycled through
+			if (!prototypeConfig.contains("entrances.location" + entranceID))
+				break;
+			
+			// Checks to see if the entrance is active and matches the player world
+			if (prototypeConfig.getBoolean("entrances.location" + entranceID + ".active")) {
+
+				String entranceWorld = prototypeConfig.getString("entrances.location" + entranceID + ".entranceworld");
+				
+				float entranceX = prototypeConfig.getInt("entrances.location" + entranceID + ".entrancex");
+				float entranceY = prototypeConfig.getInt("entrances.location" + entranceID + ".entrancey");
+				float entranceZ = prototypeConfig.getInt("entrances.location" + entranceID + ".entrancez");
+				
+				Location entranceLocation = new Location(plugin.getServer().getWorld(entranceWorld), entranceX, entranceY, entranceZ);
+				
+				entranceLocations.add(entranceLocation);
+			}
+			
+			entranceID++;
+		}
+		
+		return entranceLocations;
+	}
+	
+	public List<Location> getExitLocations(String prototypeName) {
+		
+		List<Location> exitLocations = new ArrayList<Location>();
+		
+		FileConfiguration prototypeConfig = plugin.goldfishManager.getPrototypeConfig(prototypeName);
+		
+		int exitID = 1;
+		
+		while (true) {
+			
+			// Breaks if all numbered locations have been cycled through
+			if (!prototypeConfig.contains("exits.location" + exitID))
+				break;
+			
+			// Checks to see if the exit is active and matches the player world
+			if (prototypeConfig.getBoolean("exits.location" + exitID + ".active")) {
+
+				String exitWorld = prototypeConfig.getString("exits.location" + exitID + ".exitworld");
+				
+				float exitX = prototypeConfig.getInt("exits.location" + exitID + ".exitx");
+				float exitY = prototypeConfig.getInt("exits.location" + exitID + ".exity");
+				float exitZ = prototypeConfig.getInt("exits.location" + exitID + ".exitz");
+				
+				Location exitLocation = new Location(plugin.getServer().getWorld(exitWorld), exitX, exitY, exitZ);
+				
+				exitLocations.add(exitLocation);
+			}
+			
+			exitID++;
+		}
+		
+		return exitLocations;
+	}
+	
+	// Portal Timers
+	public void addPortalTimer(String playerName, GoldfishPortalTimer portalTimer) {
+		
+		portalTimers.put(playerName, portalTimer);
+	}
+	
+	public void removePortalTimer(String playerName) {
+		
+		portalTimers.remove(playerName);
+	}
+	
+	public GoldfishPortalTimer getPortalTimer(String playerName) {
+		
+		return portalTimers.get(playerName);
+	}
+	
+	public boolean doesPortalTimerExist(String playerName) {
+		
+		if (portalTimers.containsKey(playerName))
+			return true;
+		else
+			return false;
 	}
 }

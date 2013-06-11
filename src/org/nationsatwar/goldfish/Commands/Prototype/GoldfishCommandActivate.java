@@ -74,11 +74,25 @@ public class GoldfishCommandActivate {
 	    prototypeConfig.set(GoldfishPrototypeConfig.exitsLocation1InstanceZ, (int) instance.getEntranceLocation().getZ());
 	    
 	    plugin.goldfishManager.savePrototypeConfig(prototypeConfig, worldName);
-		GoldfishUtility.saveInstance(worldName);
+		GoldfishUtility.savePrototype(plugin, worldName);
 		
-		if (instance.isActivated())
+		if (instance.isActivated()) {
+			
+			for (Location entranceLocation : plugin.goldfishManager.getEntranceLocations(worldName))
+				entranceLocation.getBlock().setTypeId(90);
+			for (Location entranceLocation : plugin.goldfishManager.getExitLocations(worldName))
+				entranceLocation.getBlock().setTypeId(90);
+			
 			player.sendMessage(ChatColor.YELLOW + "Prototype " + worldName + " has been activated");
-		else
+		}
+		else {
+			
+			for (Location entranceLocation : plugin.goldfishManager.getEntranceLocations(worldName))
+				entranceLocation.getBlock().setTypeId(1);
+			for (Location entranceLocation : plugin.goldfishManager.getExitLocations(worldName))
+				entranceLocation.getBlock().setTypeId(1);
+			
 			player.sendMessage(ChatColor.YELLOW + "Prototype " + worldName + " has been deactivated");
+		}
 	}
 }

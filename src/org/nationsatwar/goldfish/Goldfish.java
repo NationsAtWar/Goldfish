@@ -11,6 +11,7 @@ import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.configuration.file.YamlConfiguration;
 import org.bukkit.plugin.java.JavaPlugin;
 import org.nationsatwar.goldfish.Listeners.GoldfishBlockListener;
+import org.nationsatwar.goldfish.Listeners.GoldfishInstanceListener;
 import org.nationsatwar.goldfish.Listeners.GoldfishLimitListener;
 import org.nationsatwar.goldfish.Listeners.GoldfishRespawnListener;
 import org.nationsatwar.goldfish.Listeners.GoldfishTimerListener;
@@ -40,6 +41,7 @@ public class Goldfish extends JavaPlugin {
 		
 		getServer().getPluginManager().registerEvents(new GoldfishBlockListener(this), this);
 		getServer().getPluginManager().registerEvents(new GoldfishLimitListener(this), this);
+		getServer().getPluginManager().registerEvents(new GoldfishInstanceListener(this), this);
 		getServer().getPluginManager().registerEvents(new GoldfishRespawnListener(this), this);
 		getServer().getPluginManager().registerEvents(new GoldfishTimerListener(this), this);
 		

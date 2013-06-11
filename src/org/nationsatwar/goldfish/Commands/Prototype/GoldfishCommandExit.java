@@ -23,7 +23,7 @@ public class GoldfishCommandExit {
 				plugin.goldfishManager.findPrototype(prototypeName).setNewExitLocation(player.getLocation());
 			    
 				player.sendMessage(ChatColor.YELLOW + "Prototype " + prototypeName + "'s exit location has been set.");
-				GoldfishUtility.saveInstance(prototypeName);
+				GoldfishUtility.savePrototype(plugin, prototypeName);
 				return;
 			}
 

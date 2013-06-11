@@ -37,7 +37,7 @@ public class GoldfishCommandLeave {
 			FileConfiguration prototypeConfig = plugin.goldfishManager.getPrototypeConfig(prototypeName);
 			
 			int exitID = 1;
-			boolean foundEntrance = false;
+			boolean foundExit = false;
 			
 			// Attempts to find a nearby entrance from the cycled prototype
 			while (true) {
@@ -60,7 +60,7 @@ public class GoldfishCommandLeave {
 					// If the player is close enough, break and continue
 					if (entranceDistance < 10) {
 						
-						foundEntrance = true;
+						foundExit = true;
 						break;
 					}
 				}
@@ -68,7 +68,7 @@ public class GoldfishCommandLeave {
 				exitID++;
 			}
 			
-			if (!foundEntrance)
+			if (!foundExit)
 				continue;
 			
 			// Sets the instance location to teleport the player to

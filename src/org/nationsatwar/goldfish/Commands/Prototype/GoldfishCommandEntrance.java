@@ -25,6 +25,6 @@ public class GoldfishCommandEntrance {
 		plugin.goldfishManager.findPrototype(worldName).setNewEntranceLocation(player.getLocation());
 
 		player.sendMessage(ChatColor.YELLOW + "Prototype " + worldName + "'s entrance location has been set.");
-		GoldfishUtility.saveInstance(worldName);
+		GoldfishUtility.savePrototype(plugin, worldName);
 	}
 }

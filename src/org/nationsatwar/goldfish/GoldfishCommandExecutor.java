@@ -1,14 +1,13 @@
 package org.nationsatwar.goldfish;
 
-import java.util.Calendar;
-import java.util.Date;
-import java.util.GregorianCalendar;
+import net.minecraft.server.v1_5_R3.BlockPortal;
 
 import org.bukkit.ChatColor;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandExecutor;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
+
 import org.nationsatwar.goldfish.Commands.GoldfishCommandEnter;
 import org.nationsatwar.goldfish.Commands.GoldfishCommandLeave;
 import org.nationsatwar.goldfish.Commands.GoldfishCommandList;
@@ -19,8 +18,6 @@ import org.nationsatwar.goldfish.Commands.Prototype.GoldfishCommandEntrance;
 import org.nationsatwar.goldfish.Commands.Prototype.GoldfishCommandExit;
 import org.nationsatwar.goldfish.Commands.Prototype.GoldfishCommandUpdate;
 import org.nationsatwar.goldfish.Commands.Prototype.GoldfishCommandWarp;
-
-
 
 public class GoldfishCommandExecutor implements CommandExecutor {
 	
@@ -252,11 +249,6 @@ public class GoldfishCommandExecutor implements CommandExecutor {
 		
 		Player player = (Player) sender;
 		
-		Date date = new Date();   // given date
-		Calendar calendar = GregorianCalendar.getInstance(); // creates a new calendar instance
-		calendar.setTime(date);   // assigns calendar to given date 
-		calendar.get(Calendar.HOUR_OF_DAY); // gets hour in 24h format
-		
-		player.sendMessage(calendar.get(Calendar.HOUR_OF_DAY) + calendar.get(Calendar.MINUTE) + "");
+		player.sendMessage("" + BlockPortal.PORTAL.id);
 	}
 }
