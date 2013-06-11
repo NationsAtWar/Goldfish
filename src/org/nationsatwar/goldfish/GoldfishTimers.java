@@ -24,8 +24,6 @@ public class GoldfishTimers extends BukkitRunnable {
 
 	public void run() {
 		
-		plugin.logger("Timer: " + timer);
-		
 		if (!active)
 			return;
 		

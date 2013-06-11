@@ -21,8 +21,6 @@ public class GoldfishPortalTimer extends BukkitRunnable {
 		
 		timer--;
 		
-		plugin.logger(playerName + ": " + timer);
-		
 		if (timer <= 0) {
 			
 			plugin.goldfishManager.removePortalTimer(playerName);
