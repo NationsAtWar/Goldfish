@@ -45,8 +45,12 @@ public class GoldfishCommandEnter {
 				
 				entranceID++;
 				
-				if (!entranceLocation.getWorld().getName().equals(worldName))
+				if (!entranceLocation.getWorld().getName().equals(worldName) &&
+						entranceLocation.getWorld().getName().length() == worldName.length())
 					continue;
+				
+				plugin.logger("Entrance World: " + entranceLocation.getWorld().getName());
+				plugin.logger("Player World: " + player.getLocation().getWorld().getName());
 				
 				double entranceDistance = player.getLocation().distance(entranceLocation);
 				
