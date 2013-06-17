@@ -58,7 +58,7 @@ public class GoldfishCommandLeave {
 					double entranceDistance = player.getLocation().distance(exitLocation);
 					
 					// If the player is close enough, break and continue
-					if (entranceDistance < 10) {
+					if (entranceDistance < 3) {
 						
 						foundExit = true;
 						break;

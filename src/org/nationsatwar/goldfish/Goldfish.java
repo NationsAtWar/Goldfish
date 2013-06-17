@@ -19,7 +19,6 @@ import org.nationsatwar.goldfish.Utility.GoldfishInstanceConfig;
 import org.nationsatwar.goldfish.Utility.GoldfishPrototypeConfig;
 import org.nationsatwar.goldfish.Utility.GoldfishUtility;
 
-
 public class Goldfish extends JavaPlugin {
 	
 	public HashMap<String, GoldfishHook> goldfishHooks;

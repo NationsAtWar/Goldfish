@@ -45,17 +45,17 @@ public class GoldfishCommandEnter {
 				
 				entranceID++;
 				
-				if (!entranceLocation.getWorld().getName().equals(worldName) &&
-						entranceLocation.getWorld().getName().length() == worldName.length())
+				if (!entranceLocation.getWorld().getName().equals(worldName))
 					continue;
 				
 				plugin.logger("Entrance World: " + entranceLocation.getWorld().getName());
 				plugin.logger("Player World: " + player.getLocation().getWorld().getName());
+				plugin.logger("World Name: " + worldName);
 				
 				double entranceDistance = player.getLocation().distance(entranceLocation);
 				
 				// If the player is close enough, break and continue
-				if (entranceDistance < 10) {
+				if (entranceDistance < 3) {
 					
 					foundEntrance = true;
 					break;
