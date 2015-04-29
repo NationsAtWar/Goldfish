@@ -1,0 +1,19 @@
+name: Goldfish
+main: org.nationsatwar.goldfish.Goldfish
+version: 1.0
+
+commands:
+  instance:
+    description: Lists all Goldfish commands.
+    permission: Goldfish.basic
+    usage: /<command>
+  goldfish:
+    description: Lists all Goldfish commands.
+    permission: Goldfish.basic
+    usage: /<command>
+    
+permissions:
+  goldfish.*:
+    description: Gives access to all goldfish commands
+  instance.*:
+    description: Gives access to all goldfish commands
