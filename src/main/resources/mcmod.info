@@ -1,0 +1,16 @@
+[
+{
+  "modid": "babble",
+  "name": "Babble",
+  "description": "Chat Mod",
+  "version": "${version}",
+  "mcversion": "${mcversion}",
+  "url": "www.nationsatwar.org",
+  "updateUrl": "",
+  "authorList": ["Aculem"],
+  "credits": "The Forge and FML guys, for making this example",
+  "logoFile": "",
+  "screenshots": [],
+  "dependencies": []
+}
+]
