@@ -30,6 +30,6 @@ public class PrototypeProvider extends WorldProvider {
 	
 	public String getSaveFolder() {
 		
-		return (dimensionId == 0 ? null : "/proto_" + dimensionName);
+		return (dimensionId == 0 ? null : "Prototype_" + dimensionName);
 	}
 }

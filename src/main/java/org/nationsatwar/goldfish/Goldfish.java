@@ -12,6 +12,7 @@ import net.minecraftforge.fml.common.event.FMLPostInitializationEvent;
 import net.minecraftforge.fml.common.event.FMLPreInitializationEvent;
 
 import org.nationsatwar.goldfish.events.DebugEvents;
+import org.nationsatwar.goldfish.prototypes.PrototypeManager;
 import org.nationsatwar.goldfish.proxy.CommonProxy;
  
 @Mod(modid = Goldfish.MODID, 
@@ -39,18 +40,6 @@ public class Goldfish {
 	
 	@EventHandler
 	public void preInit(FMLPreInitializationEvent event) {
-		
-		// Create necessary folders
-		File goldfishDirectory = new File(goldfishPath);
-		File prototypeDirectory = new File(prototypePath);
-		File instanceDirectory = new File(instancePath);
-		
-		if (!goldfishDirectory.exists())
-			goldfishDirectory.mkdir();
-		if (!prototypeDirectory.exists())
-			prototypeDirectory.mkdir();
-		if (!instanceDirectory.exists())
-			instanceDirectory.mkdir();
 	}
 	
 	@EventHandler
@@ -66,6 +55,16 @@ public class Goldfish {
 	@EventHandler
 	public void postInit(FMLPostInitializationEvent event) {
 		
+		// Create necessary folders
+		File goldfishDirectory = new File(goldfishPath);
+		File prototypeDirectory = new File(prototypePath);
+		File instanceDirectory = new File(instancePath);
 		
+		if (!goldfishDirectory.exists())
+			goldfishDirectory.mkdir();
+		if (!prototypeDirectory.exists())
+			prototypeDirectory.mkdir();
+		if (!instanceDirectory.exists())
+			instanceDirectory.mkdir();
 	}
 }

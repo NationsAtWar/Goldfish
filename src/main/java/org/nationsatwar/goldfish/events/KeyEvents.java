@@ -1,6 +1,5 @@
 package org.nationsatwar.goldfish.events;
 
-import net.minecraftforge.common.DimensionManager;
 import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
 import net.minecraftforge.fml.common.gameevent.InputEvent;
 
@@ -14,10 +13,7 @@ public class KeyEvents {
 		
 		if (ClientProxy.debugKey.isPressed()) {
 			
-			PrototypeManager.addPrototype("Test6");
-			
-			for (int dimensionID : DimensionManager.getIDs())
-				System.out.println(DimensionManager.getProvider(dimensionID).getDimensionName());
+			PrototypeManager.loadPrototypes();
 		}
 	}
 }

@@ -1,4 +1,4 @@
-package org.nationsatwar.goldfish;
+package org.nationsatwar.goldfish.util;
 
 import net.minecraft.entity.Entity;
 import net.minecraft.world.Teleporter;

@@ -7,9 +7,9 @@ import net.minecraft.world.WorldServer;
 import net.minecraftforge.event.world.BlockEvent;
 import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
 
-import org.nationsatwar.goldfish.TeleporterFix;
 import org.nationsatwar.goldfish.prototypes.Prototype;
 import org.nationsatwar.goldfish.prototypes.PrototypeManager;
+import org.nationsatwar.goldfish.util.TeleporterFix;
 
 public class DebugEvents {
 	
@@ -18,9 +18,8 @@ public class DebugEvents {
 		
 		if (event.state.getBlock().getMaterial().equals(Material.grass)) {
 			
-			Prototype prototype = PrototypeManager.getPrototype("Test6");
+			Prototype prototype = PrototypeManager.getPrototype("Test5");
 			
-			System.out.println(prototype == null);
 			int dimensionID = prototype.getPrototypeID();
 			
 			WorldServer worldServer = MinecraftServer.getServer().worldServerForDimension(dimensionID);
