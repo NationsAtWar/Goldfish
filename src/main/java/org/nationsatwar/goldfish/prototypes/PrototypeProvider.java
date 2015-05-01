@@ -4,6 +4,8 @@ import net.minecraft.world.WorldProvider;
 import net.minecraft.world.biome.BiomeGenBase;
 import net.minecraft.world.biome.WorldChunkManagerHell;
 
+import org.nationsatwar.goldfish.Goldfish;
+
 public class PrototypeProvider extends WorldProvider {
 	
 	private String dimensionName;
@@ -16,6 +18,7 @@ public class PrototypeProvider extends WorldProvider {
 		
 		Prototype prototype = PrototypeManager.getPrototype(this.dimensionId);
 		this.dimensionName = prototype.getPrototypeName();
+		this.setDimension(prototype.getPrototypeID());
 	}
 	
 	public String getDimensionName() {
@@ -30,6 +33,6 @@ public class PrototypeProvider extends WorldProvider {
 	
 	public String getSaveFolder() {
 		
-		return (dimensionId == 0 ? null : "Prototype_" + dimensionName);
+		return (dimensionId == 0 ? null : Goldfish.prototypePath + "Prototype_" + dimensionName);
 	}
 }

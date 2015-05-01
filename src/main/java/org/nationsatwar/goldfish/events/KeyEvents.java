@@ -1,9 +1,11 @@
 package org.nationsatwar.goldfish.events;
 
+import net.minecraft.client.Minecraft;
+import net.minecraft.client.entity.EntityPlayerSP;
 import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
 import net.minecraftforge.fml.common.gameevent.InputEvent;
 
-import org.nationsatwar.goldfish.prototypes.PrototypeManager;
+import org.nationsatwar.goldfish.Goldfish;
 import org.nationsatwar.goldfish.proxy.ClientProxy;
 
 public class KeyEvents {
@@ -13,7 +15,8 @@ public class KeyEvents {
 		
 		if (ClientProxy.debugKey.isPressed()) {
 			
-			PrototypeManager.loadPrototypes();
+			EntityPlayerSP player = Minecraft.getMinecraft().thePlayer;			
+			player.openGui(Goldfish.instance, 20, player.getEntityWorld(), 0, 0, 0);
 		}
 	}
 }
