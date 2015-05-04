@@ -1,21 +1,30 @@
 package org.nationsatwar.goldfish.gui;
 
+import java.io.IOException;
+
 import net.minecraft.client.entity.EntityPlayerSP;
 import net.minecraft.client.gui.GuiButton;
 import net.minecraft.client.gui.GuiScreen;
+import net.minecraft.client.gui.GuiTextField;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.util.ResourceLocation;
 import net.minecraft.world.World;
 
+import org.lwjgl.opengl.GL11;
 import org.nationsatwar.goldfish.Goldfish;
 import org.nationsatwar.goldfish.packets.PacketPrototype;
 
 public class DebugGUI extends GuiScreen {
 	
+	private final static int maxPrototypeName = 20;
+	
 	private ResourceLocation backgroundimage = new ResourceLocation(Goldfish.MODID + ":" + 
 			"textures/client/gui/GuiBackground.png");
 	
 	private EntityPlayer player;
+	
+	private GuiTextField prototypeName;
+	private String errorText = "";
 	
 	private int windowX, windowY, windowWidth, windowHeight;
 	
@@ -30,27 +39,62 @@ public class DebugGUI extends GuiScreen {
 	@Override
 	public void initGui() {
 		
-		windowWidth = 256;
-		windowHeight = 192;
+		windowWidth = 140;
+		windowHeight = 180;
 		windowX = (width - windowWidth) / 2;
 		windowY = (height - windowHeight) / 2 - 20;
 		
 		buttonList.clear();
 		
-		GuiButton createPrototype = new GuiButton(0, windowX + 10, windowY + 30, 120, 20, "Create Prototype");
+		GuiButton listPrototypes = new GuiButton(0, windowX + 20, windowY + 40, 100, 20, "Prototype List");
+		buttonList.add(listPrototypes);
+		
+		GuiButton createPrototype = new GuiButton(1, windowX + 20, windowY + 100, 100, 20, "Create Prototype");
 		buttonList.add(createPrototype);
+		
+		prototypeName = new GuiTextField(1, fontRendererObj, windowX + 20, windowY + 130, 100, 20);
+		prototypeName.setMaxStringLength(maxPrototypeName);
+		prototypeName.setText("");
+		prototypeName.setFocused(true);
+	}
+	
+	@Override
+	protected void keyTyped(char par1, int par2) throws IOException {
+		
+		super.keyTyped(par1, par2);
+		prototypeName.textboxKeyTyped(par1, par2);
+	}
+	
+	@Override
+	public void updateScreen() {
+		
+		super.updateScreen();
+		prototypeName.updateCursorCounter();
 	}
 	
 	@Override
 	public void drawScreen(int mouseX, int mouseY, float renderPartialTicks) {
 		
 		// Draws the background window
-		this.mc.getTextureManager().bindTexture(backgroundimage);
+		mc.getTextureManager().bindTexture(backgroundimage);
 		drawTexturedModalRect(windowX, windowY, 0, 0, windowWidth,  windowHeight);
+		prototypeName.drawTextBox();
 		
-		drawString(fontRendererObj, "Plot Management", windowX + 10, windowY + 10, 0xEE8888);
+		GL11.glPushMatrix();
+		GL11.glScaled(2, 2, 2);
+		drawString(fontRendererObj, "Goldfish", (windowX + 30) / 2, (windowY + 15) / 2, 0xCCAA22);
+		GL11.glPopMatrix();
+		
+		drawString(fontRendererObj, errorText, windowX + 10, windowY + 160, 0xCC2222);
 		
 		super.drawScreen(mouseX, mouseY, renderPartialTicks);
+	}
+	
+	@Override
+	protected void mouseClicked(int x, int y, int btn) throws IOException {
+		
+		super.mouseClicked(x, y, btn);
+		prototypeName.mouseClicked(x, y, btn);
 	}
 	
 	@Override
@@ -67,8 +111,23 @@ public class DebugGUI extends GuiScreen {
 		// Creates Prototype
 		if (button.id == 0) {
 			
-			Goldfish.channel.sendToServer(new PacketPrototype("Test", 0));
+			System.out.println();
+			Goldfish.channel.sendToServer(new PacketPrototype(prototypeName.getText(), 0));
 			playerSP.closeScreen();
+		}
+		
+		// Creates Prototype
+		if (button.id == 1) {
+			
+			if (prototypeName.getText().matches("[A-Za-z0-9_\\-\\s]+")) {
+				
+				Goldfish.channel.sendToServer(new PacketPrototype(prototypeName.getText(), 0));
+				playerSP.closeScreen();
+			}
+			else if (prototypeName.getText() == "")
+				errorText = "Enter a prototype name";
+			else
+				errorText = "Enter valid characters";
 		}
 	}
 }

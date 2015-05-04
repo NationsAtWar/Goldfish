@@ -66,12 +66,9 @@ public class PrototypeManager {
 		
 		if (mapData == null) {
 			
-			System.out.println("Map Data Null");
 			mapData = new PrototypeMapData(prototypeName);
 			worldServer.getPerWorldStorage().setData(prototypeName, mapData);
 		}
-		
-		System.out.println(mapData.getData().getString("lol"));
 		
 		//mapData.getData().setString("lol", "You fucker");
 		//mapData.setDirty(true);

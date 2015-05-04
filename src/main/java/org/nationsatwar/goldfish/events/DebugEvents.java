@@ -13,7 +13,6 @@ import org.nationsatwar.goldfish.Goldfish;
 import org.nationsatwar.goldfish.packets.PacketPrototype;
 import org.nationsatwar.goldfish.prototypes.Prototype;
 import org.nationsatwar.goldfish.prototypes.PrototypeManager;
-import org.nationsatwar.goldfish.prototypes.PrototypeMapData;
 import org.nationsatwar.goldfish.util.TeleporterFix;
 
 public class DebugEvents {
@@ -34,9 +33,6 @@ public class DebugEvents {
 			if (prototype.getMapData().getData().getString("Test") == null)
 				return;
 			
-			System.out.println(prototype.getMapData().getData().getString("Test"));
-			
-			/*
 			int dimensionID = prototype.getPrototypeID();
 			
 			WorldServer worldServer = MinecraftServer.getServer().worldServerForDimension(dimensionID);
@@ -45,7 +41,6 @@ public class DebugEvents {
 					dimensionID, new TeleporterFix(worldServer));
 			
 			event.getPlayer().posY += 2;
-			*/
 		}
 	}
 	
