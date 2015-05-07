@@ -4,6 +4,7 @@ import java.io.File;
 import java.util.HashMap;
 import java.util.Map;
 
+import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.entity.player.EntityPlayerMP;
 import net.minecraft.server.MinecraftServer;
 import net.minecraft.world.WorldServer;
@@ -15,6 +16,8 @@ import org.nationsatwar.goldfish.packets.PacketCreatePrototype;
 public class PrototypeManager {
 	
 	public final static int MAX_PROTOTYPE_NAME_LENGTH = 20;
+	
+	public static Map<Integer, EntityPlayer> prepPlayers = new HashMap<Integer, EntityPlayer>();
 	
 	private static String createPrototypeName;
 	private static Prototype activePrototype;

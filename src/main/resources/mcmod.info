@@ -1,14 +1,14 @@
 [
 {
-  "modid": "babble",
-  "name": "Babble",
-  "description": "Chat Mod",
+  "modid": "goldfish",
+  "name": "Goldfish",
+  "description": "Instances",
   "version": "${version}",
   "mcversion": "${mcversion}",
   "url": "www.nationsatwar.org",
   "updateUrl": "",
   "authorList": ["Aculem"],
-  "credits": "The Forge and FML guys, for making this example",
+  "credits": "The Nations at War staff",
   "logoFile": "",
   "screenshots": [],
   "dependencies": []

@@ -77,6 +77,7 @@ public class DeleteConfirmGUI extends GuiScreen {
 			ChatMessage.sendMessage(player, "Prototype: '" + prototypeName + "' has been deleted.");
 		}
 		
+		System.out.println(player.worldObj.provider.getDimensionName());
 		player.openGui(Goldfish.instance, GUIHandler.MAIN_GUI_ID, player.getEntityWorld(), 0, 0, 0);
 	}
 }

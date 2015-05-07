@@ -58,16 +58,16 @@ public class ListGUI extends GuiScreen {
 		GuiButton renamePrototype = new GuiButton(2, windowX + 10, windowY + 62, 60, 20, "Rename");
 		buttonList.add(renamePrototype);
 		
-		GuiButton deletePrototype = new GuiButton(6, windowX + 72, windowY + 62, 60, 20, "Delete");
+		GuiButton deletePrototype = new GuiButton(3, windowX + 72, windowY + 62, 60, 20, "Delete");
 		buttonList.add(deletePrototype);
 		
-		GuiButton warpToPrototype = new GuiButton(3, windowX + 20, windowY + 84, 100, 20, "Warp to Prototype");
+		GuiButton warpToPrototype = new GuiButton(4, windowX + 20, windowY + 84, 100, 20, "Warp to Prototype");
 		buttonList.add(warpToPrototype);
 		
-		GuiButton prototypeTeleports = new GuiButton(4, windowX + 20, windowY + 106, 100, 20, "Teleports List");
+		GuiButton prototypeTeleports = new GuiButton(5, windowX + 20, windowY + 106, 100, 20, "Teleports List");
 		buttonList.add(prototypeTeleports);
 		
-		GuiButton prototypeConfig = new GuiButton(5, windowX + 20, windowY + 128, 100, 20, "Configure");
+		GuiButton prototypeConfig = new GuiButton(6, windowX + 20, windowY + 128, 100, 20, "Configure");
 		buttonList.add(prototypeConfig);
 		
 		if (PrototypeManager.getPrototypeByIndex(prototypePage - 1) != null) {
@@ -138,7 +138,6 @@ public class ListGUI extends GuiScreen {
 			
 			String playerUUID = player.getUniqueID().toString();
 			Goldfish.channel.sendToServer(new PacketWarpPlayer(playerUUID, PrototypeManager.getActivePrototype().getPrototypeName()));
-			player.closeScreen();
 		}
 		
 		// Teleports Menu

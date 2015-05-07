@@ -14,8 +14,11 @@ public class PrototypeProvider extends WorldProvider {
 	
 	public void registerWorldChunkManager() {
 		
-		worldChunkMgr = new WorldChunkManagerHell(BiomeGenBase.taiga, 0.8F);
+		worldChunkMgr = new WorldChunkManagerHell(BiomeGenBase.extremeHills, 0.8F);
 		
+		worldChunkMgr.cleanupCache();
+		
+		System.out.println(this.dimensionName);
 		Prototype prototype = PrototypeManager.getPrototype(this.dimensionId);
 		this.dimensionName = prototype.getPrototypeName();
 		this.setDimension(prototype.getPrototypeID());

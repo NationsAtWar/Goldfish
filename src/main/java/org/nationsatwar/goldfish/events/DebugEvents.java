@@ -1,13 +1,14 @@
 package org.nationsatwar.goldfish.events;
 
-import net.minecraft.block.material.Material;
+import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.entity.player.EntityPlayerMP;
 import net.minecraft.server.MinecraftServer;
 import net.minecraft.world.WorldServer;
-import net.minecraftforge.event.world.BlockEvent;
 import net.minecraftforge.event.world.WorldEvent;
 import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
 import net.minecraftforge.fml.common.gameevent.PlayerEvent.PlayerLoggedInEvent;
+import net.minecraftforge.fml.common.gameevent.TickEvent.ServerTickEvent;
+import net.minecraftforge.fml.relauncher.Side;
 
 import org.nationsatwar.goldfish.Goldfish;
 import org.nationsatwar.goldfish.packets.PacketCreatePrototype;
@@ -18,11 +19,30 @@ import org.nationsatwar.goldfish.util.TeleporterFix;
 public class DebugEvents {
 	
 	@SubscribeEvent
-	public void breakBlockEvent(BlockEvent.BreakEvent event) {
+	public void breakBlockEvent(ServerTickEvent event) {
+		
+		if (event.side == Side.SERVER && PrototypeManager.prepPlayers.size() > 0) {
+			
+			for (int prototypeID : PrototypeManager.prepPlayers.keySet()) {
+
+				EntityPlayer player = PrototypeManager.prepPlayers.get(prototypeID);
+				
+				WorldServer worldServer = MinecraftServer.getServer().worldServerForDimension(prototypeID);
+				
+				MinecraftServer.getServer().getConfigurationManager().transferPlayerToDimension((EntityPlayerMP) player, 
+						prototypeID, new TeleporterFix(worldServer));
+				
+				player.posY += 2;
+				
+				PrototypeManager.prepPlayers.remove(prototypeID);
+				return;
+			}
+		}
+		/*
 		
 		if (event.state.getBlock().getMaterial().equals(Material.grass)) {
 			
-			Prototype prototype = PrototypeManager.getPrototype("Test");
+			Prototype prototype = PrototypeManager.getPrototype("Test 5");
 			
 			if (prototype == null)
 				return;
@@ -41,7 +61,7 @@ public class DebugEvents {
 					dimensionID, new TeleporterFix(worldServer));
 			
 			event.getPlayer().posY += 2;
-		}
+		*/
 	}
 	
 	@SubscribeEvent
