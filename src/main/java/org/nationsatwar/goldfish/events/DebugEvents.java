@@ -10,7 +10,7 @@ import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
 import net.minecraftforge.fml.common.gameevent.PlayerEvent.PlayerLoggedInEvent;
 
 import org.nationsatwar.goldfish.Goldfish;
-import org.nationsatwar.goldfish.packets.PacketPrototype;
+import org.nationsatwar.goldfish.packets.PacketCreatePrototype;
 import org.nationsatwar.goldfish.prototypes.Prototype;
 import org.nationsatwar.goldfish.prototypes.PrototypeManager;
 import org.nationsatwar.goldfish.util.TeleporterFix;
@@ -55,8 +55,8 @@ public class DebugEvents {
 	public void playerLoginEvent(PlayerLoggedInEvent event) {
 		
 		if (!event.player.worldObj.isRemote)
-			for (Prototype prototype : PrototypeManager.prototypeList.values())
-				Goldfish.channel.sendTo(new PacketPrototype(prototype.getPrototypeName(), prototype.getPrototypeID()), 
+			for (Prototype prototype : PrototypeManager.getAllPrototypes().values())
+				Goldfish.channel.sendTo(new PacketCreatePrototype(prototype.getPrototypeName(), prototype.getPrototypeID()), 
 						(EntityPlayerMP) event.player);
 	}
 }

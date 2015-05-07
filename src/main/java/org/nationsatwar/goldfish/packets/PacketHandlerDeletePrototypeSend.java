@@ -6,12 +6,12 @@ import net.minecraftforge.fml.common.network.simpleimpl.MessageContext;
 
 import org.nationsatwar.goldfish.prototypes.PrototypeManager;
 
-public class PacketHandlerPrototypeSend implements IMessageHandler<PacketPrototype, IMessage> {
+public class PacketHandlerDeletePrototypeSend implements IMessageHandler<PacketDeletePrototype, IMessage> {
 
 	@Override
-	public IMessage onMessage(PacketPrototype message, MessageContext ctx) {
+	public IMessage onMessage(PacketDeletePrototype message, MessageContext ctx) {
 		
-		PrototypeManager.addPrototype(message.prototypeName);
+		PrototypeManager.deletePrototype(message.prototypeName);		
 		return null;
 	}
 }

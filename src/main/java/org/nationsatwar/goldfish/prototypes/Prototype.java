@@ -7,6 +7,8 @@ public class Prototype {
 	
 	private PrototypeMapData mapData;
 	
+	private boolean activated;
+	
 	public Prototype(String prototypeName, int prototypeID) {
 		
 		this.prototypeName = prototypeName;
@@ -16,6 +18,11 @@ public class Prototype {
 	public String getPrototypeName() {
 		
 		return prototypeName;
+	}
+	
+	public void renamePrototype(String prototypeName) {
+		
+		this.prototypeName = prototypeName;
 	}
 	
 	public int getPrototypeID() {
@@ -31,5 +38,15 @@ public class Prototype {
 	public void setMapData(PrototypeMapData mapData) {
 		
 		this.mapData = mapData;
+	}
+	
+	public boolean isActivated() {
+		
+		return activated;
+	}
+	
+	public void toggleActivated() {
+		
+		this.activated = !this.activated;
 	}
 }

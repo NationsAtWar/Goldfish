@@ -15,9 +15,17 @@ import net.minecraftforge.fml.relauncher.Side;
 
 import org.nationsatwar.goldfish.events.DebugEvents;
 import org.nationsatwar.goldfish.gui.GUIHandler;
-import org.nationsatwar.goldfish.packets.PacketHandlerPrototypeReceive;
-import org.nationsatwar.goldfish.packets.PacketHandlerPrototypeSend;
-import org.nationsatwar.goldfish.packets.PacketPrototype;
+import org.nationsatwar.goldfish.packets.PacketDeletePrototype;
+import org.nationsatwar.goldfish.packets.PacketHandlerCreatePrototypeReceive;
+import org.nationsatwar.goldfish.packets.PacketHandlerCreatePrototypeSend;
+import org.nationsatwar.goldfish.packets.PacketCreatePrototype;
+import org.nationsatwar.goldfish.packets.PacketHandlerDeletePrototypeReceive;
+import org.nationsatwar.goldfish.packets.PacketHandlerDeletePrototypeSend;
+import org.nationsatwar.goldfish.packets.PacketHandlerRenamePrototypeReceive;
+import org.nationsatwar.goldfish.packets.PacketHandlerRenamePrototypeSend;
+import org.nationsatwar.goldfish.packets.PacketHandlerWarpPlayer;
+import org.nationsatwar.goldfish.packets.PacketRenamePrototype;
+import org.nationsatwar.goldfish.packets.PacketWarpPlayer;
 import org.nationsatwar.goldfish.proxy.CommonProxy;
  
 @Mod(modid = Goldfish.MODID, 
@@ -50,8 +58,13 @@ public class Goldfish {
 		
 		// Packet Registration
 		channel = NetworkRegistry.INSTANCE.newSimpleChannel(Goldfish.MODID);
-		channel.registerMessage(PacketHandlerPrototypeSend.class, PacketPrototype.class, 1, Side.SERVER);
-		channel.registerMessage(PacketHandlerPrototypeReceive.class, PacketPrototype.class, 1, Side.CLIENT);
+		channel.registerMessage(PacketHandlerCreatePrototypeSend.class, PacketCreatePrototype.class, 1, Side.SERVER);
+		channel.registerMessage(PacketHandlerCreatePrototypeReceive.class, PacketCreatePrototype.class, 1, Side.CLIENT);
+		channel.registerMessage(PacketHandlerRenamePrototypeSend.class, PacketRenamePrototype.class, 2, Side.SERVER);
+		channel.registerMessage(PacketHandlerRenamePrototypeReceive.class, PacketRenamePrototype.class, 2, Side.CLIENT);
+		channel.registerMessage(PacketHandlerDeletePrototypeSend.class, PacketDeletePrototype.class, 3, Side.SERVER);
+		channel.registerMessage(PacketHandlerDeletePrototypeReceive.class, PacketDeletePrototype.class, 3, Side.CLIENT);
+		channel.registerMessage(PacketHandlerWarpPlayer.class, PacketWarpPlayer.class, 4, Side.SERVER);
 	}
 	
 	@EventHandler

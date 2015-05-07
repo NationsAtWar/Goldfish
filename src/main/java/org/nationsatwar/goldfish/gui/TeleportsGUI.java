@@ -2,7 +2,6 @@ package org.nationsatwar.goldfish.gui;
 
 import java.io.IOException;
 
-import net.minecraft.client.entity.EntityPlayerSP;
 import net.minecraft.client.gui.GuiButton;
 import net.minecraft.client.gui.GuiScreen;
 import net.minecraft.client.gui.GuiTextField;
@@ -12,9 +11,8 @@ import net.minecraft.world.World;
 
 import org.lwjgl.opengl.GL11;
 import org.nationsatwar.goldfish.Goldfish;
-import org.nationsatwar.goldfish.packets.PacketPrototype;
 
-public class DebugGUI extends GuiScreen {
+public class TeleportsGUI extends GuiScreen {
 	
 	private final static int maxPrototypeName = 20;
 	
@@ -30,7 +28,7 @@ public class DebugGUI extends GuiScreen {
 	
 	public static final int GUI_ID = 20;
 	
-	public DebugGUI(EntityPlayer player, World world, int x, int y, int z) {
+	public TeleportsGUI(EntityPlayer player, World world, int x, int y, int z) {
 		
 		this.player = player;
 	}
@@ -55,6 +53,7 @@ public class DebugGUI extends GuiScreen {
 		prototypeName = new GuiTextField(1, fontRendererObj, windowX + 20, windowY + 130, 100, 20);
 		prototypeName.setMaxStringLength(maxPrototypeName);
 		prototypeName.setText("");
+		prototypeName.setCanLoseFocus(false);
 		prototypeName.setFocused(true);
 	}
 	
@@ -106,28 +105,10 @@ public class DebugGUI extends GuiScreen {
 	@Override
 	public void actionPerformed(GuiButton button) {
 		
-		EntityPlayerSP playerSP = (EntityPlayerSP) player;
-		
 		// Creates Prototype
 		if (button.id == 0) {
 			
-			System.out.println();
-			Goldfish.channel.sendToServer(new PacketPrototype(prototypeName.getText(), 0));
-			playerSP.closeScreen();
-		}
-		
-		// Creates Prototype
-		if (button.id == 1) {
-			
-			if (prototypeName.getText().matches("[A-Za-z0-9_\\-\\s]+")) {
-				
-				Goldfish.channel.sendToServer(new PacketPrototype(prototypeName.getText(), 0));
-				playerSP.closeScreen();
-			}
-			else if (prototypeName.getText() == "")
-				errorText = "Enter a prototype name";
-			else
-				errorText = "Enter valid characters";
+			player.closeScreen();
 		}
 	}
 }

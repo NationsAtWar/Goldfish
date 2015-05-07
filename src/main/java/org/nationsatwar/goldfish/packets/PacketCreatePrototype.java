@@ -4,16 +4,16 @@ import io.netty.buffer.ByteBuf;
 import net.minecraftforge.fml.common.network.ByteBufUtils;
 import net.minecraftforge.fml.common.network.simpleimpl.IMessage;
 
-public class PacketPrototype implements IMessage {
+public class PacketCreatePrototype implements IMessage {
 	
 	public String prototypeName;
 	public int prototypeID;
 	
-	public PacketPrototype() {
+	public PacketCreatePrototype() {
 		
 	}
 	
-	public PacketPrototype(String prototypeName, int prototypeID) {
+	public PacketCreatePrototype(String prototypeName, int prototypeID) {
 		
 		this.prototypeName = prototypeName;
 		this.prototypeID = prototypeID;

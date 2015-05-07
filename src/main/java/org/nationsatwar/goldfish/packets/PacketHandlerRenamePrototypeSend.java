@@ -6,12 +6,12 @@ import net.minecraftforge.fml.common.network.simpleimpl.MessageContext;
 
 import org.nationsatwar.goldfish.prototypes.PrototypeManager;
 
-public class PacketHandlerPrototypeReceive implements IMessageHandler<PacketPrototype, IMessage> {
+public class PacketHandlerRenamePrototypeSend implements IMessageHandler<PacketRenamePrototype, IMessage> {
 
 	@Override
-	public IMessage onMessage(PacketPrototype message, MessageContext ctx) {
+	public IMessage onMessage(PacketRenamePrototype message, MessageContext ctx) {
 		
-		PrototypeManager.addPrototype(message.prototypeName, message.prototypeID);		
+		PrototypeManager.renamePrototype(message.oldPrototypeName, message.newPrototypeName);		
 		return null;
 	}
 }
