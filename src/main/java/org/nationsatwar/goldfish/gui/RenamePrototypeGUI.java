@@ -8,12 +8,14 @@ import net.minecraft.client.gui.GuiTextField;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.util.ResourceLocation;
 import net.minecraft.world.World;
+import net.minecraftforge.common.DimensionManager;
 
 import org.nationsatwar.goldfish.Goldfish;
 import org.nationsatwar.goldfish.packets.PacketRenamePrototype;
 import org.nationsatwar.goldfish.prototypes.Prototype;
 import org.nationsatwar.goldfish.prototypes.PrototypeManager;
 import org.nationsatwar.goldfish.util.Constants;
+import org.nationsatwar.palette.chat.ChatMessage;
 
 public class RenamePrototypeGUI extends GuiScreen {
 	
@@ -113,16 +115,26 @@ public class RenamePrototypeGUI extends GuiScreen {
 	@Override
 	public void actionPerformed(GuiButton button) {
 		
-		// Creates Prototype
+		// Renames Prototype
 		if (button.id == 0) {
 			
 			if (renameTextbox.getText().matches(Constants.PROTOTYPE_NAME_REGEX)) {
 				
 				Prototype prototype = PrototypeManager.getActivePrototype();
 				
-				Goldfish.channel.sendToServer(new PacketRenamePrototype(prototype.getPrototypeName(), renameTextbox.getText()));
-				prototype.renamePrototype(renameTextbox.getText());
-				player.openGui(Goldfish.instance, GUIHandler.LIST_GUI_ID, player.getEntityWorld(), 0, 0, 0);
+				// Can only rename the prototype if it is not currently occupied
+				if (DimensionManager.getWorld(prototype.getPrototypeID()).playerEntities.size() < 1) {
+					
+					String oldPrototypeName = prototype.getPrototypeName();
+					
+					Goldfish.channel.sendToServer(new PacketRenamePrototype(prototype.getPrototypeName(), renameTextbox.getText()));
+					prototype.renamePrototype(renameTextbox.getText());
+					player.openGui(Goldfish.instance, GUIHandler.LIST_GUI_ID, player.getEntityWorld(), 0, 0, 0);
+					
+					ChatMessage.sendMessage(player, "Prototype: '" + oldPrototypeName + 
+							"' has been renamed to: " + prototype.getPrototypeName());
+				} else
+					errorText = "Can't rename a world that is occupied.";
 			}
 			else if (renameTextbox.getText() == "")
 				errorText = "Enter a prototype name";

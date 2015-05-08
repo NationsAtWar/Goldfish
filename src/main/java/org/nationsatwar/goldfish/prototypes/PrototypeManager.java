@@ -12,6 +12,8 @@ import net.minecraftforge.common.DimensionManager;
 
 import org.nationsatwar.goldfish.Goldfish;
 import org.nationsatwar.goldfish.packets.PacketCreatePrototype;
+import org.nationsatwar.goldfish.packets.PacketDeletePrototype;
+import org.nationsatwar.goldfish.packets.PacketRenamePrototype;
 
 public class PrototypeManager {
 	
@@ -98,14 +100,12 @@ public class PrototypeManager {
 		
 		if (prototypeExists(prototypeName))
 			return;
-
+		
 		DimensionManager.registerProviderType(prototypeID, PrototypeProvider.class, false);
 		DimensionManager.registerDimension(prototypeID, prototypeID);
 		
 		Prototype prototype = new Prototype(prototypeName, prototypeID);
 		prototypeList.put(prototypeID, prototype);
-		
-		System.out.println("Client loaded: " + prototypeName + " under ID: " + prototypeID);
 	}
 	
 	/**
@@ -287,10 +287,24 @@ public class PrototypeManager {
 		String saveDirectory = DimensionManager.getCurrentSaveRootDirectory().getAbsolutePath() + "/";
 		File oldPrototypeFile = new File(saveDirectory + Goldfish.prototypePath + "Prototype_" + oldPrototypeName);
 		File newPrototypeFile = new File(saveDirectory + Goldfish.prototypePath + "Prototype_" + newPrototypeName);
-
-		oldPrototypeFile.renameTo(newPrototypeFile);
 		
-		// If the client isn't the same as the server, then the server still needs to change the name internally
+		// This should only be called on the server
+		if (oldPrototypeFile.exists()) {
+			
+			// Renames the folder to the new name
+			oldPrototypeFile.renameTo(newPrototypeFile);
+			
+			// Makes sure all clients also get their prototype renamed
+			for (WorldServer worldServer : MinecraftServer.getServer().worldServers) {
+				for (Object playerEntity : worldServer.playerEntities) {
+					
+					EntityPlayerMP player = (EntityPlayerMP) playerEntity;
+					Goldfish.channel.sendTo(new PacketRenamePrototype(oldPrototypeName, newPrototypeName), player);
+				}
+			}
+		}
+		
+		// Makes sure everyone who still has the old prototype name has it changed to the new one internally
 		Prototype prototype = getPrototype(oldPrototypeName);
 		
 		if (prototype == null)
@@ -309,7 +323,21 @@ public class PrototypeManager {
 		String saveDirectory = DimensionManager.getCurrentSaveRootDirectory().getAbsolutePath() + "/";
 		File prototypeFile = new File(saveDirectory + Goldfish.prototypePath + "Prototype_" + prototypeName);
 		
-		prototypeFile.delete();
+		// This should only be called on the server
+		if (prototypeFile.exists()) {
+			
+			// Renames the folder to the new name
+			prototypeFile.delete();
+			
+			// Makes sure all clients also get their prototype deleted internally
+			for (WorldServer worldServer : MinecraftServer.getServer().worldServers) {
+				for (Object playerEntity : worldServer.playerEntities) {
+					
+					EntityPlayerMP player = (EntityPlayerMP) playerEntity;
+					Goldfish.channel.sendTo(new PacketDeletePrototype(prototypeName), player);
+				}
+			}
+		}
 		
 		Prototype prototype = getPrototype(prototypeName);
 		

@@ -1,5 +1,10 @@
 package org.nationsatwar.goldfish.prototypes;
 
+import java.util.ArrayList;
+import java.util.List;
+
+import org.nationsatwar.goldfish.teleports.TeleportPoint;
+
 public class Prototype {
 	
 	private String prototypeName;
@@ -8,6 +13,8 @@ public class Prototype {
 	private PrototypeMapData mapData;
 	
 	private boolean activated;
+	
+	private List<TeleportPoint> teleportPoints = new ArrayList<TeleportPoint>();
 	
 	public Prototype(String prototypeName, int prototypeID) {
 		

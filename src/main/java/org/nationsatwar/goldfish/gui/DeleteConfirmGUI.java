@@ -5,9 +5,11 @@ import net.minecraft.client.gui.GuiScreen;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.util.ResourceLocation;
 import net.minecraft.world.World;
+import net.minecraftforge.common.DimensionManager;
 
 import org.nationsatwar.goldfish.Goldfish;
 import org.nationsatwar.goldfish.packets.PacketDeletePrototype;
+import org.nationsatwar.goldfish.prototypes.Prototype;
 import org.nationsatwar.goldfish.prototypes.PrototypeManager;
 import org.nationsatwar.palette.chat.ChatMessage;
 
@@ -17,6 +19,9 @@ public class DeleteConfirmGUI extends GuiScreen {
 			"textures/client/gui/GuiBackground.png");
 	
 	private EntityPlayer player;
+	
+	private String errorText = "";
+	
 	private int windowX, windowY, windowWidth, windowHeight;
 	
 	public DeleteConfirmGUI(EntityPlayer player, World world, int x, int y, int z) {
@@ -29,7 +34,7 @@ public class DeleteConfirmGUI extends GuiScreen {
 	public void initGui() {
 		
 		windowWidth = 140;
-		windowHeight = 64;
+		windowHeight = 80;
 		windowX = (width - windowWidth) / 2;
 		windowY = (height - windowHeight) / 2 - 20;
 		
@@ -56,6 +61,8 @@ public class DeleteConfirmGUI extends GuiScreen {
 		drawString(fontRendererObj, "Create: " + prototypeName + "?", 
 				windowX + 10, windowY + 12, 0xEE8888);
 		
+		drawString(fontRendererObj, errorText, windowX + 10, windowY + 60, 0xCC2222);
+		
 		super.drawScreen(mouseX, mouseY, renderPartialTicks);
 	}
 	
@@ -71,13 +78,19 @@ public class DeleteConfirmGUI extends GuiScreen {
 		// Confirm Button - Deletes Prototype
 		if (button.id == 0) {
 			
-			String prototypeName = PrototypeManager.getActivePrototype().getPrototypeName();
+			Prototype prototype = PrototypeManager.getActivePrototype();
 			
-			Goldfish.channel.sendToServer(new PacketDeletePrototype(prototypeName));
-			ChatMessage.sendMessage(player, "Prototype: '" + prototypeName + "' has been deleted.");
+			// Can only delete a prototype if it is not occupied
+			if (DimensionManager.getWorld(prototype.getPrototypeID()).playerEntities.size() < 1) {
+				
+				String prototypeName = PrototypeManager.getActivePrototype().getPrototypeName();
+				
+				Goldfish.channel.sendToServer(new PacketDeletePrototype(prototypeName));
+				ChatMessage.sendMessage(player, "Prototype: '" + prototypeName + "' has been deleted.");
+			} else
+				errorText = "Can't delete a world that is occupied.";
 		}
 		
-		System.out.println(player.worldObj.provider.getDimensionName());
 		player.openGui(Goldfish.instance, GUIHandler.MAIN_GUI_ID, player.getEntityWorld(), 0, 0, 0);
 	}
 }
