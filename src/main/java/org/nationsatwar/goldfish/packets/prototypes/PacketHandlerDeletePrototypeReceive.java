@@ -1,4 +1,4 @@
-package org.nationsatwar.goldfish.packets;
+package org.nationsatwar.goldfish.packets.prototypes;
 
 import net.minecraftforge.fml.common.network.simpleimpl.IMessage;
 import net.minecraftforge.fml.common.network.simpleimpl.IMessageHandler;

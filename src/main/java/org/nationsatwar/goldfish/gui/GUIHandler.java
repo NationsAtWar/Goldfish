@@ -12,6 +12,8 @@ public class GUIHandler implements IGuiHandler {
 	public static final int RENAME_PROTOTYPE_GUI_ID = 23;
 	public static final int DELETE_CONFIRM_GUI_ID = 24;
 	public static final int TELEPORTS_GUI_ID = 25;
+	public static final int SET_TELEPORT_LABEL_GUI_ID = 26;
+	public static final int SET_TELEPORT_MESSAGE_GUI_ID = 27;
 
 	@Override
 	public Object getServerGuiElement(int ID, EntityPlayer player, World world,
@@ -25,17 +27,21 @@ public class GUIHandler implements IGuiHandler {
 			int x, int y, int z) {
 		
 		if (ID == MAIN_GUI_ID)
-			return new MainGUI(player, world, x, y, z);
+			return new GUIMainMenu(player, world, x, y, z);
 		if (ID == CREATE_CONFIRM_GUI_ID)
-			return new CreateConfirmGUI(player, world, x, y, z);
+			return new GUICreateConfirm(player, world, x, y, z);
 		if (ID == LIST_GUI_ID)
-			return new ListGUI(player, world, x, y, z);
+			return new GUIPrototypesList(player, world, x, y, z);
 		if (ID == RENAME_PROTOTYPE_GUI_ID)
-			return new RenamePrototypeGUI(player, world, x, y, z);
+			return new GUIRenamePrototype(player, world, x, y, z);
 		if (ID == DELETE_CONFIRM_GUI_ID)
-			return new DeleteConfirmGUI(player, world, x, y, z);
+			return new GUIDeleteConfirm(player, world, x, y, z);
 		if (ID == TELEPORTS_GUI_ID)
-			return new TeleportsGUI(player, world, x, y, z);
+			return new GUITeleportsList(player, world, x, y, z);
+		if (ID == SET_TELEPORT_LABEL_GUI_ID)
+			return new GUISetTeleportLabel(player, world, x, y, z);
+		if (ID == SET_TELEPORT_MESSAGE_GUI_ID)
+			return new GUISetTeleportMessage(player, world, x, y, z);
 		
 		return null;
 	}

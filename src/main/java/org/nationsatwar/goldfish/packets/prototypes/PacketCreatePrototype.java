@@ -1,4 +1,4 @@
-package org.nationsatwar.goldfish.packets;
+package org.nationsatwar.goldfish.packets.prototypes;
 
 import io.netty.buffer.ByteBuf;
 import net.minecraftforge.fml.common.network.ByteBufUtils;

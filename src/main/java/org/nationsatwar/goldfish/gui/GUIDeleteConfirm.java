@@ -5,21 +5,26 @@ import net.minecraft.client.gui.GuiScreen;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.util.ResourceLocation;
 import net.minecraft.world.World;
+import net.minecraftforge.common.DimensionManager;
 
 import org.nationsatwar.goldfish.Goldfish;
-import org.nationsatwar.goldfish.packets.PacketCreatePrototype;
+import org.nationsatwar.goldfish.packets.prototypes.PacketDeletePrototype;
+import org.nationsatwar.goldfish.prototypes.Prototype;
 import org.nationsatwar.goldfish.prototypes.PrototypeManager;
 import org.nationsatwar.palette.chat.ChatMessage;
 
-public class CreateConfirmGUI extends GuiScreen {
+public class GUIDeleteConfirm extends GuiScreen {
 	
 	private ResourceLocation backgroundimage = new ResourceLocation(Goldfish.MODID + ":" + 
 			"textures/client/gui/GuiBackground.png");
 	
 	private EntityPlayer player;
+	
+	private String errorText = "";
+	
 	private int windowX, windowY, windowWidth, windowHeight;
 	
-	public CreateConfirmGUI(EntityPlayer player, World world, int x, int y, int z) {
+	public GUIDeleteConfirm(EntityPlayer player, World world, int x, int y, int z) {
 		
 		this.player = player;
 	}
@@ -29,7 +34,7 @@ public class CreateConfirmGUI extends GuiScreen {
 	public void initGui() {
 		
 		windowWidth = 140;
-		windowHeight = 64;
+		windowHeight = 80;
 		windowX = (width - windowWidth) / 2;
 		windowY = (height - windowHeight) / 2 - 20;
 		
@@ -48,10 +53,15 @@ public class CreateConfirmGUI extends GuiScreen {
 		this.mc.getTextureManager().bindTexture(backgroundimage);
 		drawTexturedModalRect(windowX, windowY, 0, 0, windowWidth,  windowHeight);
 		
-		String prototypeName = PrototypeManager.getCreatePrototypeName();
+		if (!PrototypeManager.activePrototypeIsSet())
+			return;
+		
+		String prototypeName = PrototypeManager.getActivePrototype().getPrototypeName();
 		
 		drawString(fontRendererObj, "Create: " + prototypeName + "?", 
 				windowX + 10, windowY + 12, 0xEE8888);
+		
+		drawString(fontRendererObj, errorText, windowX + 10, windowY + 60, 0xCC2222);
 		
 		super.drawScreen(mouseX, mouseY, renderPartialTicks);
 	}
@@ -65,13 +75,20 @@ public class CreateConfirmGUI extends GuiScreen {
 	@Override
 	public void actionPerformed(GuiButton button) {
 		
-		// Confirm Button - Creates Prototype
+		// Confirm Button - Deletes Prototype
 		if (button.id == 0) {
 			
-			String prototypeName = PrototypeManager.getCreatePrototypeName();
+			Prototype prototype = PrototypeManager.getActivePrototype();
 			
-			Goldfish.channel.sendToServer(new PacketCreatePrototype(prototypeName, 0));
-			ChatMessage.sendMessage(player, "Prototype: '" + prototypeName + "' has been created.");
+			// Can only delete a prototype if it is not occupied
+			if (DimensionManager.getWorld(prototype.getPrototypeID()).playerEntities.size() < 1) {
+				
+				String prototypeName = PrototypeManager.getActivePrototype().getPrototypeName();
+				
+				Goldfish.channel.sendToServer(new PacketDeletePrototype(prototypeName));
+				ChatMessage.sendMessage(player, "Prototype: '" + prototypeName + "' has been deleted.");
+			} else
+				errorText = "Can't delete a world that is occupied.";
 		}
 		
 		player.openGui(Goldfish.instance, GUIHandler.MAIN_GUI_ID, player.getEntityWorld(), 0, 0, 0);

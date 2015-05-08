@@ -1,20 +1,28 @@
 package org.nationsatwar.goldfish.teleports;
 
+import net.minecraft.entity.Entity;
+
 import org.nationsatwar.palette.WorldLocation;
 
 public class TeleportPoint {
 	
 	private WorldLocation sourcePoint;
 	private WorldLocation destPoint;
-	
-	private String message;
+
+	private String label = "";
+	private String message = "";
 	
 	private int messageRadius = 10;
 	private int teleportRadius = 5;
 	
-	public TeleportPoint() {
+	public TeleportPoint(WorldLocation sourcePoint) {
 		
+		this.sourcePoint = sourcePoint;
+	}
+	
+	public TeleportPoint(Entity entity) {
 		
+		this.sourcePoint = new WorldLocation(entity);
 	}
 	
 	public WorldLocation getSourcePoint() {
@@ -25,12 +33,28 @@ public class TeleportPoint {
 		this.sourcePoint = sourcePoint;
 	}
 	
+	public void setSourcePoint(Entity entity) {
+		this.sourcePoint = new WorldLocation(entity);
+	}
+	
 	public WorldLocation getDestPoint() {
 		return destPoint;
 	}
 	
 	public void setDestPoint(WorldLocation destPoint) {
 		this.destPoint = destPoint;
+	}
+	
+	public void setDestPoint(Entity entity) {
+		this.destPoint = new WorldLocation(entity);
+	}
+	
+	public String getLabel() {
+		return label;
+	}
+	
+	public void setLabel(String label) {
+		this.label = label;
 	}
 	
 	public String getMessage() {

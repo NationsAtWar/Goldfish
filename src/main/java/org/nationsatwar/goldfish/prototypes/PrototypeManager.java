@@ -11,9 +11,9 @@ import net.minecraft.world.WorldServer;
 import net.minecraftforge.common.DimensionManager;
 
 import org.nationsatwar.goldfish.Goldfish;
-import org.nationsatwar.goldfish.packets.PacketCreatePrototype;
-import org.nationsatwar.goldfish.packets.PacketDeletePrototype;
-import org.nationsatwar.goldfish.packets.PacketRenamePrototype;
+import org.nationsatwar.goldfish.packets.prototypes.PacketCreatePrototype;
+import org.nationsatwar.goldfish.packets.prototypes.PacketDeletePrototype;
+import org.nationsatwar.goldfish.packets.prototypes.PacketRenamePrototype;
 
 public class PrototypeManager {
 	

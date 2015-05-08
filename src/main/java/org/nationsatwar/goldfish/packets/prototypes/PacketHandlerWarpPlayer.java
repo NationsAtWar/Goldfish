@@ -1,4 +1,4 @@
-package org.nationsatwar.goldfish.packets;
+package org.nationsatwar.goldfish.packets.prototypes;
 
 import java.util.UUID;
 

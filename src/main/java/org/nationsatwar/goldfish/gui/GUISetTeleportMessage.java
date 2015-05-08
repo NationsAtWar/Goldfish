@@ -11,13 +11,13 @@ import net.minecraft.world.World;
 import net.minecraftforge.common.DimensionManager;
 
 import org.nationsatwar.goldfish.Goldfish;
-import org.nationsatwar.goldfish.packets.PacketRenamePrototype;
+import org.nationsatwar.goldfish.packets.prototypes.PacketRenamePrototype;
 import org.nationsatwar.goldfish.prototypes.Prototype;
 import org.nationsatwar.goldfish.prototypes.PrototypeManager;
 import org.nationsatwar.goldfish.util.Constants;
 import org.nationsatwar.palette.chat.ChatMessage;
 
-public class RenamePrototypeGUI extends GuiScreen {
+public class GUISetTeleportMessage extends GuiScreen {
 	
 	private ResourceLocation backgroundimage = new ResourceLocation(Goldfish.MODID + ":" + 
 			"textures/client/gui/GuiBackground.png");
@@ -29,7 +29,7 @@ public class RenamePrototypeGUI extends GuiScreen {
 
 	private String errorText = "";
 	
-	public RenamePrototypeGUI(EntityPlayer player, World world, int x, int y, int z) {
+	public GUISetTeleportMessage(EntityPlayer player, World world, int x, int y, int z) {
 		
 		this.player = player;
 	}

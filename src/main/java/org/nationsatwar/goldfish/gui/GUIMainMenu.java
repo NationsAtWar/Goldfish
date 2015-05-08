@@ -11,24 +11,22 @@ import net.minecraft.world.World;
 
 import org.lwjgl.opengl.GL11;
 import org.nationsatwar.goldfish.Goldfish;
+import org.nationsatwar.goldfish.prototypes.PrototypeManager;
+import org.nationsatwar.goldfish.util.Constants;
 
-public class TeleportsGUI extends GuiScreen {
-	
-	private final static int maxPrototypeName = 20;
+public class GUIMainMenu extends GuiScreen {
 	
 	private ResourceLocation backgroundimage = new ResourceLocation(Goldfish.MODID + ":" + 
 			"textures/client/gui/GuiBackground.png");
 	
 	private EntityPlayer player;
 	
-	private GuiTextField prototypeName;
+	private GuiTextField createTextbox;
 	private String errorText = "";
 	
 	private int windowX, windowY, windowWidth, windowHeight;
 	
-	public static final int GUI_ID = 20;
-	
-	public TeleportsGUI(EntityPlayer player, World world, int x, int y, int z) {
+	public GUIMainMenu(EntityPlayer player, World world, int x, int y, int z) {
 		
 		this.player = player;
 	}
@@ -50,25 +48,31 @@ public class TeleportsGUI extends GuiScreen {
 		GuiButton createPrototype = new GuiButton(1, windowX + 20, windowY + 100, 100, 20, "Create Prototype");
 		buttonList.add(createPrototype);
 		
-		prototypeName = new GuiTextField(1, fontRendererObj, windowX + 20, windowY + 130, 100, 20);
-		prototypeName.setMaxStringLength(maxPrototypeName);
-		prototypeName.setText("");
-		prototypeName.setCanLoseFocus(false);
-		prototypeName.setFocused(true);
+		createTextbox = new GuiTextField(1, fontRendererObj, windowX + 20, windowY + 130, 100, 20);
+		createTextbox.setMaxStringLength(PrototypeManager.MAX_PROTOTYPE_NAME_LENGTH);
+		createTextbox.setText("");
+		createTextbox.setCanLoseFocus(false);
+		createTextbox.setFocused(true);
 	}
 	
 	@Override
 	protected void keyTyped(char par1, int par2) throws IOException {
 		
+		String charString = "" + par1;
+		
+		// Only accept valid characters. 8 is the key code for backspace, 27 for escape
+		if (!charString.matches(Constants.PROTOTYPE_NAME_REGEX) && par1 != 8 && par1 != 27)
+			return;
+		
 		super.keyTyped(par1, par2);
-		prototypeName.textboxKeyTyped(par1, par2);
+		createTextbox.textboxKeyTyped(par1, par2);
 	}
 	
 	@Override
 	public void updateScreen() {
 		
 		super.updateScreen();
-		prototypeName.updateCursorCounter();
+		createTextbox.updateCursorCounter();
 	}
 	
 	@Override
@@ -77,7 +81,7 @@ public class TeleportsGUI extends GuiScreen {
 		// Draws the background window
 		mc.getTextureManager().bindTexture(backgroundimage);
 		drawTexturedModalRect(windowX, windowY, 0, 0, windowWidth,  windowHeight);
-		prototypeName.drawTextBox();
+		createTextbox.drawTextBox();
 		
 		GL11.glPushMatrix();
 		GL11.glScaled(2, 2, 2);
@@ -93,7 +97,7 @@ public class TeleportsGUI extends GuiScreen {
 	protected void mouseClicked(int x, int y, int btn) throws IOException {
 		
 		super.mouseClicked(x, y, btn);
-		prototypeName.mouseClicked(x, y, btn);
+		createTextbox.mouseClicked(x, y, btn);
 	}
 	
 	@Override
@@ -106,9 +110,23 @@ public class TeleportsGUI extends GuiScreen {
 	public void actionPerformed(GuiButton button) {
 		
 		// Creates Prototype
-		if (button.id == 0) {
+		if (button.id == 0)
+			player.openGui(Goldfish.instance, GUIHandler.LIST_GUI_ID, player.getEntityWorld(), 0, 0, 0);
+		
+		// Creates Prototype
+		if (button.id == 1) {
 			
-			player.closeScreen();
+			if (createTextbox.getText().matches(Constants.PROTOTYPE_NAME_REGEX)) {
+				
+				PrototypeManager.setCreatePrototypeName(createTextbox.getText());
+				player.openGui(Goldfish.instance, GUIHandler.CREATE_CONFIRM_GUI_ID, player.getEntityWorld(), 0, 0, 0);
+			}
+			else if (createTextbox.getText() == "")
+				errorText = "Enter a prototype name";
+			else
+				errorText = "Enter valid characters";
+
+			createTextbox.setText("");
 		}
 	}
 }

@@ -8,11 +8,11 @@ import net.minecraft.world.World;
 
 import org.lwjgl.opengl.GL11;
 import org.nationsatwar.goldfish.Goldfish;
-import org.nationsatwar.goldfish.packets.PacketWarpPlayer;
+import org.nationsatwar.goldfish.packets.prototypes.PacketWarpPlayer;
 import org.nationsatwar.goldfish.prototypes.Prototype;
 import org.nationsatwar.goldfish.prototypes.PrototypeManager;
 
-public class ListGUI extends GuiScreen {
+public class GUIPrototypesList extends GuiScreen {
 	
 	private ResourceLocation backgroundimage = new ResourceLocation(Goldfish.MODID + ":" + 
 			"textures/client/gui/GuiBackground.png");
@@ -25,7 +25,7 @@ public class ListGUI extends GuiScreen {
 	
 	public static final int GUI_ID = 20;
 	
-	public ListGUI(EntityPlayer player, World world, int x, int y, int z) {
+	public GUIPrototypesList(EntityPlayer player, World world, int x, int y, int z) {
 		
 		this.player = player;
 	}
@@ -44,7 +44,7 @@ public class ListGUI extends GuiScreen {
 		GuiButton returnButton = new GuiButton(0, windowX + 10, windowY + 40, 60, 20, "Return");
 		buttonList.add(returnButton);
 		
-		Prototype prototype =PrototypeManager.getPrototypeByIndex(prototypePage);
+		Prototype prototype = PrototypeManager.getPrototypeByIndex(prototypePage);
 		
 		if (prototype == null)
 			return;
