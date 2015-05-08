@@ -9,7 +9,6 @@ import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.util.ResourceLocation;
 import net.minecraft.world.World;
 
-import org.lwjgl.opengl.GL11;
 import org.nationsatwar.goldfish.Goldfish;
 import org.nationsatwar.goldfish.packets.teleports.PacketAddTeleport;
 import org.nationsatwar.goldfish.packets.teleports.PacketSetMessageRadius;
@@ -29,6 +28,7 @@ public class GUITeleportsList extends GuiScreen {
 	
 	private EntityPlayer player;
 	private Prototype prototype;
+	private TeleportPoint teleportPoint;
 	
 	private int windowX, windowY, windowWidth, windowHeight;
 	
@@ -69,8 +69,6 @@ public class GUITeleportsList extends GuiScreen {
 		if (prototype == null)
 			return;
 		
-		TeleportPoint teleportPoint = null;
-		
 		if (prototype.numberofTeleportPoints() > teleportsPage)
 			teleportPoint = prototype.getTeleportPoint(teleportsPage);
 		
@@ -83,39 +81,38 @@ public class GUITeleportsList extends GuiScreen {
 		GuiButton setMessage = new GuiButton(3, windowX + 82, windowY + 62, 70, 20, "Set Message");
 		buttonList.add(setMessage);
 		
-		GuiButton setSource = new GuiButton(4, windowX + 10, windowY + 84, 70, 20, "Set Origin");
+		GuiButton setSource = new GuiButton(4, windowX + 10, windowY + 106, 70, 20, "Set Origin");
 		buttonList.add(setSource);
 		
-		GuiButton setDest = new GuiButton(5, windowX + 82, windowY + 84, 70, 20, "Set Dest");
+		GuiButton setDest = new GuiButton(5, 
+				windowX + (windowWidth / 2) + 2, windowY + 106, 70, 20, "Set Dest");
 		buttonList.add(setDest);
 		
-		messageRadius = new GuiTextField(6, fontRendererObj, windowX + 10, windowY + 106, 20, 20);
+		messageRadius = new GuiTextField(6, fontRendererObj, 
+				windowX + (windowWidth / 2) - 20, windowY + 128, 20, 20);
 		messageRadius.setText(teleportPoint.getMessageRadius() + "");
 		messageRadius.setFocused(true);
+		messageRadius.setMaxStringLength(2);
 		
-		teleportRadius = new GuiTextField(7, fontRendererObj, windowX + 82, windowY + 106, 20, 20);
+		teleportRadius = new GuiTextField(7, fontRendererObj, 
+				windowX + windowWidth - 30, windowY + 128, 20, 20);
 		teleportRadius.setText(teleportPoint.getTeleportRadius() + "");
 		teleportRadius.setFocused(false);
+		teleportRadius.setMaxStringLength(2);
 		
 		if (teleportsPage > 0) {
 			
-			GuiButton previousPage = new GuiButton(8, windowX + 20, windowY + 150, 20, 20, "<");
+			GuiButton previousPage = new GuiButton(8, 
+					windowX + 10, windowY + 150, 20, 20, "<");
 			buttonList.add(previousPage);
 		}
 		
 		if (prototype.numberofTeleportPoints() > teleportsPage + 1) {
 			
-			GuiButton nextPage = new GuiButton(9, windowX + 100, windowY + 150, 20, 20, ">");
+			GuiButton nextPage = new GuiButton(9, 
+					windowX + windowWidth - 30, windowY + 150, 20, 20, ">");
 			buttonList.add(nextPage);
 		}
-		
-		GuiButton activateMessageRadius = new GuiButton(10, windowX + 10, windowY + 106, 20, 20, "");
-		buttonList.add(activateMessageRadius);
-		activateMessageRadius.enabled = false;
-		
-		GuiButton activateTeleportRadius = new GuiButton(11, windowX + 82, windowY + 106, 20, 20, "");
-		buttonList.add(activateTeleportRadius);
-		activateMessageRadius.enabled = false;
 	}
 	
 	@Override
@@ -128,6 +125,9 @@ public class GUITeleportsList extends GuiScreen {
 			return;
 		
 		super.keyTyped(par1, par2);
+		
+		if (teleportPoint == null)
+			return;
 		
 		if (messageRadiusActive)
 			messageRadius.textboxKeyTyped(par1, par2);
@@ -171,17 +171,43 @@ public class GUITeleportsList extends GuiScreen {
 		mc.getTextureManager().bindTexture(backgroundimage);
 		drawTexturedModalRect(windowX, windowY, 0, 0, windowWidth,  windowHeight);
 		
-		if (messageRadius != null)
-			messageRadius.drawTextBox();
-		if (teleportRadius != null)
-			teleportRadius.drawTextBox();
-		
-		GL11.glPushMatrix();
-		GL11.glScaled(2, 2, 2);
-		drawString(fontRendererObj, "Goldfish", (windowX + 30) / 2, (windowY + 15) / 2, 0xCCAA22);
-		GL11.glPopMatrix();
+		drawCenteredString(fontRendererObj, prototype.getPrototypeName() + " Teleports", 
+				(windowX + (windowWidth / 2)), (windowY + 15), 0xCCAA22);
 		
 		super.drawScreen(mouseX, mouseY, renderPartialTicks);
+		
+		if (teleportPoint == null)
+			return;
+		
+		messageRadius.drawTextBox();
+		teleportRadius.drawTextBox();
+
+		drawString(fontRendererObj, teleportPoint.getSourcePoint().getWorldName(), 
+				(windowX + 10), (windowY + 85), 0x9999AA);
+		drawString(fontRendererObj, teleportPoint.getSourcePoint().getFormattedCoords(), 
+				(windowX + 10), (windowY + 95), 0x9999AA);
+		
+		if (teleportPoint.getDestPoint() != null) {
+			
+			drawString(fontRendererObj, teleportPoint.getDestPoint().getWorldName(),
+					(windowX + (windowWidth / 2) + 2), (windowY + 85), 0x9999AA);
+			drawString(fontRendererObj, teleportPoint.getDestPoint().getFormattedCoords(), 
+					(windowX + (windowWidth / 2) + 2), (windowY + 95), 0x9999AA);
+		} else {
+			
+			drawString(fontRendererObj, "(Null)",
+					(windowX + (windowWidth / 2) + 2), (windowY + 85), 0x9999AA);
+		}
+		
+		drawString(fontRendererObj, "Message", 
+				(windowX + 10), (windowY + 128), 0x9999AA);
+		drawString(fontRendererObj, " Radius", 
+				(windowX + 10), (windowY + 138), 0x9999AA);
+		
+		drawString(fontRendererObj, "Teleport", 
+				(windowX + (windowWidth / 2) + 2), (windowY + 128), 0x9999AA);
+		drawString(fontRendererObj, "  Radius", 
+				(windowX + (windowWidth / 2) + 2), (windowY + 138), 0x9999AA);
 	}
 	
 	@Override
@@ -189,10 +215,22 @@ public class GUITeleportsList extends GuiScreen {
 		
 		super.mouseClicked(x, y, btn);
 		
-		if (messageRadiusActive && messageRadius != null)
+		if (messageRadius == null || teleportRadius == null)
+			return;
+		
+		if (x >= messageRadius.xPosition && x <= messageRadius.xPosition + messageRadius.width && 
+				y >= messageRadius.yPosition && y <= messageRadius.yPosition + messageRadius.height) {
+			
+			activateMessageRadius();
 			messageRadius.mouseClicked(x, y, btn);
-		if (teleportRadiusActive && teleportRadius != null)
+		}
+		
+		if (x >= teleportRadius.xPosition && x <= teleportRadius.xPosition + teleportRadius.width && 
+				y >= teleportRadius.yPosition && y <= teleportRadius.yPosition + teleportRadius.height) {
+			
+			activateTeleportRadius();
 			teleportRadius.mouseClicked(x, y, btn);
+		}
 	}
 	
 	@Override
@@ -215,10 +253,12 @@ public class GUITeleportsList extends GuiScreen {
 		// Add Teleport
 		if (button.id == 1) {
 			
-			TeleportsManager.addTeleport(prototype, player, teleportsPage);
+			int teleportID = prototype.numberofTeleportPoints();
+			
+			TeleportsManager.addTeleport(prototype, player, teleportID);
 			
 			Goldfish.channel.sendToServer(new PacketAddTeleport(player.getUniqueID().toString(), 
-					prototype.getPrototypeID(), teleportsPage));
+					prototype.getPrototypeID(), teleportID));
 			
 			initGui();
 		}
