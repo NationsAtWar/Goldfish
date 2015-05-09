@@ -10,11 +10,12 @@ import net.minecraft.util.ResourceLocation;
 import net.minecraft.world.World;
 
 import org.nationsatwar.goldfish.Goldfish;
-import org.nationsatwar.goldfish.packets.teleports.PacketAddTeleport;
-import org.nationsatwar.goldfish.packets.teleports.PacketSetMessageRadius;
-import org.nationsatwar.goldfish.packets.teleports.PacketSetTeleportDest;
-import org.nationsatwar.goldfish.packets.teleports.PacketSetTeleportRadius;
-import org.nationsatwar.goldfish.packets.teleports.PacketSetTeleportSource;
+import org.nationsatwar.goldfish.packets.teleports.add.PacketAddTeleport;
+import org.nationsatwar.goldfish.packets.teleports.messageradius.PacketSetMessageRadius;
+import org.nationsatwar.goldfish.packets.teleports.remove.PacketRemoveTeleport;
+import org.nationsatwar.goldfish.packets.teleports.teleportdest.PacketSetTeleportDest;
+import org.nationsatwar.goldfish.packets.teleports.teleportradius.PacketSetTeleportRadius;
+import org.nationsatwar.goldfish.packets.teleports.teleportsource.PacketSetTeleportSource;
 import org.nationsatwar.goldfish.prototypes.Prototype;
 import org.nationsatwar.goldfish.prototypes.PrototypeManager;
 import org.nationsatwar.goldfish.teleports.TeleportPoint;
@@ -58,10 +59,11 @@ public class GUITeleportsList extends GuiScreen {
 		
 		buttonList.clear();
 		
-		GuiButton returnButton = new GuiButton(0, windowX + 10, windowY + 40, 70, 20, "Return");
+		GuiButton returnButton = new GuiButton(0, 
+				windowX + (windowWidth / 2) - 30, windowY + 150, 60, 20, "Return");
 		buttonList.add(returnButton);
 		
-		GuiButton addTeleport = new GuiButton(1, windowX + 82, windowY + 40, 70, 20, "Add Teleport");
+		GuiButton addTeleport = new GuiButton(1, windowX + 10, windowY + 40, 70, 20, "Add");
 		buttonList.add(addTeleport);
 		
 		prototype = PrototypeManager.getActivePrototype();
@@ -75,26 +77,29 @@ public class GUITeleportsList extends GuiScreen {
 		if (teleportPoint == null)
 			return;
 		
-		GuiButton setLabel = new GuiButton(2, windowX + 10, windowY + 62, 70, 20, "Set Label");
+		GuiButton removeTeleport = new GuiButton(2, windowX + 82, windowY + 40, 70, 20, "Remove");
+		buttonList.add(removeTeleport);
+		
+		GuiButton setLabel = new GuiButton(3, windowX + 10, windowY + 62, 70, 20, "Set Label");
 		buttonList.add(setLabel);
 		
-		GuiButton setMessage = new GuiButton(3, windowX + 82, windowY + 62, 70, 20, "Set Message");
+		GuiButton setMessage = new GuiButton(4, windowX + 82, windowY + 62, 70, 20, "Set Message");
 		buttonList.add(setMessage);
 		
-		GuiButton setSource = new GuiButton(4, windowX + 10, windowY + 106, 70, 20, "Set Origin");
+		GuiButton setSource = new GuiButton(5, windowX + 10, windowY + 106, 70, 20, "Set Origin");
 		buttonList.add(setSource);
 		
-		GuiButton setDest = new GuiButton(5, 
+		GuiButton setDest = new GuiButton(6, 
 				windowX + (windowWidth / 2) + 2, windowY + 106, 70, 20, "Set Dest");
 		buttonList.add(setDest);
 		
-		messageRadius = new GuiTextField(6, fontRendererObj, 
+		messageRadius = new GuiTextField(7, fontRendererObj, 
 				windowX + (windowWidth / 2) - 20, windowY + 128, 20, 20);
 		messageRadius.setText(teleportPoint.getMessageRadius() + "");
 		messageRadius.setFocused(true);
 		messageRadius.setMaxStringLength(2);
 		
-		teleportRadius = new GuiTextField(7, fontRendererObj, 
+		teleportRadius = new GuiTextField(8, fontRendererObj, 
 				windowX + windowWidth - 30, windowY + 128, 20, 20);
 		teleportRadius.setText(teleportPoint.getTeleportRadius() + "");
 		teleportRadius.setFocused(false);
@@ -102,14 +107,14 @@ public class GUITeleportsList extends GuiScreen {
 		
 		if (teleportsPage > 0) {
 			
-			GuiButton previousPage = new GuiButton(8, 
+			GuiButton previousPage = new GuiButton(9, 
 					windowX + 10, windowY + 150, 20, 20, "<");
 			buttonList.add(previousPage);
 		}
 		
 		if (prototype.numberofTeleportPoints() > teleportsPage + 1) {
 			
-			GuiButton nextPage = new GuiButton(9, 
+			GuiButton nextPage = new GuiButton(10, 
 					windowX + windowWidth - 30, windowY + 150, 20, 20, ">");
 			buttonList.add(nextPage);
 		}
@@ -172,12 +177,15 @@ public class GUITeleportsList extends GuiScreen {
 		drawTexturedModalRect(windowX, windowY, 0, 0, windowWidth,  windowHeight);
 		
 		drawCenteredString(fontRendererObj, prototype.getPrototypeName() + " Teleports", 
-				(windowX + (windowWidth / 2)), (windowY + 15), 0xCCAA22);
+				(windowX + (windowWidth / 2)), (windowY + 12), 0xCCAA22);
 		
 		super.drawScreen(mouseX, mouseY, renderPartialTicks);
 		
 		if (teleportPoint == null)
 			return;
+		
+		drawCenteredString(fontRendererObj, "(" + teleportPoint.getLabel() + ")", 
+				(windowX + (windowWidth / 2)), (windowY + 25), 0xCCAA22);
 		
 		messageRadius.drawTextBox();
 		teleportRadius.drawTextBox();
@@ -215,7 +223,7 @@ public class GUITeleportsList extends GuiScreen {
 		
 		super.mouseClicked(x, y, btn);
 		
-		if (messageRadius == null || teleportRadius == null)
+		if (teleportPoint == null)
 			return;
 		
 		if (x >= messageRadius.xPosition && x <= messageRadius.xPosition + messageRadius.width && 
@@ -263,16 +271,30 @@ public class GUITeleportsList extends GuiScreen {
 			initGui();
 		}
 		
+		// Remove Teleport
+		if (button.id == 2) {
+			
+			int teleportAmount = prototype.numberofTeleportPoints();
+			
+			TeleportsManager.removeTeleport(prototype, teleportsPage, teleportAmount);
+			
+			Goldfish.channel.sendToServer(new PacketRemoveTeleport(prototype.getPrototypeID(), 
+					teleportsPage, teleportAmount));
+			
+			teleportsPage = 0;
+			initGui();
+		}
+		
 		// Label Teleport
-		if (button.id == 2)
+		if (button.id == 3)
 			player.openGui(Goldfish.instance, GUIHandler.SET_TELEPORT_LABEL_GUI_ID, player.getEntityWorld(), 0, 0, 0);
 		
 		// Set Text
-		if (button.id == 3)
+		if (button.id == 4)
 			player.openGui(Goldfish.instance, GUIHandler.SET_TELEPORT_MESSAGE_GUI_ID, player.getEntityWorld(), 0, 0, 0);
 		
 		// Set Source Location
-		if (button.id == 4) {
+		if (button.id == 5) {
 			
 			TeleportsManager.setSourcePoint(prototype, player, teleportsPage);
 			
@@ -281,7 +303,7 @@ public class GUITeleportsList extends GuiScreen {
 		}
 		
 		// Set Destination Location
-		if (button.id == 5) {
+		if (button.id == 6) {
 			
 			TeleportsManager.setDestPoint(prototype, player, teleportsPage);
 			
@@ -290,26 +312,18 @@ public class GUITeleportsList extends GuiScreen {
 		}
 				
 		// Previous Page
-		if (button.id == 8) {
+		if (button.id == 9) {
 			
 			teleportsPage--;
 			initGui();
 		}
 		
 		// Next Page
-		if (button.id == 9) {
+		if (button.id == 10) {
 			
 			teleportsPage++;
 			initGui();
 		}
-		
-		// Activate Message Radius
-		if (button.id == 10)
-			activateMessageRadius();
-		
-		// Activate Teleport Radius
-		if (button.id == 11)
-			activateTeleportRadius();
 	}
 	
 	private void activateMessageRadius() {

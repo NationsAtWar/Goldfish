@@ -8,7 +8,7 @@ import net.minecraft.world.World;
 import net.minecraftforge.common.DimensionManager;
 
 import org.nationsatwar.goldfish.Goldfish;
-import org.nationsatwar.goldfish.packets.prototypes.PacketDeletePrototype;
+import org.nationsatwar.goldfish.packets.prototypes.delete.PacketDeletePrototype;
 import org.nationsatwar.goldfish.prototypes.Prototype;
 import org.nationsatwar.goldfish.prototypes.PrototypeManager;
 import org.nationsatwar.palette.chat.ChatMessage;

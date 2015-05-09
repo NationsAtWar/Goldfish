@@ -7,7 +7,7 @@ import net.minecraft.util.ResourceLocation;
 import net.minecraft.world.World;
 
 import org.nationsatwar.goldfish.Goldfish;
-import org.nationsatwar.goldfish.packets.prototypes.PacketCreatePrototype;
+import org.nationsatwar.goldfish.packets.prototypes.create.PacketCreatePrototype;
 import org.nationsatwar.goldfish.prototypes.PrototypeManager;
 import org.nationsatwar.palette.chat.ChatMessage;
 

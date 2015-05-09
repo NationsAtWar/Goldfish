@@ -11,7 +11,7 @@ import net.minecraftforge.fml.common.gameevent.TickEvent.ServerTickEvent;
 import net.minecraftforge.fml.relauncher.Side;
 
 import org.nationsatwar.goldfish.Goldfish;
-import org.nationsatwar.goldfish.packets.prototypes.PacketCreatePrototype;
+import org.nationsatwar.goldfish.packets.prototypes.create.PacketCreatePrototype;
 import org.nationsatwar.goldfish.prototypes.Prototype;
 import org.nationsatwar.goldfish.prototypes.PrototypeManager;
 import org.nationsatwar.goldfish.util.TeleporterFix;

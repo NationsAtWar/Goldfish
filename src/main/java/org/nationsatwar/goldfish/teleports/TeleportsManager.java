@@ -20,6 +20,15 @@ public class TeleportsManager {
 			prototype.addTeleportPoint(teleportID, teleportPoint);
 	}
 	
+	public static void removeTeleport(Prototype prototype, int teleportID, int amountOfTeleports) {
+		
+		// Prevents double removal
+		if (prototype.numberofTeleportPoints() < amountOfTeleports)
+			return;
+		
+		prototype.removeTeleportPoint(teleportID);
+	}
+	
 	public static void setSourcePoint(Prototype prototype, Entity entity, int teleportID) {
 		
 		TeleportPoint teleportPoint = prototype.getTeleportPoint(teleportID);

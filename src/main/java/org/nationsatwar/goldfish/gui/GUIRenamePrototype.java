@@ -11,7 +11,7 @@ import net.minecraft.world.World;
 import net.minecraftforge.common.DimensionManager;
 
 import org.nationsatwar.goldfish.Goldfish;
-import org.nationsatwar.goldfish.packets.prototypes.PacketRenamePrototype;
+import org.nationsatwar.goldfish.packets.prototypes.rename.PacketRenamePrototype;
 import org.nationsatwar.goldfish.prototypes.Prototype;
 import org.nationsatwar.goldfish.prototypes.PrototypeManager;
 import org.nationsatwar.goldfish.util.Constants;

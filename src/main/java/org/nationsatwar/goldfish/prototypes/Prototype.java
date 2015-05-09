@@ -62,6 +62,11 @@ public class Prototype {
 		return teleportPoints.get(index);
 	}
 	
+	public void decrementPrototypeID() {
+		
+		prototypeID--;
+	}
+	
 	public boolean teleportPointExists(int teleportID) {
 		
 		if (teleportPoints.containsKey(teleportID))
@@ -73,6 +78,23 @@ public class Prototype {
 	public void addTeleportPoint(int teleportID, TeleportPoint teleportPoint) {
 
 		teleportPoints.put(teleportID, teleportPoint);
+	}
+	
+	public void removeTeleportPoint(int teleportID) {
+
+		teleportPoints.remove(teleportID);
+		
+		Map<Integer, TeleportPoint> updatedTeleports = new HashMap<Integer, TeleportPoint>();
+		
+		int index = 0;
+		
+		for (TeleportPoint teleportPoint : teleportPoints.values()) {
+			
+			updatedTeleports.put(index, teleportPoint);
+			index++;
+		}
+		
+		teleportPoints = updatedTeleports;
 	}
 	
 	public int numberofTeleportPoints() {

@@ -8,7 +8,7 @@ import net.minecraft.world.World;
 
 import org.lwjgl.opengl.GL11;
 import org.nationsatwar.goldfish.Goldfish;
-import org.nationsatwar.goldfish.packets.prototypes.PacketWarpPlayer;
+import org.nationsatwar.goldfish.packets.prototypes.warp.PacketWarpPlayer;
 import org.nationsatwar.goldfish.prototypes.Prototype;
 import org.nationsatwar.goldfish.prototypes.PrototypeManager;
 
