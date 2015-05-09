@@ -8,14 +8,13 @@ import net.minecraft.client.gui.GuiTextField;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.util.ResourceLocation;
 import net.minecraft.world.World;
-import net.minecraftforge.common.DimensionManager;
 
 import org.nationsatwar.goldfish.Goldfish;
-import org.nationsatwar.goldfish.packets.prototypes.rename.PacketRenamePrototype;
+import org.nationsatwar.goldfish.packets.teleports.message.PacketSetTeleportMessage;
 import org.nationsatwar.goldfish.prototypes.Prototype;
 import org.nationsatwar.goldfish.prototypes.PrototypeManager;
+import org.nationsatwar.goldfish.teleports.TeleportsManager;
 import org.nationsatwar.goldfish.util.Constants;
-import org.nationsatwar.palette.chat.ChatMessage;
 
 public class GUISetTeleportMessage extends GuiScreen {
 	
@@ -25,7 +24,7 @@ public class GUISetTeleportMessage extends GuiScreen {
 	private EntityPlayer player;
 	private int windowX, windowY, windowWidth, windowHeight;
 	
-	private GuiTextField renameTextbox;
+	private GuiTextField teleportMessage;
 
 	private String errorText = "";
 	
@@ -51,11 +50,13 @@ public class GUISetTeleportMessage extends GuiScreen {
 		GuiButton cancelButton = new GuiButton(1, windowX + 70, windowY + 60, 50, 20, "Cancel");
 		buttonList.add(cancelButton);
 		
-		renameTextbox = new GuiTextField(2, fontRendererObj, windowX + 20, windowY + 30, 100, 20);
-		renameTextbox.setMaxStringLength(PrototypeManager.MAX_PROTOTYPE_NAME_LENGTH);
-		renameTextbox.setText(PrototypeManager.getActivePrototype().getPrototypeName());
-		renameTextbox.setCanLoseFocus(false);
-		renameTextbox.setFocused(true);
+		int activeTeleportPointID = TeleportsManager.getActiveTeleportPointID();
+		
+		teleportMessage = new GuiTextField(2, fontRendererObj, windowX + 20, windowY + 30, 100, 20);
+		teleportMessage.setMaxStringLength(PrototypeManager.MAX_PROTOTYPE_NAME_LENGTH);
+		teleportMessage.setText(PrototypeManager.getActivePrototype().getTeleportPoint(activeTeleportPointID).getMessage());
+		teleportMessage.setCanLoseFocus(false);
+		teleportMessage.setFocused(true);
 	}
 	
 	@Override
@@ -68,14 +69,14 @@ public class GUISetTeleportMessage extends GuiScreen {
 			return;
 		
 		super.keyTyped(par1, par2);
-		renameTextbox.textboxKeyTyped(par1, par2);
+		teleportMessage.textboxKeyTyped(par1, par2);
 	}
 	
 	@Override
 	public void updateScreen() {
 		
 		super.updateScreen();
-		renameTextbox.updateCursorCounter();
+		teleportMessage.updateCursorCounter();
 	}
 	
 	@Override
@@ -84,14 +85,12 @@ public class GUISetTeleportMessage extends GuiScreen {
 		this.mc.getTextureManager().bindTexture(backgroundimage);
 		drawTexturedModalRect(windowX, windowY, 0, 0, windowWidth,  windowHeight);
 		
-		renameTextbox.drawTextBox();
+		teleportMessage.drawTextBox();
 		
 		if (!PrototypeManager.activePrototypeIsSet())
 			return;
 		
-		String prototypeName = PrototypeManager.getActivePrototype().getPrototypeName();
-		
-		drawString(fontRendererObj, "Rename: " + prototypeName + "?", 
+		drawString(fontRendererObj, "New Message: " + teleportMessage.getText() + "?", 
 				windowX + 10, windowY + 12, 0xEE8888);
 		
 		drawString(fontRendererObj, errorText, windowX + 10, windowY + 160, 0xCC2222);
@@ -103,7 +102,7 @@ public class GUISetTeleportMessage extends GuiScreen {
 	protected void mouseClicked(int x, int y, int btn) throws IOException {
 		
 		super.mouseClicked(x, y, btn);
-		renameTextbox.mouseClicked(x, y, btn);
+		teleportMessage.mouseClicked(x, y, btn);
 	}
 	
 	@Override
@@ -115,37 +114,30 @@ public class GUISetTeleportMessage extends GuiScreen {
 	@Override
 	public void actionPerformed(GuiButton button) {
 		
-		// Renames Prototype
+		// Sets the new Teleport Label
 		if (button.id == 0) {
 			
-			if (renameTextbox.getText().matches(Constants.PROTOTYPE_NAME_REGEX)) {
+			if (teleportMessage.getText().matches(Constants.PROTOTYPE_NAME_REGEX)) {
 				
 				Prototype prototype = PrototypeManager.getActivePrototype();
+				int teleportID = TeleportsManager.getActiveTeleportPointID();
 				
-				// Can only rename the prototype if it is not currently occupied
-				if (DimensionManager.getWorld(prototype.getPrototypeID()).playerEntities.size() < 1) {
-					
-					String oldPrototypeName = prototype.getPrototypeName();
-					
-					Goldfish.channel.sendToServer(new PacketRenamePrototype(prototype.getPrototypeName(), renameTextbox.getText()));
-					prototype.renamePrototype(renameTextbox.getText());
-					player.openGui(Goldfish.instance, GUIHandler.LIST_GUI_ID, player.getEntityWorld(), 0, 0, 0);
-					
-					ChatMessage.sendMessage(player, "Prototype: '" + oldPrototypeName + 
-							"' has been renamed to: " + prototype.getPrototypeName());
-				} else
-					errorText = "Can't rename a world that is occupied.";
+				TeleportsManager.setMessage(prototype, teleportMessage.getText(), teleportID);
+				
+				Goldfish.channel.sendToServer(new PacketSetTeleportMessage(prototype.getPrototypeID(), 
+						teleportID, teleportMessage.getText()));
+				player.openGui(Goldfish.instance, GUIHandler.TELEPORTS_GUI_ID, player.getEntityWorld(), 0, 0, 0);
 			}
-			else if (renameTextbox.getText() == "")
-				errorText = "Enter a prototype name";
+			else if (teleportMessage.getText() == "")
+				errorText = "Enter a teleport message";
 			else
 				errorText = "Enter valid characters";
 
-			renameTextbox.setText("");
+			teleportMessage.setText("");
 		}
 		
-		// Cancel - Returns to Prototype List
+		// Cancel - Returns to Teleports List
 		if (button.id == 1)
-			player.openGui(Goldfish.instance, GUIHandler.LIST_GUI_ID, player.getEntityWorld(), 0, 0, 0);
+			player.openGui(Goldfish.instance, GUIHandler.TELEPORTS_GUI_ID, player.getEntityWorld(), 0, 0, 0);
 	}
 }

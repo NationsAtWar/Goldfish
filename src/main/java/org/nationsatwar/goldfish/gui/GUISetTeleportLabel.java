@@ -8,14 +8,13 @@ import net.minecraft.client.gui.GuiTextField;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.util.ResourceLocation;
 import net.minecraft.world.World;
-import net.minecraftforge.common.DimensionManager;
 
 import org.nationsatwar.goldfish.Goldfish;
-import org.nationsatwar.goldfish.packets.prototypes.rename.PacketRenamePrototype;
+import org.nationsatwar.goldfish.packets.teleports.label.PacketSetTeleportLabel;
 import org.nationsatwar.goldfish.prototypes.Prototype;
 import org.nationsatwar.goldfish.prototypes.PrototypeManager;
+import org.nationsatwar.goldfish.teleports.TeleportsManager;
 import org.nationsatwar.goldfish.util.Constants;
-import org.nationsatwar.palette.chat.ChatMessage;
 
 public class GUISetTeleportLabel extends GuiScreen {
 	
@@ -51,9 +50,11 @@ public class GUISetTeleportLabel extends GuiScreen {
 		GuiButton cancelButton = new GuiButton(1, windowX + 70, windowY + 60, 50, 20, "Cancel");
 		buttonList.add(cancelButton);
 		
+		int activeTeleportPointID = TeleportsManager.getActiveTeleportPointID();
+		
 		teleportLabel = new GuiTextField(2, fontRendererObj, windowX + 20, windowY + 30, 100, 20);
 		teleportLabel.setMaxStringLength(PrototypeManager.MAX_PROTOTYPE_NAME_LENGTH);
-		teleportLabel.setText(PrototypeManager.getActivePrototype().getPrototypeName());
+		teleportLabel.setText(PrototypeManager.getActivePrototype().getTeleportPoint(activeTeleportPointID).getLabel());
 		teleportLabel.setCanLoseFocus(false);
 		teleportLabel.setFocused(true);
 	}
@@ -115,37 +116,30 @@ public class GUISetTeleportLabel extends GuiScreen {
 	@Override
 	public void actionPerformed(GuiButton button) {
 		
-		// Renames Prototype
+		// Sets the new Teleport Label
 		if (button.id == 0) {
 			
 			if (teleportLabel.getText().matches(Constants.PROTOTYPE_NAME_REGEX)) {
 				
 				Prototype prototype = PrototypeManager.getActivePrototype();
+				int teleportID = TeleportsManager.getActiveTeleportPointID();
 				
-				// Can only rename the prototype if it is not currently occupied
-				if (DimensionManager.getWorld(prototype.getPrototypeID()).playerEntities.size() < 1) {
-					
-					String oldPrototypeName = prototype.getPrototypeName();
-					
-					Goldfish.channel.sendToServer(new PacketRenamePrototype(prototype.getPrototypeName(), teleportLabel.getText()));
-					prototype.renamePrototype(teleportLabel.getText());
-					player.openGui(Goldfish.instance, GUIHandler.LIST_GUI_ID, player.getEntityWorld(), 0, 0, 0);
-					
-					ChatMessage.sendMessage(player, "Prototype: '" + oldPrototypeName + 
-							"' has been renamed to: " + prototype.getPrototypeName());
-				} else
-					errorText = "Can't rename a world that is occupied.";
+				TeleportsManager.setLabel(prototype, teleportLabel.getText(), teleportID);
+				
+				Goldfish.channel.sendToServer(new PacketSetTeleportLabel(prototype.getPrototypeID(), 
+						teleportID, teleportLabel.getText()));
+				player.openGui(Goldfish.instance, GUIHandler.TELEPORTS_GUI_ID, player.getEntityWorld(), 0, 0, 0);
 			}
 			else if (teleportLabel.getText() == "")
-				errorText = "Enter a prototype name";
+				errorText = "Enter a teleport label";
 			else
 				errorText = "Enter valid characters";
 
 			teleportLabel.setText("");
 		}
 		
-		// Cancel - Returns to Prototype List
+		// Cancel - Returns to Teleports List
 		if (button.id == 1)
-			player.openGui(Goldfish.instance, GUIHandler.LIST_GUI_ID, player.getEntityWorld(), 0, 0, 0);
+			player.openGui(Goldfish.instance, GUIHandler.TELEPORTS_GUI_ID, player.getEntityWorld(), 0, 0, 0);
 	}
 }

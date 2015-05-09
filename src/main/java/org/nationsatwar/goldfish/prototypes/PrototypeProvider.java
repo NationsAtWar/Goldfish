@@ -18,7 +18,6 @@ public class PrototypeProvider extends WorldProvider {
 		
 		worldChunkMgr.cleanupCache();
 		
-		System.out.println(this.dimensionName);
 		Prototype prototype = PrototypeManager.getPrototype(this.dimensionId);
 		this.dimensionName = prototype.getPrototypeName();
 		this.setDimension(prototype.getPrototypeID());

@@ -52,9 +52,9 @@ public class Prototype {
 		return activated;
 	}
 	
-	public void toggleActivated() {
+	public void setActivated(boolean activated) {
 		
-		this.activated = !this.activated;
+		this.activated = activated;
 	}
 	
 	public TeleportPoint getTeleportPoint(int index) {

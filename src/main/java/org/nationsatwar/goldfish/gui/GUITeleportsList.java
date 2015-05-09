@@ -77,6 +77,8 @@ public class GUITeleportsList extends GuiScreen {
 		if (teleportPoint == null)
 			return;
 		
+		TeleportsManager.setActiveTeleportPointID(teleportsPage);
+		
 		GuiButton removeTeleport = new GuiButton(2, windowX + 82, windowY + 40, 70, 20, "Remove");
 		buttonList.add(removeTeleport);
 		
@@ -261,9 +263,10 @@ public class GUITeleportsList extends GuiScreen {
 		// Add Teleport
 		if (button.id == 1) {
 			
+			int prototypeID = prototype.getPrototypeID();
 			int teleportID = prototype.numberofTeleportPoints();
 			
-			TeleportsManager.addTeleport(prototype, player, teleportID);
+			TeleportsManager.addTeleport(player.getUniqueID().toString(), prototypeID, teleportID, false);
 			
 			Goldfish.channel.sendToServer(new PacketAddTeleport(player.getUniqueID().toString(), 
 					prototype.getPrototypeID(), teleportID));

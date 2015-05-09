@@ -28,4 +28,9 @@ public class PrototypeMapData extends WorldSavedData {
 		
 		return data;
 	}
+	
+	public void setData(NBTTagCompound data) {
+		
+		this.data = data;
+	}
 }

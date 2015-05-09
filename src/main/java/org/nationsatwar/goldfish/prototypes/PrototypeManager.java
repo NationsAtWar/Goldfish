@@ -11,13 +11,17 @@ import net.minecraft.world.WorldServer;
 import net.minecraftforge.common.DimensionManager;
 
 import org.nationsatwar.goldfish.Goldfish;
+import org.nationsatwar.goldfish.packets.prototypes.activate.PacketActivatePrototype;
 import org.nationsatwar.goldfish.packets.prototypes.create.PacketCreatePrototype;
 import org.nationsatwar.goldfish.packets.prototypes.delete.PacketDeletePrototype;
 import org.nationsatwar.goldfish.packets.prototypes.rename.PacketRenamePrototype;
+import org.nationsatwar.goldfish.util.FileUtil;
 
 public class PrototypeManager {
 	
 	public final static int MAX_PROTOTYPE_NAME_LENGTH = 20;
+	
+	public final static String PROTOTYPE_ACIVATED_KEY = "GF_Activated";
 	
 	public static Map<Integer, EntityPlayer> prepPlayers = new HashMap<Integer, EntityPlayer>();
 	
@@ -81,13 +85,9 @@ public class PrototypeManager {
 			worldServer.getPerWorldStorage().setData(prototypeName, mapData);
 		}
 		
-		// Functionality for saving world data. Will be useful later.
-		//mapData.getData().setString("lol", "You fucker");
-		//mapData.setDirty(true);
-		
 		prototype.setMapData(mapData);
 		
-		System.out.println("Server loaded: " + prototypeName + " under ID: " + prototypeID);
+		PrototypeManager.loadPrototypeData(prototype);
 	}
 
 	/**
@@ -106,6 +106,21 @@ public class PrototypeManager {
 		
 		Prototype prototype = new Prototype(prototypeName, prototypeID);
 		prototypeList.put(prototypeID, prototype);
+	}
+	
+	/**
+	 * Loads the data saved in the prototype data folder back into this instance of the prototype
+	 * 
+	 * @param prototype The prototype which you want to load data from
+	 */
+	public static void loadPrototypeData(Prototype prototype) {
+		
+		PrototypeMapData mapData = prototype.getMapData();
+		int prototypeID = prototype.getPrototypeID();
+		
+		// Load prototype properties
+		boolean activated = mapData.getData().getBoolean(PROTOTYPE_ACIVATED_KEY);
+		PrototypeManager.setPrototypeActivation(prototypeID, activated, true);
 	}
 	
 	/**
@@ -285,14 +300,24 @@ public class PrototypeManager {
 	public static void renamePrototype(String oldPrototypeName, String newPrototypeName) {
 
 		String saveDirectory = DimensionManager.getCurrentSaveRootDirectory().getAbsolutePath() + "/";
-		File oldPrototypeFile = new File(saveDirectory + Goldfish.prototypePath + "Prototype_" + oldPrototypeName);
-		File newPrototypeFile = new File(saveDirectory + Goldfish.prototypePath + "Prototype_" + newPrototypeName);
+		File oldPrototypeFile = new File(saveDirectory + Goldfish.prototypePath + 
+				"Prototype_" + oldPrototypeName);
+		File newPrototypeFile = new File(saveDirectory + Goldfish.prototypePath + 
+				"Prototype_" + newPrototypeName);
 		
 		// This should only be called on the server
 		if (oldPrototypeFile.exists()) {
 			
 			// Renames the folder to the new name
 			oldPrototypeFile.renameTo(newPrototypeFile);
+			
+			File oldPrototypeData = new File(saveDirectory + Goldfish.prototypePath + 
+					"Prototype_" + newPrototypeName + "/data/" + oldPrototypeName + ".dat");
+			File newPrototypeData = new File(saveDirectory + Goldfish.prototypePath + 
+					"Prototype_" + newPrototypeName + "/data/" + newPrototypeName + ".dat");
+			
+			// Renames the data file to the new name
+			oldPrototypeData.renameTo(newPrototypeData);
 			
 			// Makes sure all clients also get their prototype renamed
 			for (WorldServer worldServer : MinecraftServer.getServer().worldServers) {
@@ -308,9 +333,18 @@ public class PrototypeManager {
 		Prototype prototype = getPrototype(oldPrototypeName);
 		
 		if (prototype == null)
-			return;
+			prototype = getPrototype(newPrototypeName);
 		
 		prototype.renamePrototype(newPrototypeName);
+		DimensionManager.initDimension(prototype.getPrototypeID());
+		
+		WorldServer worldServer = DimensionManager.getWorld(prototype.getPrototypeID());
+		
+		// Sets the map data for the new world name
+		PrototypeMapData mapData = (PrototypeMapData) worldServer.getPerWorldStorage().loadData(PrototypeMapData.class, newPrototypeName);
+		mapData.setData(prototype.getMapData().getData());
+		mapData.setDirty(true);
+		prototype.setMapData(mapData);
 	}
 	
 	/**
@@ -326,8 +360,8 @@ public class PrototypeManager {
 		// This should only be called on the server
 		if (prototypeFile.exists()) {
 			
-			// Renames the folder to the new name
-			prototypeFile.delete();
+			// Deletes the folder
+			FileUtil.deleteDirectory(prototypeFile);
 			
 			// Makes sure all clients also get their prototype deleted internally
 			for (WorldServer worldServer : MinecraftServer.getServer().worldServers) {
@@ -344,6 +378,41 @@ public class PrototypeManager {
 		if (prototype == null)
 			return;
 		
+		int prototypeID = prototype.getPrototypeID();
+		DimensionManager.unregisterDimension(prototypeID);
+		DimensionManager.unloadWorld(prototypeID);
+		
 		prototypeList.remove(prototype.getPrototypeID());
+	}
+	
+	/**
+	 * Sets whether or not a prototype is activated, syncs clients if necessary.
+	 * 
+	 * @param prototypeID The ID of the prototype
+	 * @param activated Set to true to activate, false otherwise
+	 * @param syncClients Server Only, syncs all clients to the server's settings
+	 */
+	public static void setPrototypeActivation(int prototypeID, boolean activated, boolean syncClients) {
+		
+		Prototype prototype = PrototypeManager.getPrototype(prototypeID);
+		prototype.setActivated(activated);
+		
+		// Syncs activation for all clients
+		if (syncClients) {
+			
+			// Saves the data for the prototype world
+			PrototypeMapData mapData = prototype.getMapData();
+			mapData.getData().setBoolean(PrototypeManager.PROTOTYPE_ACIVATED_KEY, activated);
+			mapData.setDirty(true);
+			
+			// Sync activation for all clients
+			for (WorldServer worldServer : MinecraftServer.getServer().worldServers) {
+				for (Object playerEntity : worldServer.playerEntities) {
+					
+					EntityPlayerMP clientPlayer = (EntityPlayerMP) playerEntity;
+					Goldfish.channel.sendTo(new PacketActivatePrototype(prototypeID, activated), clientPlayer);
+				}
+			}
+		}
 	}
 }

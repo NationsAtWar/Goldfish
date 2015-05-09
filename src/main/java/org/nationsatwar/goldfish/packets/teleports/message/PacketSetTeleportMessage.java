@@ -6,34 +6,34 @@ import net.minecraftforge.fml.common.network.simpleimpl.IMessage;
 
 public class PacketSetTeleportMessage implements IMessage {
 	
-	public String playerUUID;
 	public int prototypeID;
 	public int teleportID;
+	public String message;
 	
 	public PacketSetTeleportMessage() {
 		
 	}
 	
-	public PacketSetTeleportMessage(String playerUUID, int prototypeID, int teleportID) {
+	public PacketSetTeleportMessage(int prototypeID, int teleportID, String message) {
 		
-		this.playerUUID = playerUUID;
 		this.prototypeID = prototypeID;
 		this.teleportID = teleportID;
+		this.message = message;
 	}
 
 	@Override
 	public void fromBytes(ByteBuf buf) {
 
-		playerUUID = ByteBufUtils.readUTF8String(buf);
 		prototypeID = buf.readInt();
 		teleportID = buf.readInt();
+		message = ByteBufUtils.readUTF8String(buf);
 	}
 
 	@Override
 	public void toBytes(ByteBuf buf) {
 		
-		ByteBufUtils.writeUTF8String(buf, playerUUID);
 		buf.writeInt(prototypeID);
 		buf.writeInt(teleportID);
+		ByteBufUtils.writeUTF8String(buf, message);
 	}
 }

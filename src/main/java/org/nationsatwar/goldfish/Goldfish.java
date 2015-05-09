@@ -15,6 +15,9 @@ import net.minecraftforge.fml.relauncher.Side;
 
 import org.nationsatwar.goldfish.events.DebugEvents;
 import org.nationsatwar.goldfish.gui.GUIHandler;
+import org.nationsatwar.goldfish.packets.prototypes.activate.PacketActivatePrototype;
+import org.nationsatwar.goldfish.packets.prototypes.activate.PacketHandlerActivatePrototypeReceive;
+import org.nationsatwar.goldfish.packets.prototypes.activate.PacketHandlerActivatePrototypeSend;
 import org.nationsatwar.goldfish.packets.prototypes.create.PacketCreatePrototype;
 import org.nationsatwar.goldfish.packets.prototypes.create.PacketHandlerCreatePrototypeReceive;
 import org.nationsatwar.goldfish.packets.prototypes.create.PacketHandlerCreatePrototypeSend;
@@ -84,12 +87,14 @@ public class Goldfish {
 		channel = NetworkRegistry.INSTANCE.newSimpleChannel(Goldfish.MODID);
 		
 		// Prototype Packets
-		channel.registerMessage(PacketHandlerCreatePrototypeSend.class, PacketCreatePrototype.class, 1, Side.SERVER);
-		channel.registerMessage(PacketHandlerCreatePrototypeReceive.class, PacketCreatePrototype.class, 1, Side.CLIENT);
-		channel.registerMessage(PacketHandlerRenamePrototypeSend.class, PacketRenamePrototype.class, 2, Side.SERVER);
-		channel.registerMessage(PacketHandlerRenamePrototypeReceive.class, PacketRenamePrototype.class, 2, Side.CLIENT);
-		channel.registerMessage(PacketHandlerDeletePrototypeSend.class, PacketDeletePrototype.class, 3, Side.SERVER);
-		channel.registerMessage(PacketHandlerDeletePrototypeReceive.class, PacketDeletePrototype.class, 3, Side.CLIENT);
+		channel.registerMessage(PacketHandlerCreatePrototypeSend.class, PacketCreatePrototype.class, 0, Side.SERVER);
+		channel.registerMessage(PacketHandlerCreatePrototypeReceive.class, PacketCreatePrototype.class, 0, Side.CLIENT);
+		channel.registerMessage(PacketHandlerRenamePrototypeSend.class, PacketRenamePrototype.class, 1, Side.SERVER);
+		channel.registerMessage(PacketHandlerRenamePrototypeReceive.class, PacketRenamePrototype.class, 1, Side.CLIENT);
+		channel.registerMessage(PacketHandlerDeletePrototypeSend.class, PacketDeletePrototype.class, 2, Side.SERVER);
+		channel.registerMessage(PacketHandlerDeletePrototypeReceive.class, PacketDeletePrototype.class, 2, Side.CLIENT);
+		channel.registerMessage(PacketHandlerActivatePrototypeSend.class, PacketActivatePrototype.class, 3, Side.SERVER);
+		channel.registerMessage(PacketHandlerActivatePrototypeReceive.class, PacketActivatePrototype.class, 3, Side.CLIENT);
 		channel.registerMessage(PacketHandlerWarpPlayer.class, PacketWarpPlayer.class, 4, Side.SERVER);
 		
 		// Teleports Packets - TODO: Perhaps consolidate these into one general TeleportSync packet

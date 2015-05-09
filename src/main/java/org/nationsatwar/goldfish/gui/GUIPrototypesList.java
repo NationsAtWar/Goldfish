@@ -8,6 +8,7 @@ import net.minecraft.world.World;
 
 import org.lwjgl.opengl.GL11;
 import org.nationsatwar.goldfish.Goldfish;
+import org.nationsatwar.goldfish.packets.prototypes.activate.PacketActivatePrototype;
 import org.nationsatwar.goldfish.packets.prototypes.warp.PacketWarpPlayer;
 import org.nationsatwar.goldfish.prototypes.Prototype;
 import org.nationsatwar.goldfish.prototypes.PrototypeManager;
@@ -121,7 +122,12 @@ public class GUIPrototypesList extends GuiScreen {
 		// Activate Prototype
 		if (button.id == 1) {
 			
-			PrototypeManager.getActivePrototype().toggleActivated();
+			boolean activated = PrototypeManager.getActivePrototype().isActivated();
+			int prototypeID = PrototypeManager.getActivePrototype().getPrototypeID();
+			
+			PrototypeManager.getActivePrototype().setActivated(!activated);
+			Goldfish.channel.sendToServer(new PacketActivatePrototype(prototypeID, !activated));
+			
 			initGui();
 		}
 		
