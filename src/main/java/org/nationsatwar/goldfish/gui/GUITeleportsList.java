@@ -21,6 +21,7 @@ import org.nationsatwar.goldfish.prototypes.PrototypeManager;
 import org.nationsatwar.goldfish.teleports.TeleportPoint;
 import org.nationsatwar.goldfish.teleports.TeleportsManager;
 import org.nationsatwar.goldfish.util.Constants;
+import org.nationsatwar.palette.WorldLocation;
 
 public class GUITeleportsList extends GuiScreen {
 	
@@ -146,8 +147,8 @@ public class GUITeleportsList extends GuiScreen {
 			int messageRadiusInteger = Integer.parseInt(messageRadius.getText());
 			int teleportRadiusInteger = Integer.parseInt(teleportRadius.getText());
 			
-			TeleportsManager.setMessageRadius(prototype, messageRadiusInteger, teleportsPage);
-			TeleportsManager.setTeleportRadius(prototype, teleportRadiusInteger, teleportsPage);
+			TeleportsManager.setMessageRadius(prototype, messageRadiusInteger, teleportsPage, false);
+			TeleportsManager.setTeleportRadius(prototype, teleportRadiusInteger, teleportsPage, false);
 			
 			Goldfish.channel.sendToServer(new PacketSetMessageRadius(messageRadiusInteger, 
 					prototype.getPrototypeID(), teleportsPage));
@@ -299,18 +300,24 @@ public class GUITeleportsList extends GuiScreen {
 		// Set Source Location
 		if (button.id == 5) {
 			
-			TeleportsManager.setSourcePoint(prototype, player, teleportsPage);
+			WorldLocation worldLocation = new WorldLocation(player);
 			
-			Goldfish.channel.sendToServer(new PacketSetTeleportSource(player.getUniqueID().toString(), 
+			TeleportsManager.setSourcePoint(prototype, worldLocation, teleportsPage, false);
+			
+			Goldfish.channel.sendToServer(new PacketSetTeleportSource(worldLocation.getWorldName(), 
+					worldLocation.getPosX(), worldLocation.getPosY(), worldLocation.getPosZ(), 
 					prototype.getPrototypeID(), teleportsPage));
 		}
 		
 		// Set Destination Location
 		if (button.id == 6) {
 			
-			TeleportsManager.setDestPoint(prototype, player, teleportsPage);
+			WorldLocation worldLocation = new WorldLocation(player);
 			
-			Goldfish.channel.sendToServer(new PacketSetTeleportDest(player.getUniqueID().toString(), 
+			TeleportsManager.setDestPoint(prototype, worldLocation, teleportsPage, false);
+			
+			Goldfish.channel.sendToServer(new PacketSetTeleportDest(worldLocation.getWorldName(), 
+					worldLocation.getPosX(), worldLocation.getPosY(), worldLocation.getPosZ(), 
 					prototype.getPrototypeID(), teleportsPage));
 		}
 				

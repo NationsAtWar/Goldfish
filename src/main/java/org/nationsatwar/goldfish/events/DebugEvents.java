@@ -38,30 +38,6 @@ public class DebugEvents {
 				return;
 			}
 		}
-		/*
-		
-		if (event.state.getBlock().getMaterial().equals(Material.grass)) {
-			
-			Prototype prototype = PrototypeManager.getPrototype("Test 5");
-			
-			if (prototype == null)
-				return;
-			
-			if (prototype.getMapData() == null)
-				return;
-			
-			if (prototype.getMapData().getData().getString("Test") == null)
-				return;
-			
-			int dimensionID = prototype.getPrototypeID();
-			
-			WorldServer worldServer = MinecraftServer.getServer().worldServerForDimension(dimensionID);
-			
-			MinecraftServer.getServer().getConfigurationManager().transferPlayerToDimension((EntityPlayerMP) event.getPlayer(), 
-					dimensionID, new TeleporterFix(worldServer));
-			
-			event.getPlayer().posY += 2;
-		*/
 	}
 	
 	@SubscribeEvent

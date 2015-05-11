@@ -124,7 +124,7 @@ public class GUISetTeleportLabel extends GuiScreen {
 				Prototype prototype = PrototypeManager.getActivePrototype();
 				int teleportID = TeleportsManager.getActiveTeleportPointID();
 				
-				TeleportsManager.setLabel(prototype, teleportLabel.getText(), teleportID);
+				TeleportsManager.setLabel(prototype, teleportLabel.getText(), teleportID, false);
 				
 				Goldfish.channel.sendToServer(new PacketSetTeleportLabel(prototype.getPrototypeID(), 
 						teleportID, teleportLabel.getText()));

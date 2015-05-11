@@ -14,7 +14,7 @@ public class PacketHandlerSetTeleportMessageReceive implements IMessageHandler<P
 	public IMessage onMessage(PacketSetTeleportMessage message, MessageContext ctx) {
 		
 		Prototype prototype = PrototypeManager.getPrototype(message.prototypeID);
-		TeleportsManager.setMessage(prototype, message.message, message.teleportID);
+		TeleportsManager.setMessage(prototype, message.message, message.teleportID, false);
 		
 		return null;
 	}

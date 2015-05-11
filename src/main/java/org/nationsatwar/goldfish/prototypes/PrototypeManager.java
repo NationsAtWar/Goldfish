@@ -15,6 +15,7 @@ import org.nationsatwar.goldfish.packets.prototypes.activate.PacketActivateProto
 import org.nationsatwar.goldfish.packets.prototypes.create.PacketCreatePrototype;
 import org.nationsatwar.goldfish.packets.prototypes.delete.PacketDeletePrototype;
 import org.nationsatwar.goldfish.packets.prototypes.rename.PacketRenamePrototype;
+import org.nationsatwar.goldfish.teleports.TeleportsManager;
 import org.nationsatwar.goldfish.util.FileUtil;
 
 public class PrototypeManager {
@@ -121,6 +122,8 @@ public class PrototypeManager {
 		// Load prototype properties
 		boolean activated = mapData.getData().getBoolean(PROTOTYPE_ACIVATED_KEY);
 		PrototypeManager.setPrototypeActivation(prototypeID, activated, true);
+		
+		TeleportsManager.loadTeleportData(prototype);
 	}
 	
 	/**

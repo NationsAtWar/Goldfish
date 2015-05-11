@@ -14,8 +14,7 @@ public class PacketHandlerSetMessageRadiusReceive implements IMessageHandler<Pac
 	public IMessage onMessage(PacketSetMessageRadius message, MessageContext ctx) {
 		
 		Prototype prototype = PrototypeManager.getPrototype(message.prototypeID);
-		
-		TeleportsManager.setMessageRadius(prototype, message.messageRadius, message.teleportID);
+		TeleportsManager.setMessageRadius(prototype, message.messageRadius, message.teleportID, false);
 		
 		return null;
 	}

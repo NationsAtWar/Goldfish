@@ -14,7 +14,7 @@ public class PacketHandlerSetTeleportLabelReceive implements IMessageHandler<Pac
 	public IMessage onMessage(PacketSetTeleportLabel message, MessageContext ctx) {
 		
 		Prototype prototype = PrototypeManager.getPrototype(message.prototypeID);
-		TeleportsManager.setLabel(prototype, message.label, message.teleportID);
+		TeleportsManager.setLabel(prototype, message.label, message.teleportID, false);
 		
 		return null;
 	}

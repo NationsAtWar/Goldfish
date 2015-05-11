@@ -1,8 +1,5 @@
 package org.nationsatwar.goldfish.packets.teleports.teleportsource;
 
-import java.util.UUID;
-
-import net.minecraft.entity.player.EntityPlayer;
 import net.minecraftforge.fml.common.network.simpleimpl.IMessage;
 import net.minecraftforge.fml.common.network.simpleimpl.IMessageHandler;
 import net.minecraftforge.fml.common.network.simpleimpl.MessageContext;
@@ -10,7 +7,7 @@ import net.minecraftforge.fml.common.network.simpleimpl.MessageContext;
 import org.nationsatwar.goldfish.prototypes.Prototype;
 import org.nationsatwar.goldfish.prototypes.PrototypeManager;
 import org.nationsatwar.goldfish.teleports.TeleportsManager;
-import org.nationsatwar.palette.PlayerUtil;
+import org.nationsatwar.palette.WorldLocation;
 
 public class PacketHandlerSetTeleportSourceReceive implements IMessageHandler<PacketSetTeleportSource, IMessage> {
 
@@ -18,10 +15,9 @@ public class PacketHandlerSetTeleportSourceReceive implements IMessageHandler<Pa
 	public IMessage onMessage(PacketSetTeleportSource message, MessageContext ctx) {
 		
 		Prototype prototype = PrototypeManager.getPrototype(message.prototypeID);
-		UUID playerUUID = UUID.fromString(message.playerUUID);
-		EntityPlayer player = PlayerUtil.getPlayerByUUID(playerUUID);
+		WorldLocation worldLocation = new WorldLocation(message.worldName, message.posX, message.posY, message.posZ);
 		
-		TeleportsManager.setSourcePoint(prototype, player, message.teleportID);
+		TeleportsManager.setSourcePoint(prototype, worldLocation, message.teleportID, false);
 		
 		return null;
 	}

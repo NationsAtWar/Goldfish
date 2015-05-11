@@ -122,7 +122,7 @@ public class GUISetTeleportMessage extends GuiScreen {
 				Prototype prototype = PrototypeManager.getActivePrototype();
 				int teleportID = TeleportsManager.getActiveTeleportPointID();
 				
-				TeleportsManager.setMessage(prototype, teleportMessage.getText(), teleportID);
+				TeleportsManager.setMessage(prototype, teleportMessage.getText(), teleportID, false);
 				
 				Goldfish.channel.sendToServer(new PacketSetTeleportMessage(prototype.getPrototypeID(), 
 						teleportID, teleportMessage.getText()));

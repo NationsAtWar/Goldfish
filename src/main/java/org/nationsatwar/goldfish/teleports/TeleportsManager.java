@@ -2,7 +2,6 @@ package org.nationsatwar.goldfish.teleports;
 
 import java.util.UUID;
 
-import net.minecraft.entity.Entity;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.entity.player.EntityPlayerMP;
 import net.minecraft.server.MinecraftServer;
@@ -10,6 +9,12 @@ import net.minecraft.world.WorldServer;
 
 import org.nationsatwar.goldfish.Goldfish;
 import org.nationsatwar.goldfish.packets.teleports.add.PacketAddTeleport;
+import org.nationsatwar.goldfish.packets.teleports.label.PacketSetTeleportLabel;
+import org.nationsatwar.goldfish.packets.teleports.message.PacketSetTeleportMessage;
+import org.nationsatwar.goldfish.packets.teleports.messageradius.PacketSetMessageRadius;
+import org.nationsatwar.goldfish.packets.teleports.teleportdest.PacketSetTeleportDest;
+import org.nationsatwar.goldfish.packets.teleports.teleportradius.PacketSetTeleportRadius;
+import org.nationsatwar.goldfish.packets.teleports.teleportsource.PacketSetTeleportSource;
 import org.nationsatwar.goldfish.prototypes.Prototype;
 import org.nationsatwar.goldfish.prototypes.PrototypeManager;
 import org.nationsatwar.goldfish.prototypes.PrototypeMapData;
@@ -19,6 +24,7 @@ import org.nationsatwar.palette.WorldLocation;
 public class TeleportsManager {
 	
 	public final static String TELEPORT_PREFIX_KEY = "GF_Teleport_";
+	public final static String TELEPORT_AMOUNT_KEY = "GF_Teleport_Amount";
 	
 	private static int activeTeleportPointID;
 	
@@ -58,6 +64,9 @@ public class TeleportsManager {
 		TeleportPoint teleportPoint = prototype.getTeleportPoint(teleportID);
 		PrototypeMapData mapData = prototype.getMapData();
 		
+		// Saves Teleport Amount data
+		mapData.getData().setInteger(TELEPORT_AMOUNT_KEY, prototype.numberofTeleportPoints());
+		
 		// Saves source location data
 		if (teleportPoint.getSourcePoint() != null) {
 			
@@ -76,7 +85,7 @@ public class TeleportsManager {
 		// Saves destination location data
 		if (teleportPoint.getDestPoint() != null) {
 			
-			WorldLocation worldLoc = teleportPoint.getSourcePoint();
+			WorldLocation worldLoc = teleportPoint.getDestPoint();
 			String worldName = worldLoc.getWorldName();
 			double posX = worldLoc.getPosX();
 			double posY = worldLoc.getPosY();
@@ -96,10 +105,67 @@ public class TeleportsManager {
 		
 		int messageRadius = teleportPoint.getMessageRadius();
 		mapData.getData().setInteger(prefix + "MessageRadius", messageRadius);
+		System.out.println(prefix + "MessageRadius: " + messageRadius);
 		
 		int teleportRadius = teleportPoint.getTeleportRadius();
 		mapData.getData().setInteger(prefix + "TeleportRadius", teleportRadius);
 		mapData.setDirty(true);
+		mapData.markDirty();
+	}
+	
+	public static void loadTeleportData(Prototype prototype) {
+		
+		PrototypeMapData mapData = prototype.getMapData();
+		int amountOfTeleports = mapData.getData().getInteger(TELEPORT_AMOUNT_KEY);
+		
+		if (amountOfTeleports == 0)
+			return;
+		
+		for (int i = 0; i < amountOfTeleports; i++) {
+			
+			String prefix = TELEPORT_PREFIX_KEY + i + "_";
+			TeleportPoint teleportPoint = null;
+			
+			if (mapData.getData().hasKey(prefix + "Source_WorldName")) {
+				
+				String worldName = mapData.getData().getString(prefix + "Source_WorldName");
+				double posX = mapData.getData().getDouble(prefix + "Source_PosX");
+				double posY = mapData.getData().getDouble(prefix + "Source_PosY");
+				double posZ = mapData.getData().getDouble(prefix + "Source_PosZ");
+				
+				WorldLocation worldLocation = new WorldLocation(worldName, posX, posY, posZ);
+				teleportPoint = new TeleportPoint(worldLocation);
+				
+				prototype.addTeleportPoint(i, teleportPoint);
+			}
+			
+			if (teleportPoint == null)
+				return;
+			
+			if (mapData.getData().hasKey(prefix + "Dest_WorldName")) {
+				
+				String worldName = mapData.getData().getString(prefix + "Dest_WorldName");
+				double posX = mapData.getData().getDouble(prefix + "Dest_PosX");
+				double posY = mapData.getData().getDouble(prefix + "Dest_PosY");
+				double posZ = mapData.getData().getDouble(prefix + "Dest_PosZ");
+				
+				WorldLocation worldLocation = new WorldLocation(worldName, posX, posY, posZ);
+				teleportPoint.setDestPoint(worldLocation);
+			}
+			
+			String label = mapData.getData().getString(prefix + "Label");
+			teleportPoint.setLabel(label);
+			
+			String message = mapData.getData().getString(prefix + "Message");
+			teleportPoint.setMessage(message);
+			
+			int messageRadius = mapData.getData().getInteger(prefix + "MessageRadius");
+			teleportPoint.setMessageRadius(messageRadius);
+			System.out.println(prefix + "MessageRadius: " + messageRadius);
+			
+			int teleportRadius = mapData.getData().getInteger(prefix + "TeleportRadius");
+			teleportPoint.setTeleportRadius(teleportRadius);
+		}
 	}
 	
 	public static void removeTeleport(Prototype prototype, int teleportID, int amountOfTeleports) {
@@ -111,40 +177,132 @@ public class TeleportsManager {
 		prototype.removeTeleportPoint(teleportID);
 	}
 	
-	public static void setSourcePoint(Prototype prototype, Entity entity, int teleportID) {
+	public static void setSourcePoint(Prototype prototype, WorldLocation worldLocation, int teleportID, boolean syncClients) {
 		
 		TeleportPoint teleportPoint = prototype.getTeleportPoint(teleportID);
-		teleportPoint.setSourcePoint(entity);
+		teleportPoint.setSourcePoint(worldLocation);
+		
+		// Sync the teleport for all clients as well
+		if (syncClients) {
+			
+			TeleportsManager.saveTeleportData(prototype, teleportID);
+			
+			for (WorldServer worldServer : MinecraftServer.getServer().worldServers) {
+				for (Object playerEntity : worldServer.playerEntities) {
+					
+					EntityPlayerMP clientPlayer = (EntityPlayerMP) playerEntity;
+					Goldfish.channel.sendTo(new PacketSetTeleportSource(worldLocation.getWorldName(), 
+							worldLocation.getPosX(), worldLocation.getPosY(), worldLocation.getPosZ(), 
+							prototype.getPrototypeID(), teleportID), clientPlayer);
+				}
+			}
+		}
 	}
 	
-	public static void setDestPoint(Prototype prototype, Entity entity, int teleportID) {
+	public static void setDestPoint(Prototype prototype, WorldLocation worldLocation, int teleportID, boolean syncClients) {
 		
 		TeleportPoint teleportPoint = prototype.getTeleportPoint(teleportID);
-		teleportPoint.setDestPoint(entity);
+		teleportPoint.setDestPoint(worldLocation);
+		
+		// Sync the teleport for all clients as well
+		if (syncClients) {
+			
+			TeleportsManager.saveTeleportData(prototype, teleportID);
+			
+			for (WorldServer worldServer : MinecraftServer.getServer().worldServers) {
+				for (Object playerEntity : worldServer.playerEntities) {
+					
+					EntityPlayerMP clientPlayer = (EntityPlayerMP) playerEntity;
+					Goldfish.channel.sendTo(new PacketSetTeleportDest(worldLocation.getWorldName(), 
+							worldLocation.getPosX(), worldLocation.getPosY(), worldLocation.getPosZ(), 
+							prototype.getPrototypeID(), teleportID), clientPlayer);
+				}
+			}
+		}
 	}
 	
-	public static void setMessageRadius(Prototype prototype, int messageRadius, int teleportID) {
+	public static void setMessageRadius(Prototype prototype, int messageRadius, int teleportID, boolean syncClients) {
 		
 		TeleportPoint teleportPoint = prototype.getTeleportPoint(teleportID);
 		teleportPoint.setMessageRadius(messageRadius);
+		
+		// Sync the teleport for all clients as well
+		if (syncClients) {
+			
+			TeleportsManager.saveTeleportData(prototype, teleportID);
+			
+			for (WorldServer worldServer : MinecraftServer.getServer().worldServers) {
+				for (Object playerEntity : worldServer.playerEntities) {
+					
+					EntityPlayerMP clientPlayer = (EntityPlayerMP) playerEntity;
+					Goldfish.channel.sendTo(new PacketSetMessageRadius(messageRadius, 
+							prototype.getPrototypeID(), teleportID), clientPlayer);
+				}
+			}
+		}
 	}
 	
-	public static void setTeleportRadius(Prototype prototype, int teleportRadius, int teleportID) {
+	public static void setTeleportRadius(Prototype prototype, int teleportRadius, int teleportID, boolean syncClients) {
 		
 		TeleportPoint teleportPoint = prototype.getTeleportPoint(teleportID);
 		teleportPoint.setTeleportRadius(teleportRadius);
+		
+		// Sync the teleport for all clients as well
+		if (syncClients) {
+			
+			TeleportsManager.saveTeleportData(prototype, teleportID);
+			
+			for (WorldServer worldServer : MinecraftServer.getServer().worldServers) {
+				for (Object playerEntity : worldServer.playerEntities) {
+					
+					EntityPlayerMP clientPlayer = (EntityPlayerMP) playerEntity;
+					Goldfish.channel.sendTo(new PacketSetTeleportRadius(teleportRadius, 
+							prototype.getPrototypeID(), teleportID), clientPlayer);
+				}
+			}
+		}
 	}
 	
-	public static void setMessage(Prototype prototype, String message, int teleportID) {
+	public static void setMessage(Prototype prototype, String message, int teleportID, boolean syncClients) {
 		
 		TeleportPoint teleportPoint = prototype.getTeleportPoint(teleportID);
 		teleportPoint.setMessage(message);
+		
+		// Sync the teleport for all clients as well
+		if (syncClients) {
+			
+			TeleportsManager.saveTeleportData(prototype, teleportID);
+			
+			for (WorldServer worldServer : MinecraftServer.getServer().worldServers) {
+				for (Object playerEntity : worldServer.playerEntities) {
+					
+					EntityPlayerMP clientPlayer = (EntityPlayerMP) playerEntity;
+					Goldfish.channel.sendTo(new PacketSetTeleportMessage(prototype.getPrototypeID(), 
+							teleportID, message), clientPlayer);
+				}
+			}
+		}
 	}
 	
-	public static void setLabel(Prototype prototype, String label, int teleportID) {
+	public static void setLabel(Prototype prototype, String label, int teleportID, boolean syncClients) {
 		
 		TeleportPoint teleportPoint = prototype.getTeleportPoint(teleportID);
 		teleportPoint.setLabel(label);
+		
+		// Sync the teleport for all clients as well
+		if (syncClients) {
+			
+			TeleportsManager.saveTeleportData(prototype, teleportID);
+			
+			for (WorldServer worldServer : MinecraftServer.getServer().worldServers) {
+				for (Object playerEntity : worldServer.playerEntities) {
+					
+					EntityPlayerMP clientPlayer = (EntityPlayerMP) playerEntity;
+					Goldfish.channel.sendTo(new PacketSetTeleportLabel(prototype.getPrototypeID(), 
+							teleportID, label), clientPlayer);
+				}
+			}
+		}
 	}
 	
 	/**

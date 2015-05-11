@@ -6,7 +6,11 @@ import net.minecraftforge.fml.common.network.simpleimpl.IMessage;
 
 public class PacketSetTeleportDest implements IMessage {
 	
-	public String playerUUID;
+	public String worldName;
+	public double posX;
+	public double posY;
+	public double posZ;
+	
 	public int prototypeID;
 	public int teleportID;
 	
@@ -14,9 +18,13 @@ public class PacketSetTeleportDest implements IMessage {
 		
 	}
 	
-	public PacketSetTeleportDest(String playerUUID, int prototypeID, int teleportID) {
+	public PacketSetTeleportDest(String worldName, double posX, double posY, double posZ, int prototypeID, int teleportID) {
 		
-		this.playerUUID = playerUUID;
+		this.worldName = worldName;
+		this.posX = posX;
+		this.posY = posY;
+		this.posZ = posZ;
+		
 		this.prototypeID = prototypeID;
 		this.teleportID = teleportID;
 	}
@@ -24,7 +32,11 @@ public class PacketSetTeleportDest implements IMessage {
 	@Override
 	public void fromBytes(ByteBuf buf) {
 
-		playerUUID = ByteBufUtils.readUTF8String(buf);
+		worldName = ByteBufUtils.readUTF8String(buf);
+		posX = buf.readDouble();		
+		posY = buf.readDouble();		
+		posZ = buf.readDouble();		
+		
 		prototypeID = buf.readInt();
 		teleportID = buf.readInt();
 	}
@@ -32,7 +44,11 @@ public class PacketSetTeleportDest implements IMessage {
 	@Override
 	public void toBytes(ByteBuf buf) {
 		
-		ByteBufUtils.writeUTF8String(buf, playerUUID);
+		ByteBufUtils.writeUTF8String(buf, worldName);
+		buf.writeDouble(posX);
+		buf.writeDouble(posY);
+		buf.writeDouble(posZ);
+		
 		buf.writeInt(prototypeID);
 		buf.writeInt(teleportID);
 	}
