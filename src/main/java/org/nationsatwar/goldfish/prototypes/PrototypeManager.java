@@ -24,6 +24,8 @@ public class PrototypeManager {
 	
 	public final static String PROTOTYPE_ACIVATED_KEY = "GF_Activated";
 	
+	public static String overlayText = "";
+	
 	public static Map<Integer, EntityPlayer> prepPlayers = new HashMap<Integer, EntityPlayer>();
 	
 	private static String createPrototypeName;

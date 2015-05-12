@@ -13,7 +13,8 @@ import net.minecraftforge.fml.common.network.NetworkRegistry;
 import net.minecraftforge.fml.common.network.simpleimpl.SimpleNetworkWrapper;
 import net.minecraftforge.fml.relauncher.Side;
 
-import org.nationsatwar.goldfish.events.DebugEvents;
+import org.nationsatwar.goldfish.events.InstanceEvents;
+import org.nationsatwar.goldfish.events.ServerEvents;
 import org.nationsatwar.goldfish.gui.GUIHandler;
 import org.nationsatwar.goldfish.packets.prototypes.activate.PacketActivatePrototype;
 import org.nationsatwar.goldfish.packets.prototypes.activate.PacketHandlerActivatePrototypeReceive;
@@ -47,6 +48,8 @@ import org.nationsatwar.goldfish.packets.teleports.remove.PacketRemoveTeleport;
 import org.nationsatwar.goldfish.packets.teleports.teleportdest.PacketHandlerSetTeleportDestReceive;
 import org.nationsatwar.goldfish.packets.teleports.teleportdest.PacketHandlerSetTeleportDestSend;
 import org.nationsatwar.goldfish.packets.teleports.teleportdest.PacketSetTeleportDest;
+import org.nationsatwar.goldfish.packets.teleports.teleportplayer.PacketHandlerTeleportPlayer;
+import org.nationsatwar.goldfish.packets.teleports.teleportplayer.PacketTeleportPlayer;
 import org.nationsatwar.goldfish.packets.teleports.teleportradius.PacketHandlerSetTeleportRadiusReceive;
 import org.nationsatwar.goldfish.packets.teleports.teleportradius.PacketHandlerSetTeleportRadiusSend;
 import org.nationsatwar.goldfish.packets.teleports.teleportradius.PacketSetTeleportRadius;
@@ -114,6 +117,8 @@ public class Goldfish {
 		channel.registerMessage(PacketHandlerSetTeleportMessageReceive.class, PacketSetTeleportMessage.class, 11, Side.CLIENT);
 		channel.registerMessage(PacketHandlerSetTeleportLabelSend.class, PacketSetTeleportLabel.class, 12, Side.SERVER);
 		channel.registerMessage(PacketHandlerSetTeleportLabelReceive.class, PacketSetTeleportLabel.class, 12, Side.CLIENT);
+		
+		channel.registerMessage(PacketHandlerTeleportPlayer.class, PacketTeleportPlayer.class, 13, Side.SERVER);
 	}
 	
 	@EventHandler
@@ -126,13 +131,14 @@ public class Goldfish {
 		proxy.registerKeybindings();
 		proxy.registerClientEvents();
 		
-		MinecraftForge.EVENT_BUS.register(new DebugEvents());
-		FMLCommonHandler.instance().bus().register(new DebugEvents());
+		MinecraftForge.EVENT_BUS.register(new ServerEvents());
+		FMLCommonHandler.instance().bus().register(new ServerEvents());
+		FMLCommonHandler.instance().bus().register(new InstanceEvents());
 	}
 	
 	@EventHandler
 	public void postInit(FMLPostInitializationEvent event) {
 		
-		
+		proxy.registerGUIOverlay();
 	}
 }

@@ -110,7 +110,6 @@ public class TeleportsManager {
 		int teleportRadius = teleportPoint.getTeleportRadius();
 		mapData.getData().setInteger(prefix + "TeleportRadius", teleportRadius);
 		mapData.setDirty(true);
-		mapData.markDirty();
 	}
 	
 	public static void loadTeleportData(Prototype prototype) {
