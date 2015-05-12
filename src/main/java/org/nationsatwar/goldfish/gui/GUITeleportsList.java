@@ -26,7 +26,7 @@ import org.nationsatwar.palette.WorldLocation;
 public class GUITeleportsList extends GuiScreen {
 	
 	private ResourceLocation backgroundimage = new ResourceLocation(Goldfish.MODID + ":" + 
-			"textures/client/gui/GuiBackground.png");
+			"textures/client/gui/TeleportsBackground.png");
 	
 	private EntityPlayer player;
 	private Prototype prototype;
@@ -54,7 +54,7 @@ public class GUITeleportsList extends GuiScreen {
 	public void initGui() {
 		
 		windowWidth = 160;
-		windowHeight = 180;
+		windowHeight = 196;
 		windowX = (width - windowWidth) / 2;
 		windowY = (height - windowHeight) / 2 - 20;
 		

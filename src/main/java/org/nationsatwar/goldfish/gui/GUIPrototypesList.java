@@ -101,10 +101,7 @@ public class GUIPrototypesList extends GuiScreen {
 		if (!PrototypeManager.activePrototypeIsSet())
 			return;
 		
-		GL11.glPushMatrix();
-		GL11.glScaled(2, 2, 2);
-		drawString(fontRendererObj, PrototypeManager.getActivePrototype().getPrototypeName(), (windowX + 30) / 2, (windowY + 15) / 2, 0xCCAA22);
-		GL11.glPopMatrix();
+		drawString(fontRendererObj, PrototypeManager.getActivePrototype().getPrototypeName(), (windowX + 30), (windowY + 15), 0xCCAA22);
 		
 		super.drawScreen(mouseX, mouseY, renderPartialTicks);
 	}
