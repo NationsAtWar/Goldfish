@@ -18,9 +18,17 @@ public class PacketHandlerWarpPlayer implements IMessageHandler<PacketWarpPlayer
 	@Override
 	public IMessage onMessage(PacketWarpPlayer message, MessageContext ctx) {
 
+		UUID playerUUID = UUID.fromString(message.playerUUID);
+		EntityPlayer player = PlayerUtil.getPlayerByUUID(playerUUID);
+		
+		if (message.prototypeName.equals("Overworld")) {
+			
+			PrototypeManager.prepPlayers.put(0, player);
+			return null;
+		}
+
 		Prototype prototype = PrototypeManager.getPrototype(message.prototypeName);
 		int prototypeID = prototype.getPrototypeID();
-		UUID playerUUID = UUID.fromString(message.playerUUID);
 		
 		WorldServer worldServer = MinecraftServer.getServer().worldServerForDimension(prototypeID);
 		
@@ -29,8 +37,6 @@ public class PacketHandlerWarpPlayer implements IMessageHandler<PacketWarpPlayer
 			System.out.println("World is null");
 			return null;
 		}
-		
-		EntityPlayer player = PlayerUtil.getPlayerByUUID(playerUUID);
 		
 		if (player == null) {
 			

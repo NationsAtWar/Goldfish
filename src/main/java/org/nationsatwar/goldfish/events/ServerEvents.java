@@ -3,6 +3,7 @@ package org.nationsatwar.goldfish.events;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.entity.player.EntityPlayerMP;
 import net.minecraft.server.MinecraftServer;
+import net.minecraft.util.BlockPos;
 import net.minecraft.world.WorldServer;
 import net.minecraftforge.event.world.WorldEvent;
 import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
@@ -34,7 +35,14 @@ public class ServerEvents {
 				MinecraftServer.getServer().getConfigurationManager().transferPlayerToDimension((EntityPlayerMP) player, 
 						prototypeID, new TeleporterFix(worldServer));
 				
-				player.posY += 2;
+				for (int i = 60; i < 120; i++) {
+					
+					if (worldServer.isAirBlock(new BlockPos(player.posX, i, player.posZ))) {
+						
+						player.posY = i;
+						break;
+					}
+				}
 				
 				PrototypeManager.prepPlayers.remove(prototypeID);
 				return;

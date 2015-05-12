@@ -151,7 +151,7 @@ public class PrototypeManager {
 	 */
 	public static boolean prototypeExists(int prototypeID) {
 		
-		if (prototypeList.containsKey(prototypeList))
+		if (prototypeList.containsKey(prototypeID))
 			return true;
 		
 		return false;

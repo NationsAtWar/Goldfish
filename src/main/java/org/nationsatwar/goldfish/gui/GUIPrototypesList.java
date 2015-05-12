@@ -23,6 +23,7 @@ public class GUIPrototypesList extends GuiScreen {
 	private int windowX, windowY, windowWidth, windowHeight;
 	
 	private int prototypePage = 0;
+	private boolean insidePrototype;
 	
 	public static final int GUI_ID = 20;
 	
@@ -62,7 +63,13 @@ public class GUIPrototypesList extends GuiScreen {
 		GuiButton deletePrototype = new GuiButton(3, windowX + 72, windowY + 62, 60, 20, "Delete");
 		buttonList.add(deletePrototype);
 		
-		GuiButton warpToPrototype = new GuiButton(4, windowX + 20, windowY + 84, 100, 20, "Warp to Prototype");
+		if (player.worldObj.provider.getDimensionName().equals(prototype.getPrototypeName()))
+			insidePrototype = true;
+		else
+			insidePrototype = false;
+		
+		GuiButton warpToPrototype = new GuiButton(4, windowX + 20, windowY + 84, 100, 20, 
+				(insidePrototype ? "Warp out" : "Warp to Prototype"));
 		buttonList.add(warpToPrototype);
 		
 		GuiButton prototypeTeleports = new GuiButton(5, windowX + 20, windowY + 106, 100, 20, "Teleports List");
@@ -143,7 +150,10 @@ public class GUIPrototypesList extends GuiScreen {
 		if (button.id == 4) {
 			
 			String playerUUID = player.getUniqueID().toString();
-			Goldfish.channel.sendToServer(new PacketWarpPlayer(playerUUID, PrototypeManager.getActivePrototype().getPrototypeName()));
+			if (insidePrototype)
+				Goldfish.channel.sendToServer(new PacketWarpPlayer(playerUUID, "Overworld"));
+			else
+				Goldfish.channel.sendToServer(new PacketWarpPlayer(playerUUID, PrototypeManager.getActivePrototype().getPrototypeName()));
 		}
 		
 		// Teleports Menu

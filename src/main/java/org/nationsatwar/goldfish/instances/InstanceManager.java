@@ -82,6 +82,11 @@ public class InstanceManager {
 	
 	private static boolean isDestinationAPrototype(WorldLocation destination) {
 		
+		System.out.println(destination.getWorldID());
+		
+		for (int prototypeID : PrototypeManager.getAllPrototypes().keySet())
+			System.out.println(prototypeID + " lol");
+		
 		if (PrototypeManager.prototypeExists(destination.getWorldID()))
 			return true;
 		else
