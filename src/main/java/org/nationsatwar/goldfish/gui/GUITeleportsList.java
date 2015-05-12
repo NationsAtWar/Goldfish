@@ -22,6 +22,7 @@ import org.nationsatwar.goldfish.teleports.TeleportPoint;
 import org.nationsatwar.goldfish.teleports.TeleportsManager;
 import org.nationsatwar.goldfish.util.Constants;
 import org.nationsatwar.palette.WorldLocation;
+import org.nationsatwar.palette.chat.ChatMessage;
 
 public class GUITeleportsList extends GuiScreen {
 	
@@ -301,8 +302,16 @@ public class GUITeleportsList extends GuiScreen {
 		if (button.id == 5) {
 			
 			WorldLocation worldLocation = new WorldLocation(player);
+			WorldLocation sourceLocation = prototype.getTeleportPoint(teleportsPage).getSourcePoint();
 			
 			TeleportsManager.setSourcePoint(prototype, worldLocation, teleportsPage, false);
+			
+			if (doesTeleportConflict(prototype)) {
+				
+				TeleportsManager.setSourcePoint(prototype, sourceLocation, teleportsPage, false);
+				ChatMessage.sendMessage(player, "Can't set location, conflicts with another location.");
+				return;
+			}
 			
 			Goldfish.channel.sendToServer(new PacketSetTeleportSource(worldLocation.getWorldName(), 
 					worldLocation.getPosX(), worldLocation.getPosY(), worldLocation.getPosZ(), 
@@ -313,8 +322,16 @@ public class GUITeleportsList extends GuiScreen {
 		if (button.id == 6) {
 			
 			WorldLocation worldLocation = new WorldLocation(player);
+			WorldLocation destLocation = prototype.getTeleportPoint(teleportsPage).getDestPoint();
 			
 			TeleportsManager.setDestPoint(prototype, worldLocation, teleportsPage, false);
+			
+			if (doesTeleportConflict(prototype)) {
+				
+				TeleportsManager.setDestPoint(prototype, destLocation, teleportsPage, false);
+				ChatMessage.sendMessage(player, "Can't set location, conflicts with another location.");
+				return;
+			}
 			
 			Goldfish.channel.sendToServer(new PacketSetTeleportDest(worldLocation.getWorldName(), 
 					worldLocation.getPosX(), worldLocation.getPosY(), worldLocation.getPosZ(), 
@@ -352,5 +369,39 @@ public class GUITeleportsList extends GuiScreen {
 
 		messageRadius.setFocused(false);
 		teleportRadius.setFocused(true);
+	}
+	
+	private boolean doesTeleportConflict(Prototype prototype) {
+		
+		for (int i = 0; i < prototype.numberofTeleportPoints(); i++) {
+			
+			WorldLocation sourcePoint = prototype.getTeleportPoint(i).getSourcePoint();
+
+			for (int j = 0; j < prototype.numberofTeleportPoints(); j++) {
+				
+				WorldLocation destPoint = prototype.getTeleportPoint(i).getDestPoint();
+				
+				if (destPoint == null)
+					continue;
+				
+				if (sourcePoint.getWorldName().equals(destPoint.getWorldName())) {
+
+					int teleportRadius = prototype.getTeleportPoint(i).getTeleportRadius();
+					
+					System.out.println(sourcePoint.getVector().distanceTo(destPoint.getVector()));
+					
+					if (sourcePoint.getVector().distanceTo(destPoint.getVector()) < teleportRadius)
+						return true;
+					
+					teleportRadius = prototype.getTeleportPoint(j).getTeleportRadius();
+					
+					if (sourcePoint.getVector().distanceTo(destPoint.getVector()) < teleportRadius)
+						return true;
+				}
+			}
+			
+		}
+		
+		return false;
 	}
 }

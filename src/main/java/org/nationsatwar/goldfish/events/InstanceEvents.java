@@ -16,11 +16,17 @@ import org.nationsatwar.palette.WorldLocation;
 
 public class InstanceEvents {
 	
+	private static final int COOLDOWN_PERIOD = 100;
+	private int teleportBuffer = 0;
+	
 	@SubscribeEvent
 	public void serverTickEvent(ClientTickEvent event) {
 		
 		if (event.side == Side.SERVER)
 			return;
+		
+		if (teleportBuffer > 0)
+			teleportBuffer--;
 		
 		EntityPlayer player = Minecraft.getMinecraft().thePlayer;
 		
@@ -31,18 +37,23 @@ public class InstanceEvents {
 		
 		for (Prototype prototype : PrototypeManager.getAllPrototypes().values()) {
 			
+			if (!prototype.isActivated())
+				continue;
+			
 			for (int i = 0; i < prototype.numberofTeleportPoints(); i++) {
 				
 				TeleportPoint teleportPoint = prototype.getTeleportPoint(i);
 				WorldLocation sourcePos = teleportPoint.getSourcePoint();
-				double distance = playerPos.distanceTo(sourcePos.getVector()) - 1;
+				double distance = playerPos.distanceTo(sourcePos.getVector());
 				int messageRadius = teleportPoint.getMessageRadius();
 				int teleportRadius = teleportPoint.getTeleportRadius();
 				
 				if (!sourcePos.getWorldName().equals(player.worldObj.provider.getDimensionName()))
 					continue;;
 				
-				if (distance < teleportRadius) {
+				if (distance < teleportRadius && teleportBuffer == 0) {
+					
+					teleportBuffer = COOLDOWN_PERIOD;
 					
 					Goldfish.channel.sendToServer(new PacketTeleportPlayer(player.getUniqueID().toString(), 
 							prototype.getPrototypeID(), i));

@@ -53,19 +53,19 @@ public class ServerEvents {
 			
 			for (EntityPlayer player : InstanceManager.prepPlayers.keySet()) {
 				
-				System.out.println("Tets");
-				
 				WorldLocation destination = InstanceManager.prepPlayers.get(player);
 				int instanceID = destination.getWorldID();
+				
+				System.out.println(destination.getPosX());
+				
+				player.posX = destination.getPosX();
+				player.posY = destination.getPosY();
+				player.posZ = destination.getPosZ();
 				
 				WorldServer worldServer = MinecraftServer.getServer().worldServerForDimension(instanceID);
 				
 				MinecraftServer.getServer().getConfigurationManager().transferPlayerToDimension((EntityPlayerMP) player, 
 						instanceID, new TeleporterFix(worldServer));
-				
-				player.posX = destination.getPosX();
-				player.posY = destination.getPosY();
-				player.posZ = destination.getPosZ();
 				
 				InstanceManager.prepPlayers.remove(player);
 				return;
