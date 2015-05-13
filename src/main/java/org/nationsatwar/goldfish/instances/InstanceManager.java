@@ -46,6 +46,7 @@ public class InstanceManager {
 			return;
 		}
 		
+		// If destination is a prototype, then create an instance and teleport there instead
 		String prototypeName = prototype.getPrototypeName();
 		Instance instance = null;
 		

@@ -1,4 +1,4 @@
-package org.nationsatwar.goldfish.gui;
+package org.nationsatwar.goldfish.gui.prototype;
 
 import net.minecraft.client.gui.GuiButton;
 import net.minecraft.client.gui.GuiScreen;
@@ -8,6 +8,7 @@ import net.minecraft.world.World;
 import net.minecraftforge.common.DimensionManager;
 
 import org.nationsatwar.goldfish.Goldfish;
+import org.nationsatwar.goldfish.gui.GUIHandler;
 import org.nationsatwar.goldfish.packets.prototypes.delete.PacketDeletePrototype;
 import org.nationsatwar.goldfish.prototypes.Prototype;
 import org.nationsatwar.goldfish.prototypes.PrototypeManager;

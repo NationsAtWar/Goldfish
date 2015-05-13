@@ -6,6 +6,8 @@ import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.entity.player.EntityPlayerMP;
 import net.minecraft.server.MinecraftServer;
 import net.minecraft.world.WorldServer;
+import net.minecraft.world.storage.MapStorage;
+import net.minecraftforge.common.DimensionManager;
 
 import org.nationsatwar.goldfish.Goldfish;
 import org.nationsatwar.goldfish.packets.teleports.add.PacketAddTeleport;
@@ -105,11 +107,29 @@ public class TeleportsManager {
 		
 		int messageRadius = teleportPoint.getMessageRadius();
 		mapData.getData().setInteger(prefix + "MessageRadius", messageRadius);
-		System.out.println(prefix + "MessageRadius: " + messageRadius);
 		
 		int teleportRadius = teleportPoint.getTeleportRadius();
 		mapData.getData().setInteger(prefix + "TeleportRadius", teleportRadius);
 		mapData.setDirty(true);
+		
+		// Makes sure nothing crashes and all data is saved immediately
+		WorldServer worldServer = DimensionManager.getWorld(prototype.getPrototypeID());
+		
+		if (worldServer == null) {
+			
+			System.out.println("World is null");
+			return;
+		}
+		
+		MapStorage mapStorage = worldServer.getMapStorage();
+		
+		if (mapStorage == null) {
+			
+			System.out.println("Map Storage is null");
+			return;
+		}
+		
+		mapStorage.saveAllData();
 	}
 	
 	public static void loadTeleportData(Prototype prototype) {

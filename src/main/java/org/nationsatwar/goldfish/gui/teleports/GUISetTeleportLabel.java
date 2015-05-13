@@ -1,4 +1,4 @@
-package org.nationsatwar.goldfish.gui;
+package org.nationsatwar.goldfish.gui.teleports;
 
 import java.io.IOException;
 
@@ -10,6 +10,7 @@ import net.minecraft.util.ResourceLocation;
 import net.minecraft.world.World;
 
 import org.nationsatwar.goldfish.Goldfish;
+import org.nationsatwar.goldfish.gui.GUIHandler;
 import org.nationsatwar.goldfish.packets.teleports.label.PacketSetTeleportLabel;
 import org.nationsatwar.goldfish.prototypes.Prototype;
 import org.nationsatwar.goldfish.prototypes.PrototypeManager;

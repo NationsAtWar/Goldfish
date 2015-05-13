@@ -409,6 +409,7 @@ public class PrototypeManager {
 			PrototypeMapData mapData = prototype.getMapData();
 			mapData.getData().setBoolean(PrototypeManager.PROTOTYPE_ACIVATED_KEY, activated);
 			mapData.setDirty(true);
+			DimensionManager.getWorld(prototype.getPrototypeID()).getMapStorage().saveAllData();
 			
 			// Sync activation for all clients
 			for (WorldServer worldServer : MinecraftServer.getServer().worldServers) {

@@ -1,4 +1,4 @@
-package org.nationsatwar.goldfish.gui;
+package org.nationsatwar.goldfish.gui.prototype;
 
 import net.minecraft.client.gui.GuiButton;
 import net.minecraft.client.gui.GuiScreen;
@@ -7,6 +7,7 @@ import net.minecraft.util.ResourceLocation;
 import net.minecraft.world.World;
 
 import org.nationsatwar.goldfish.Goldfish;
+import org.nationsatwar.goldfish.gui.GUIHandler;
 import org.nationsatwar.goldfish.packets.prototypes.create.PacketCreatePrototype;
 import org.nationsatwar.goldfish.prototypes.PrototypeManager;
 import org.nationsatwar.palette.chat.ChatMessage;

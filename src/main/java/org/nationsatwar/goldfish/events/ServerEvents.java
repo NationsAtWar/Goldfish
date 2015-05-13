@@ -24,6 +24,7 @@ public class ServerEvents {
 	@SubscribeEvent
 	public void serverTickEvent(ServerTickEvent event) {
 		
+		// Handles Prototype Warping
 		if (event.side == Side.SERVER && PrototypeManager.prepPlayers.size() > 0) {
 			
 			for (int prototypeID : PrototypeManager.prepPlayers.keySet()) {
@@ -49,25 +50,25 @@ public class ServerEvents {
 			}
 		}
 		
+		// Handles Instance Teleporting
 		if (event.side == Side.SERVER && InstanceManager.prepPlayers.size() > 0) {
 			
 			for (EntityPlayer player : InstanceManager.prepPlayers.keySet()) {
 				
 				WorldLocation destination = InstanceManager.prepPlayers.get(player);
 				int instanceID = destination.getWorldID();
+
+				InstanceManager.prepPlayers.remove(player);
 				
-				System.out.println(destination.getPosX());
+				player.setPositionAndUpdate(destination.getPosX(), destination.getPosY(), destination.getPosZ());
 				
-				player.posX = destination.getPosX();
-				player.posY = destination.getPosY();
-				player.posZ = destination.getPosZ();
+				if (player.worldObj.provider.getDimensionName().equals(destination.getWorldName()))
+					return;
 				
 				WorldServer worldServer = MinecraftServer.getServer().worldServerForDimension(instanceID);
 				
 				MinecraftServer.getServer().getConfigurationManager().transferPlayerToDimension((EntityPlayerMP) player, 
 						instanceID, new TeleporterFix(worldServer));
-				
-				InstanceManager.prepPlayers.remove(player);
 				return;
 			}
 		}
@@ -76,6 +77,7 @@ public class ServerEvents {
 	@SubscribeEvent
 	public void worldLoadEvent(WorldEvent.Load event) {
 		
+		// Loads all prototypes/dimensions when the server is first loaded
 		if (!event.world.isRemote)
 			PrototypeManager.loadPrototypes();
 	}
@@ -83,6 +85,7 @@ public class ServerEvents {
 	@SubscribeEvent
 	public void playerLoginEvent(PlayerLoggedInEvent event) {
 		
+		// Load all prototypes/dimensions for players as they log in
 		if (!event.player.worldObj.isRemote)
 			for (Prototype prototype : PrototypeManager.getAllPrototypes().values())
 				Goldfish.channel.sendTo(new PacketCreatePrototype(prototype.getPrototypeName(), prototype.getPrototypeID()), 
