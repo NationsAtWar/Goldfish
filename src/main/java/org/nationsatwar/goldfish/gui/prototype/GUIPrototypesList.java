@@ -1,130 +1,82 @@
 package org.nationsatwar.goldfish.gui.prototype;
 
-import net.minecraft.client.gui.GuiButton;
-import net.minecraft.client.gui.GuiScreen;
-import net.minecraft.entity.player.EntityPlayer;
-import net.minecraft.util.ResourceLocation;
-import net.minecraft.world.World;
-
 import org.nationsatwar.goldfish.Goldfish;
-import org.nationsatwar.goldfish.gui.GUIHandler;
+import org.nationsatwar.goldfish.gui.GUIMainMenu;
+import org.nationsatwar.goldfish.gui.config.GUIConfiguration;
+import org.nationsatwar.goldfish.gui.teleports.GUITeleportsList;
 import org.nationsatwar.goldfish.packets.prototypes.activate.PacketActivatePrototype;
 import org.nationsatwar.goldfish.packets.prototypes.warp.PacketWarpPlayer;
 import org.nationsatwar.goldfish.prototypes.Prototype;
 import org.nationsatwar.goldfish.prototypes.PrototypeManager;
+import org.nationsatwar.palette.gui.GUIButton;
+import org.nationsatwar.palette.gui.GUIHandler;
+import org.nationsatwar.palette.gui.GUIScreen;
 
-public class GUIPrototypesList extends GuiScreen {
+public class GUIPrototypesList extends GUIScreen {
 	
-	private ResourceLocation backgroundimage = new ResourceLocation(Goldfish.MODID + ":" + 
-			"textures/client/gui/GuiBackground.png");
-	
-	private EntityPlayer player;
-	
-	private int windowX, windowY, windowWidth, windowHeight;
+	private GUIButton returnButton;
+	private GUIButton activateButton;
+	private GUIButton renameButton;
+	private GUIButton deleteButton;
+	private GUIButton warpButton;
+	private GUIButton teleportsButton;
+	private GUIButton configButton;
+	private GUIButton previousButton;
+	private GUIButton nextButton;
 	
 	private int prototypePage = 0;
 	private boolean insidePrototype;
 	
-	public static final int GUI_ID = 20;
-	
-	public GUIPrototypesList(EntityPlayer player, World world, int x, int y, int z) {
+	public void setElements() {
 		
-		this.player = player;
-	}
-	
-	@SuppressWarnings("unchecked")
-	@Override
-	public void initGui() {
+		setWindow((width - 140) / 2, 20, 140, 180);
 		
-		windowWidth = 140;
-		windowHeight = 180;
-		windowX = (width - windowWidth) / 2;
-		windowY = (height - windowHeight) / 2 - 20;
-		
-		buttonList.clear();
-		
-		GuiButton returnButton = new GuiButton(0, windowX + 10, windowY + 40, 60, 20, "Return");
-		buttonList.add(returnButton);
+		returnButton = addButton(windowX + 10, windowY + 40, 60, 20, "Return");
 		
 		Prototype prototype = PrototypeManager.getPrototypeByIndex(prototypePage);
 		
-		if (prototype == null)
+		if (prototype == null) {
+			
+			prototypePage = 0;
+			GUIHandler.openGUI(new GUIMainMenu());
 			return;
+		}
 		
 		PrototypeManager.setActivePrototype(prototype);
 		
-		GuiButton activatePrototype = new GuiButton(1, windowX + 72, windowY + 40, 60, 20, 
+		addLabel(windowX + 15, windowY + 20, prototype.getPrototypeName());
+
+		activateButton = addButton(windowX + 72, windowY + 40, 60, 20, 
 				(prototype.isActivated() ? "Deactivate" : "Activate"));
-		buttonList.add(activatePrototype);
-		
-		GuiButton renamePrototype = new GuiButton(2, windowX + 10, windowY + 62, 60, 20, "Rename");
-		buttonList.add(renamePrototype);
-		
-		GuiButton deletePrototype = new GuiButton(3, windowX + 72, windowY + 62, 60, 20, "Delete");
-		buttonList.add(deletePrototype);
+		renameButton = addButton(windowX + 10, windowY + 62, 60, 20, "Rename");
+		deleteButton = addButton(windowX + 72, windowY + 62, 60, 20, "Delete");
 		
 		if (player.worldObj.provider.getDimensionName().equals(prototype.getPrototypeName()))
 			insidePrototype = true;
 		else
 			insidePrototype = false;
-		
-		GuiButton warpToPrototype = new GuiButton(4, windowX + 20, windowY + 84, 100, 20, 
+
+		warpButton = addButton(windowX + 20, windowY + 84, 100, 20, 
 				(insidePrototype ? "Warp out" : "Warp to Prototype"));
-		buttonList.add(warpToPrototype);
+
+		teleportsButton = addButton(windowX + 20, windowY + 106, 100, 20, "Teleports List");
+		configButton = addButton(windowX + 20, windowY + 128, 100, 20, "Configure");
 		
-		GuiButton prototypeTeleports = new GuiButton(5, windowX + 20, windowY + 106, 100, 20, "Teleports List");
-		buttonList.add(prototypeTeleports);
+		if (PrototypeManager.getPrototypeByIndex(prototypePage - 1) != null)
+			previousButton = addButton(windowX + 20, windowY + 150, 20, 20, "<");
 		
-		GuiButton prototypeConfig = new GuiButton(6, windowX + 20, windowY + 128, 100, 20, "Configure");
-		buttonList.add(prototypeConfig);
-		
-		if (PrototypeManager.getPrototypeByIndex(prototypePage - 1) != null) {
-			
-			GuiButton previousPage = new GuiButton(7, windowX + 20, windowY + 150, 20, 20, "<");
-			buttonList.add(previousPage);
-		}
-		
-		if (PrototypeManager.getPrototypeByIndex(prototypePage + 1) != null) {
-			
-			GuiButton nextPage = new GuiButton(8, windowX + 100, windowY + 150, 20, 20, ">");
-			buttonList.add(nextPage);
-		}
+		if (PrototypeManager.getPrototypeByIndex(prototypePage + 1) != null)
+			nextButton = addButton(windowX + 100, windowY + 150, 20, 20, ">");
 	}
 	
-	@Override
-	public void drawScreen(int mouseX, int mouseY, float renderPartialTicks) {
-		
-		// Draws the background window
-		mc.getTextureManager().bindTexture(backgroundimage);
-		drawTexturedModalRect(windowX, windowY, 0, 0, windowWidth,  windowHeight);
-		
-		if (!PrototypeManager.activePrototypeIsSet())
-			return;
-		
-		drawString(fontRendererObj, PrototypeManager.getActivePrototype().getPrototypeName(), (windowX + 30), (windowY + 15), 0xCCAA22);
-		
-		super.drawScreen(mouseX, mouseY, renderPartialTicks);
-	}
-	
-	@Override
-	public boolean doesGuiPauseGame() {
-		
-		return false;
-	}
-	
-	@Override
-	public void actionPerformed(GuiButton button) {
-		
-		// Forge Bug Fix - Don't ask
-		if(!button.isMouseOver())
-			return;
+	protected void buttonClicked(GUIButton button) {
 		
 		// Return
-		if (button.id == 0)
-			player.openGui(Goldfish.instance, GUIHandler.MAIN_GUI_ID, player.getEntityWorld(), 0, 0, 0);
-		
+		if (button.equals(returnButton))
+			GUIHandler.openGUI(new GUIMainMenu());
+
 		// Activate Prototype
-		if (button.id == 1) {
+		if (button.equals(activateButton)) {
 			
 			boolean activated = PrototypeManager.getActivePrototype().isActivated();
 			int prototypeID = PrototypeManager.getActivePrototype().getPrototypeID();
@@ -136,15 +88,15 @@ public class GUIPrototypesList extends GuiScreen {
 		}
 		
 		// Rename Prototype
-		if (button.id == 2)
-			player.openGui(Goldfish.instance, GUIHandler.RENAME_PROTOTYPE_GUI_ID, player.getEntityWorld(), 0, 0, 0);
+		if (button.equals(renameButton))
+			GUIHandler.openGUI(new GUIRenamePrototype());
 		
 		// Delete Prototype
-		if (button.id == 3)
-			player.openGui(Goldfish.instance, GUIHandler.DELETE_CONFIRM_GUI_ID, player.getEntityWorld(), 0, 0, 0);
+		if (button.equals(deleteButton))
+			GUIHandler.openGUI(new GUIDeleteConfirm());
 		
 		// Warp to Prototype
-		if (button.id == 4) {
+		if (button.equals(warpButton)) {
 			
 			String playerUUID = player.getUniqueID().toString();
 			if (insidePrototype)
@@ -154,27 +106,25 @@ public class GUIPrototypesList extends GuiScreen {
 		}
 		
 		// Teleports Menu
-		if (button.id == 5)
-			player.openGui(Goldfish.instance, GUIHandler.TELEPORTS_GUI_ID, player.getEntityWorld(), 0, 0, 0);
+		if (button.equals(teleportsButton))
+			GUIHandler.openGUI(new GUITeleportsList());
 		
 		// Configure Prototype
-		if (button.id == 6) {
-			
-			
-		}
+		if (button.equals(configButton))
+			GUIHandler.openGUI(new GUIConfiguration());
 		
 		// Previous Prototype
-		if (button.id == 7) {
+		if (button.equals(previousButton)) {
 			
 			prototypePage--;
-			initGui();
+			GUIHandler.openGUI(new GUIPrototypesList());
 		}
 		
 		// Next Prototype
-		if (button.id == 8) {
+		if (button.equals(nextButton)) {
 			
 			prototypePage++;
-			initGui();
+			GUIHandler.openGUI(new GUIPrototypesList());
 		}
 	}
 }

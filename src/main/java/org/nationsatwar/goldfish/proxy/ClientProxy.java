@@ -27,7 +27,7 @@ public class ClientProxy extends CommonProxy {
 	}
 	
 	@Override
-	public void registerGUIOverlay() {
+	public void registerGUI() {
 		
 		MinecraftForge.EVENT_BUS.register(new GUIOverlay(Minecraft.getMinecraft()));
 	}

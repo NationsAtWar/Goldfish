@@ -15,7 +15,6 @@ import net.minecraftforge.fml.relauncher.Side;
 
 import org.nationsatwar.goldfish.events.InstanceEvents;
 import org.nationsatwar.goldfish.events.ServerEvents;
-import org.nationsatwar.goldfish.gui.GUIHandler;
 import org.nationsatwar.goldfish.packets.prototypes.activate.PacketActivatePrototype;
 import org.nationsatwar.goldfish.packets.prototypes.activate.PacketHandlerActivatePrototypeReceive;
 import org.nationsatwar.goldfish.packets.prototypes.activate.PacketHandlerActivatePrototypeSend;
@@ -33,6 +32,8 @@ import org.nationsatwar.goldfish.packets.prototypes.warp.PacketWarpPlayer;
 import org.nationsatwar.goldfish.packets.teleports.add.PacketAddTeleport;
 import org.nationsatwar.goldfish.packets.teleports.add.PacketHandlerAddTeleportReceive;
 import org.nationsatwar.goldfish.packets.teleports.add.PacketHandlerAddTeleportSend;
+import org.nationsatwar.goldfish.packets.teleports.createinstance.PacketCreateInstance;
+import org.nationsatwar.goldfish.packets.teleports.createinstance.PacketHandlerCreateInstance;
 import org.nationsatwar.goldfish.packets.teleports.label.PacketHandlerSetTeleportLabelReceive;
 import org.nationsatwar.goldfish.packets.teleports.label.PacketHandlerSetTeleportLabelSend;
 import org.nationsatwar.goldfish.packets.teleports.label.PacketSetTeleportLabel;
@@ -119,13 +120,11 @@ public class Goldfish {
 		channel.registerMessage(PacketHandlerSetTeleportLabelReceive.class, PacketSetTeleportLabel.class, 12, Side.CLIENT);
 		
 		channel.registerMessage(PacketHandlerTeleportPlayer.class, PacketTeleportPlayer.class, 13, Side.SERVER);
+		channel.registerMessage(PacketHandlerCreateInstance.class, PacketCreateInstance.class, 14, Side.CLIENT);
 	}
 	
 	@EventHandler
 	public void init(FMLInitializationEvent event) {
-		
-		// Register GUI
-		NetworkRegistry.INSTANCE.registerGuiHandler(instance, new GUIHandler());
 		
 		// Register Client Classes
 		proxy.registerKeybindings();
@@ -139,6 +138,6 @@ public class Goldfish {
 	@EventHandler
 	public void postInit(FMLPostInitializationEvent event) {
 		
-		proxy.registerGUIOverlay();
+		proxy.registerGUI();
 	}
 }

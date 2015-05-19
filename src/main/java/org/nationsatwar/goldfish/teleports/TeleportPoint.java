@@ -18,11 +18,17 @@ public class TeleportPoint {
 	public TeleportPoint(WorldLocation sourcePoint) {
 		
 		this.sourcePoint = sourcePoint;
+		
+		label = "New Label";
+		message = "Entering: " + sourcePoint.getWorldName();
 	}
 	
 	public TeleportPoint(Entity entity) {
 		
 		this.sourcePoint = new WorldLocation(entity);
+		
+		label = "New Label";
+		message = "Entering: " + sourcePoint.getWorldName();
 	}
 	
 	public WorldLocation getSourcePoint() {

@@ -262,7 +262,7 @@ public class TeleportsManager {
 	}
 	
 	public static void setTeleportRadius(Prototype prototype, int teleportRadius, int teleportID, boolean syncClients) {
-		
+
 		TeleportPoint teleportPoint = prototype.getTeleportPoint(teleportID);
 		teleportPoint.setTeleportRadius(teleportRadius);
 		

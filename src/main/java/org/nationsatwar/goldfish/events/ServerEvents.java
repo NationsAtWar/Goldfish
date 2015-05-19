@@ -77,6 +77,8 @@ public class ServerEvents {
 	@SubscribeEvent
 	public void worldLoadEvent(WorldEvent.Load event) {
 		
+		System.out.println("World is being loaded");
+		
 		// Loads all prototypes/dimensions when the server is first loaded
 		if (!event.world.isRemote)
 			PrototypeManager.loadPrototypes();
@@ -84,6 +86,8 @@ public class ServerEvents {
 	
 	@SubscribeEvent
 	public void playerLoginEvent(PlayerLoggedInEvent event) {
+		
+		System.out.println("Suspect 1");
 		
 		// Load all prototypes/dimensions for players as they log in
 		if (!event.player.worldObj.isRemote)

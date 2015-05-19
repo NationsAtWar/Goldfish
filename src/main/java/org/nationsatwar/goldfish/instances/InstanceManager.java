@@ -26,6 +26,7 @@ public class InstanceManager {
 	
 	public static Map<EntityPlayer, WorldLocation> prepPlayers = new HashMap<EntityPlayer, WorldLocation>();
 	
+	// Server Calls this
 	public static void enterInstance(String messageUUID, int prototypeID, int teleportID) {
 		
 		// Get relevant variables
@@ -34,6 +35,8 @@ public class InstanceManager {
 		TeleportPoint teleportPoint = prototype.getTeleportPoint(teleportID);
 		WorldLocation destination = teleportPoint.getDestPoint();
 		EntityPlayer player = PlayerUtil.getPlayerByUUID(playerUUID);
+		
+		System.out.println("1");
 		
 		// If there's no destination, there's no point
 		if (destination == null)
@@ -45,6 +48,8 @@ public class InstanceManager {
 			prepPlayers.put(player, destination);
 			return;
 		}
+		
+		System.out.println("2");
 		
 		// If destination is a prototype, then create an instance and teleport there instead
 		String prototypeName = prototype.getPrototypeName();
@@ -58,6 +63,8 @@ public class InstanceManager {
 		if (instance == null)
 			return;
 		
+		System.out.println("3");
+		
 		destination.setWorldID(instance.getInstanceID());
 		prepPlayers.put(player, destination);
 	}
@@ -66,12 +73,15 @@ public class InstanceManager {
 		
 		return instanceList.get(instanceID);
 	}
-	
+
+	// Client Calls this
 	public static void createInstance(int prototypeID, int instanceID) {
 		
 		if (instanceList.containsKey(instanceID))
 			return;
+
 		
+		System.out.println("4");
 		DimensionManager.registerProviderType(instanceID, InstanceProvider.class, false);
 		DimensionManager.registerDimension(instanceID, instanceID);
 		
@@ -83,20 +93,18 @@ public class InstanceManager {
 	
 	private static boolean isDestinationAPrototype(WorldLocation destination) {
 		
-		System.out.println(destination.getWorldID());
-		
-		for (int prototypeID : PrototypeManager.getAllPrototypes().keySet())
-			System.out.println(prototypeID + " lol");
-		
 		if (PrototypeManager.prototypeExists(destination.getWorldID()))
 			return true;
 		else
 			return false;
 	}
-	
+
+	// Server Calls this
 	private static Instance createInstance(String prototypeName, UUID playerUUID) {
 		
 		int instanceID = DimensionManager.getNextFreeDimId();
+		
+		System.out.println("5");
 		
 		// Register Dimension for server
 		DimensionManager.registerProviderType(instanceID, InstanceProvider.class, false);
@@ -118,6 +126,8 @@ public class InstanceManager {
 		
 		int prototypeID = PrototypeManager.getPrototype(prototypeName).getPrototypeID();
 		
+		System.out.println("6");
+		
 		// Register Dimension for all players
 		for (WorldServer worldServer : MinecraftServer.getServer().worldServers) {
 			for (Object playerEntity : worldServer.playerEntities) {
@@ -126,6 +136,8 @@ public class InstanceManager {
 				Goldfish.channel.sendTo(new PacketCreateInstance(prototypeID, instanceID), player);
 			}
 		}
+		
+		System.out.println("7");
 		
 		// Initialize the new world
 		WorldServer worldServer = MinecraftServer.getServer().worldServerForDimension(instanceID);
@@ -141,6 +153,8 @@ public class InstanceManager {
 			System.out.println("Dimension is not registered");
 			return null;
 		}
+		
+		System.out.println("8");
 		
 		worldServer.init();
 		

@@ -1,132 +1,64 @@
 package org.nationsatwar.goldfish.gui;
 
-import java.io.IOException;
-
-import net.minecraft.client.gui.GuiButton;
-import net.minecraft.client.gui.GuiScreen;
-import net.minecraft.client.gui.GuiTextField;
-import net.minecraft.entity.player.EntityPlayer;
-import net.minecraft.util.ResourceLocation;
-import net.minecraft.world.World;
-
-import org.lwjgl.opengl.GL11;
-import org.nationsatwar.goldfish.Goldfish;
+import org.nationsatwar.goldfish.gui.prototype.GUICreateConfirm;
+import org.nationsatwar.goldfish.gui.prototype.GUIPrototypesList;
 import org.nationsatwar.goldfish.prototypes.PrototypeManager;
 import org.nationsatwar.goldfish.util.Constants;
+import org.nationsatwar.palette.gui.GUIButton;
+import org.nationsatwar.palette.gui.GUIHandler;
+import org.nationsatwar.palette.gui.GUILabel;
+import org.nationsatwar.palette.gui.GUIScreen;
+import org.nationsatwar.palette.gui.GUITextField;
 
-public class GUIMainMenu extends GuiScreen {
+public class GUIMainMenu extends GUIScreen {
 	
-	private ResourceLocation backgroundimage = new ResourceLocation(Goldfish.MODID + ":" + 
-			"textures/client/gui/GuiBackground.png");
+	private GUIButton prototypeList;
+	private GUIButton createPrototype;
 	
-	private EntityPlayer player;
+	private GUITextField createTextField;
+	private GUILabel errorLabel;
 	
-	private GuiTextField createTextbox;
-	private String errorText = "";
-	
-	private int windowX, windowY, windowWidth, windowHeight;
-	
-	public GUIMainMenu(EntityPlayer player, World world, int x, int y, int z) {
-		
-		this.player = player;
-	}
-	
-	@SuppressWarnings("unchecked")
 	@Override
-	public void initGui() {
+	protected void setElements() {
 		
-		windowWidth = 140;
-		windowHeight = 180;
-		windowX = (width - windowWidth) / 2;
-		windowY = (height - windowHeight) / 2 - 20;
+		setWindow((width - 140) / 2, 20, 140, 180);
 		
-		buttonList.clear();
+		prototypeList = addButton(windowX + 20, windowY + 40, 100, 20, "Prototype List");
+		createPrototype = addButton(windowX + 20, windowY + 100, 100, 20, "Create Prototype");
 		
-		GuiButton listPrototypes = new GuiButton(0, windowX + 20, windowY + 40, 100, 20, "Prototype List");
-		buttonList.add(listPrototypes);
+		createTextField = addTextField(windowX + 20, windowY + 130, 100, 20, "");
+		createTextField.setRegEx(Constants.PROTOTYPE_NAME_REGEX);
+		createTextField.setMaxStringLength(PrototypeManager.MAX_PROTOTYPE_NAME_LENGTH);
 		
-		GuiButton createPrototype = new GuiButton(1, windowX + 20, windowY + 100, 100, 20, "Create Prototype");
-		buttonList.add(createPrototype);
+		GUILabel mainLabel = addLabel(windowX + (windowWidth / 2), windowY + 18, "Goldfish");
+		mainLabel.setFontColor(0xCCAA22);
+		mainLabel.setCentered(true);
+		mainLabel.setSizeDoubled(true);
 		
-		createTextbox = new GuiTextField(1, fontRendererObj, windowX + 20, windowY + 130, 100, 20);
-		createTextbox.setMaxStringLength(PrototypeManager.MAX_PROTOTYPE_NAME_LENGTH);
-		createTextbox.setText("");
-		createTextbox.setCanLoseFocus(false);
-		createTextbox.setFocused(true);
+		errorLabel = addLabel(windowX + 10, windowY + 160, "");
+		errorLabel.setFontColor(FontColor.RED);
+		errorLabel.setCentered(true);
 	}
 	
 	@Override
-	protected void keyTyped(char par1, int par2) throws IOException {
+	protected void buttonClicked(GUIButton button) {
 		
-		String charString = "" + par1;
+		if (button.equals(prototypeList))
+			GUIHandler.openGUI(new GUIPrototypesList());
 		
-		// Only accept valid characters. 8 is the key code for backspace, 27 for escape
-		if (!charString.matches(Constants.PROTOTYPE_NAME_REGEX) && par1 != 8 && par1 != 27)
-			return;
-		
-		super.keyTyped(par1, par2);
-		createTextbox.textboxKeyTyped(par1, par2);
-	}
-	
-	@Override
-	public void updateScreen() {
-		
-		super.updateScreen();
-		createTextbox.updateCursorCounter();
-	}
-	
-	@Override
-	public void drawScreen(int mouseX, int mouseY, float renderPartialTicks) {
-		
-		// Draws the background window
-		mc.getTextureManager().bindTexture(backgroundimage);
-		drawTexturedModalRect(windowX, windowY, 0, 0, windowWidth,  windowHeight);
-		createTextbox.drawTextBox();
-		
-		GL11.glPushMatrix();
-		GL11.glScaled(2, 2, 2);
-		drawString(fontRendererObj, "Goldfish", (windowX + 30) / 2, (windowY + 15) / 2, 0xCCAA22);
-		GL11.glPopMatrix();
-		
-		drawString(fontRendererObj, errorText, windowX + 10, windowY + 160, 0xCC2222);
-		
-		super.drawScreen(mouseX, mouseY, renderPartialTicks);
-	}
-	
-	@Override
-	protected void mouseClicked(int x, int y, int btn) throws IOException {
-		
-		super.mouseClicked(x, y, btn);
-		createTextbox.mouseClicked(x, y, btn);
-	}
-	
-	@Override
-	public boolean doesGuiPauseGame() {
-		
-		return false;
-	}
-	
-	@Override
-	public void actionPerformed(GuiButton button) {
-		
-		// Creates Prototype
-		if (button.id == 0)
-			player.openGui(Goldfish.instance, GUIHandler.LIST_GUI_ID, player.getEntityWorld(), 0, 0, 0);
-		
-		// Creates Prototype
-		if (button.id == 1) {
+		if (button.equals(createPrototype)) {
 			
-			if (createTextbox.getText().matches(Constants.PROTOTYPE_NAME_REGEX)) {
+			if (createTextField.getText().matches(Constants.PROTOTYPE_NAME_REGEX)) {
 				
-				PrototypeManager.setCreatePrototypeName(createTextbox.getText());
-				player.openGui(Goldfish.instance, GUIHandler.CREATE_CONFIRM_GUI_ID, player.getEntityWorld(), 0, 0, 0);
+				PrototypeManager.setCreatePrototypeName(createTextField.getText());
+				GUIHandler.openGUI(new GUICreateConfirm());
 			}
-			else if (createTextbox.getText() == "")
-				errorText = "Enter a prototype name";
+			else if (createTextField.getText() == "")
+				errorLabel.setText("Enter a prototype name");
 			else
-				errorText = "Enter valid characters";
+				errorLabel.setText("Enter valid characters");
 
-			createTextbox.setText("");
+			createTextField.setText("");
 		}
 	}
 }

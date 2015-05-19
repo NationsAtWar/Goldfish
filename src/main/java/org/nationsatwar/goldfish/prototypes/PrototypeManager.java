@@ -41,6 +41,8 @@ public class PrototypeManager {
 	 */
 	public static void addPrototype(String prototypeName) {
 		
+		System.out.println("Server creating prototype");
+		
 		if (prototypeExists(prototypeName))
 			return;
 		
@@ -100,6 +102,8 @@ public class PrototypeManager {
 	 * @param prototypeID The id of the prototype being added
 	 */
 	public static void addPrototype(String prototypeName, int prototypeID) {
+		
+		System.out.println("Client creating prototype: " + prototypeName);
 		
 		if (prototypeExists(prototypeName))
 			return;
@@ -362,8 +366,17 @@ public class PrototypeManager {
 		String saveDirectory = DimensionManager.getCurrentSaveRootDirectory().getAbsolutePath() + "/";
 		File prototypeFile = new File(saveDirectory + Goldfish.prototypePath + "Prototype_" + prototypeName);
 		
+		Prototype prototype = getPrototype(prototypeName);
+		
+		if (prototype == null)
+			return;
+		
+		int prototypeID = prototype.getPrototypeID();
+		
 		// This should only be called on the server
 		if (prototypeFile.exists()) {
+			
+			DimensionManager.unloadWorld(prototypeID);
 			
 			// Deletes the folder
 			FileUtil.deleteDirectory(prototypeFile);
@@ -377,15 +390,6 @@ public class PrototypeManager {
 				}
 			}
 		}
-		
-		Prototype prototype = getPrototype(prototypeName);
-		
-		if (prototype == null)
-			return;
-		
-		int prototypeID = prototype.getPrototypeID();
-		DimensionManager.unregisterDimension(prototypeID);
-		DimensionManager.unloadWorld(prototypeID);
 		
 		prototypeList.remove(prototype.getPrototypeID());
 	}

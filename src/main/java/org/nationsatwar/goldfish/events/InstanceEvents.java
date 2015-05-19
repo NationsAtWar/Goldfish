@@ -49,7 +49,7 @@ public class InstanceEvents {
 				int teleportRadius = teleportPoint.getTeleportRadius();
 				
 				if (!sourcePos.getWorldName().equals(player.worldObj.provider.getDimensionName()))
-					continue;;
+					continue;
 				
 				if (distance < teleportRadius && teleportBuffer == 0) {
 					
