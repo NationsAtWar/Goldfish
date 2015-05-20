@@ -180,7 +180,6 @@ public class TeleportsManager {
 			
 			int messageRadius = mapData.getData().getInteger(prefix + "MessageRadius");
 			teleportPoint.setMessageRadius(messageRadius);
-			System.out.println(prefix + "MessageRadius: " + messageRadius);
 			
 			int teleportRadius = mapData.getData().getInteger(prefix + "TeleportRadius");
 			teleportPoint.setTeleportRadius(teleportRadius);

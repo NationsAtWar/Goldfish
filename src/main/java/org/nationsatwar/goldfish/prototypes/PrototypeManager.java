@@ -41,8 +41,6 @@ public class PrototypeManager {
 	 */
 	public static void addPrototype(String prototypeName) {
 		
-		System.out.println("Server creating prototype");
-		
 		if (prototypeExists(prototypeName))
 			return;
 		
@@ -102,8 +100,6 @@ public class PrototypeManager {
 	 * @param prototypeID The id of the prototype being added
 	 */
 	public static void addPrototype(String prototypeName, int prototypeID) {
-		
-		System.out.println("Client creating prototype: " + prototypeName);
 		
 		if (prototypeExists(prototypeName))
 			return;

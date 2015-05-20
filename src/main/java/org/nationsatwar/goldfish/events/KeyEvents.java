@@ -12,7 +12,7 @@ public class KeyEvents {
 	@SubscribeEvent
 	public void onKeyInput(InputEvent.KeyInputEvent event) {
 		
-		if (ClientProxy.debugKey.isPressed())
+		if (ClientProxy.goldfishKey.isPressed())
 			GUIHandler.openGUI(new GUIMainMenu());
 	}
 }

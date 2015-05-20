@@ -12,12 +12,12 @@ import org.nationsatwar.palette.KeyBindings;
 
 public class ClientProxy extends CommonProxy {
 
-	public static KeyBinding debugKey;
+	public static KeyBinding goldfishKey;
 	
 	@Override
 	public void registerKeybindings() {
 		
-		debugKey = KeyBindings.registerKey(Keyboard.KEY_R, "debugKey");
+		goldfishKey = KeyBindings.registerKey(Keyboard.KEY_G, "goldfishKey");
 	}
 	
 	@Override

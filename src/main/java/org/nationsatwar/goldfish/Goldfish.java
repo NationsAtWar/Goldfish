@@ -72,9 +72,8 @@ public class Goldfish {
 	
 	public static final String MODID = "goldfish";
 	public static final String MODNAME = "Goldfish";
-	public static final String MODVER = "0.0.2";
-
-	public static final String GUI_FACTORY_CLASS = "org.nationsatwar.goldfish.gui.GUIFactory";
+	public static final String MODVER = "0.0.3";
+	
 	public static final String CLIENT_PROXY_CLASS = "org.nationsatwar.goldfish.proxy.ClientProxy";
 	public static final String SERVER_PROXY_CLASS = "org.nationsatwar.goldfish.proxy.CommonProxy";
 	
@@ -119,6 +118,7 @@ public class Goldfish {
 		channel.registerMessage(PacketHandlerSetTeleportLabelSend.class, PacketSetTeleportLabel.class, 12, Side.SERVER);
 		channel.registerMessage(PacketHandlerSetTeleportLabelReceive.class, PacketSetTeleportLabel.class, 12, Side.CLIENT);
 		
+		// Instance Packets
 		channel.registerMessage(PacketHandlerTeleportPlayer.class, PacketTeleportPlayer.class, 13, Side.SERVER);
 		channel.registerMessage(PacketHandlerCreateInstance.class, PacketCreateInstance.class, 14, Side.CLIENT);
 	}
