@@ -38,7 +38,7 @@ public class GUITimers extends GUIScreen {
 		
 		// Return
 		if (button.equals(returnButton))
-			GUIHandler.openGUI(new GUIMainMenu());
+			GUIHandler.openGUI(new GUIMainMenu(), true);
 		
 		// Static Entrance
 		if (button.equals(staticButton))

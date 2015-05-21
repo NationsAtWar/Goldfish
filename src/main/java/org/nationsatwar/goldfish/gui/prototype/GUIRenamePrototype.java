@@ -59,7 +59,7 @@ public class GUIRenamePrototype extends GUIScreen {
 					
 					Goldfish.channel.sendToServer(new PacketRenamePrototype(prototype.getPrototypeName(), renameTextField.getText()));
 					prototype.renamePrototype(renameTextField.getText());
-					GUIHandler.openGUI(new GUIPrototypesList());
+					GUIHandler.openGUI(new GUIPrototypesList(), true);
 					
 					ChatMessage.sendMessage(player, "Prototype: '" + oldPrototypeName + 
 							"' has been renamed to: " + prototype.getPrototypeName());
@@ -76,6 +76,6 @@ public class GUIRenamePrototype extends GUIScreen {
 		
 		// Cancel - Returns to Prototype List
 		if (button.id == 1)
-			GUIHandler.openGUI(new GUIPrototypesList());
+			GUIHandler.openGUI(new GUIPrototypesList(), true);
 	}
 }

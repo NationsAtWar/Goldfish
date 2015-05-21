@@ -58,7 +58,7 @@ public class GUITeleportsList extends GUIScreen {
 		if (prototype == null) {
 			
 			teleportsPage = 0;
-			GUIHandler.openGUI(new GUIMainMenu());
+			GUIHandler.openGUI(new GUIMainMenu(), true);
 			return;
 		}
 		
@@ -155,7 +155,7 @@ public class GUITeleportsList extends GUIScreen {
 		
 		// Return
 		if (button.equals(returnButton))
-			GUIHandler.openGUI(new GUIPrototypesList());
+			GUIHandler.openGUI(new GUIPrototypesList(), true);
 		
 		// Add Teleport
 		if (button.equals(addTeleportButton)) {
@@ -168,7 +168,7 @@ public class GUITeleportsList extends GUIScreen {
 			Goldfish.channel.sendToServer(new PacketAddTeleport(player.getUniqueID().toString(), 
 					prototype.getPrototypeID(), teleportID));
 			
-			GUIHandler.openGUI(new GUITeleportsList());
+			GUIHandler.openGUI(new GUITeleportsList(), true);
 		}
 		
 		// Remove Teleport
@@ -184,16 +184,16 @@ public class GUITeleportsList extends GUIScreen {
 			if (prototype.numberofTeleportPoints() <= teleportsPage)
 				teleportsPage--;
 			
-			GUIHandler.openGUI(new GUITeleportsList());
+			GUIHandler.openGUI(new GUITeleportsList(), true);
 		}
 		
 		// Label Teleport
 		if (button.equals(labelButton)) 
-			GUIHandler.openGUI(new GUISetTeleportLabel());
+			GUIHandler.openGUI(new GUISetTeleportLabel(), true);
 		
 		// Set Text
 		if (button.equals(messageButton)) 
-			GUIHandler.openGUI(new GUISetTeleportMessage());
+			GUIHandler.openGUI(new GUISetTeleportMessage(), true);
 		
 		// Set Source Location
 		if (button.equals(sourceButton))  {
@@ -213,7 +213,7 @@ public class GUITeleportsList extends GUIScreen {
 			Goldfish.channel.sendToServer(new PacketSetTeleportSource(worldLocation.getWorldName(), 
 					worldLocation.getPosX(), worldLocation.getPosY(), worldLocation.getPosZ(), 
 					prototype.getPrototypeID(), teleportsPage));
-			GUIHandler.openGUI(new GUITeleportsList());
+			GUIHandler.openGUI(new GUITeleportsList(), true);
 		}
 		
 		// Set Destination Location
@@ -234,21 +234,21 @@ public class GUITeleportsList extends GUIScreen {
 			Goldfish.channel.sendToServer(new PacketSetTeleportDest(worldLocation.getWorldName(), 
 					worldLocation.getPosX(), worldLocation.getPosY(), worldLocation.getPosZ(), 
 					prototype.getPrototypeID(), teleportsPage));
-			GUIHandler.openGUI(new GUITeleportsList());
+			GUIHandler.openGUI(new GUITeleportsList(), true);
 		}
 				
 		// Previous Page
 		if (button.equals(previousButton))  {
 			
 			teleportsPage--;
-			GUIHandler.openGUI(new GUITeleportsList());
+			GUIHandler.openGUI(new GUITeleportsList(), true);
 		}
 		
 		// Next Page
 		if (button.equals(nextButton))  {
 			
 			teleportsPage++;
-			GUIHandler.openGUI(new GUITeleportsList());
+			GUIHandler.openGUI(new GUITeleportsList(), true);
 		}
 	}
 	

@@ -13,6 +13,6 @@ public class KeyEvents {
 	public void onKeyInput(InputEvent.KeyInputEvent event) {
 		
 		if (ClientProxy.goldfishKey.isPressed())
-			GUIHandler.openGUI(new GUIMainMenu());
+			GUIHandler.openGUI(new GUIMainMenu(), true);
 	}
 }

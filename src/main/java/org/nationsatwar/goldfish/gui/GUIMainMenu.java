@@ -44,14 +44,14 @@ public class GUIMainMenu extends GUIScreen {
 	protected void buttonClicked(GUIButton button) {
 		
 		if (button.equals(prototypeList))
-			GUIHandler.openGUI(new GUIPrototypesList());
+			GUIHandler.openGUI(new GUIPrototypesList(), true);
 		
 		if (button.equals(createPrototype)) {
 			
 			if (createTextField.getText().matches(Constants.PROTOTYPE_NAME_REGEX)) {
 				
 				PrototypeManager.setCreatePrototypeName(createTextField.getText());
-				GUIHandler.openGUI(new GUICreateConfirm());
+				GUIHandler.openGUI(new GUICreateConfirm(), true);
 			}
 			else if (createTextField.getText() == "")
 				errorLabel.setText("Enter a prototype name");

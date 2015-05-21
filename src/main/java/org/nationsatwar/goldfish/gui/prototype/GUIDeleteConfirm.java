@@ -59,6 +59,6 @@ public class GUIDeleteConfirm extends GUIScreen {
 			}
 		}
 		
-		GUIHandler.openGUI(new GUIMainMenu());
+		GUIHandler.openGUI(new GUIMainMenu(), true);
 	}
 }

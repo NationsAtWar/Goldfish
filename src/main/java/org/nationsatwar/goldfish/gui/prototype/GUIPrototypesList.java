@@ -24,7 +24,7 @@ public class GUIPrototypesList extends GUIScreen {
 	private GUIButton previousButton;
 	private GUIButton nextButton;
 	
-	private int prototypePage = 0;
+	private static int prototypePage = 0;
 	private boolean insidePrototype;
 	
 	public void setElements() {
@@ -38,7 +38,7 @@ public class GUIPrototypesList extends GUIScreen {
 		if (prototype == null) {
 			
 			prototypePage = 0;
-			GUIHandler.openGUI(new GUIMainMenu());
+			GUIHandler.openGUI(new GUIMainMenu(), true);
 			return;
 		}
 		
@@ -73,7 +73,7 @@ public class GUIPrototypesList extends GUIScreen {
 		
 		// Return
 		if (button.equals(returnButton))
-			GUIHandler.openGUI(new GUIMainMenu());
+			GUIHandler.openGUI(new GUIMainMenu(), true);
 
 		// Activate Prototype
 		if (button.equals(activateButton)) {
@@ -89,11 +89,11 @@ public class GUIPrototypesList extends GUIScreen {
 		
 		// Rename Prototype
 		if (button.equals(renameButton))
-			GUIHandler.openGUI(new GUIRenamePrototype());
+			GUIHandler.openGUI(new GUIRenamePrototype(), true);
 		
 		// Delete Prototype
 		if (button.equals(deleteButton))
-			GUIHandler.openGUI(new GUIDeleteConfirm());
+			GUIHandler.openGUI(new GUIDeleteConfirm(), true);
 		
 		// Warp to Prototype
 		if (button.equals(warpButton)) {
@@ -107,24 +107,24 @@ public class GUIPrototypesList extends GUIScreen {
 		
 		// Teleports Menu
 		if (button.equals(teleportsButton))
-			GUIHandler.openGUI(new GUITeleportsList());
+			GUIHandler.openGUI(new GUITeleportsList(), true);
 		
 		// Configure Prototype
 		if (button.equals(configButton))
-			GUIHandler.openGUI(new GUIConfiguration());
+			GUIHandler.openGUI(new GUIConfiguration(), true);
 		
 		// Previous Prototype
 		if (button.equals(previousButton)) {
 			
 			prototypePage--;
-			GUIHandler.openGUI(new GUIPrototypesList());
+			GUIHandler.openGUI(new GUIPrototypesList(), true);
 		}
 		
 		// Next Prototype
 		if (button.equals(nextButton)) {
 			
 			prototypePage++;
-			GUIHandler.openGUI(new GUIPrototypesList());
+			GUIHandler.openGUI(new GUIPrototypesList(), true);
 		}
 	}
 }

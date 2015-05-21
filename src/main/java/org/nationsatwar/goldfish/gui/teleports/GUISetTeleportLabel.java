@@ -54,7 +54,7 @@ public class GUISetTeleportLabel extends GUIScreen {
 				
 				Goldfish.channel.sendToServer(new PacketSetTeleportLabel(prototype.getPrototypeID(), 
 						teleportID, labelTextField.getText()));
-				GUIHandler.openGUI(new GUITeleportsList());
+				GUIHandler.openGUI(new GUITeleportsList(), true);
 			}
 			else if (labelTextField.getText() == "")
 				errorLabel.setText("Enter a teleport label");
@@ -66,6 +66,6 @@ public class GUISetTeleportLabel extends GUIScreen {
 		}
 		
 		// Cancel - Returns to Teleports List
-		GUIHandler.openGUI(new GUITeleportsList());
+		GUIHandler.openGUI(new GUITeleportsList(), true);
 	}
 }

@@ -37,6 +37,6 @@ public class GUICreateConfirm extends GUIScreen {
 			ChatMessage.sendMessage(player, "Prototype: '" + prototypeName + "' has been created.");
 		}
 		
-		GUIHandler.openGUI(new GUIPrototypesList());
+		GUIHandler.openGUI(new GUIPrototypesList(), true);
 	}
 }
