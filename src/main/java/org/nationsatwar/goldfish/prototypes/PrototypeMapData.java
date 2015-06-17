@@ -6,7 +6,7 @@ import net.minecraft.world.WorldSavedData;
 public class PrototypeMapData extends WorldSavedData {
 	
 	private NBTTagCompound data = new NBTTagCompound();
-
+	
 	public PrototypeMapData(String name) {
 		
 		super(name);
